@@ -14,6 +14,12 @@ const StaticLayers = () => import('@/views/staticlayers')
 const Login = () => import('@/views/pages/login')
 const Logout = () => import('@/views/pages/logout')
 
+// Prevent 'NavigationDuplicated' when navigating to the same path
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+};
+
 Vue.use(Router)
 
 const router = new Router({
