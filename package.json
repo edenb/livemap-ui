@@ -12,8 +12,10 @@
     "leaflet": "^1.6.0",
     "material-design-icons-iconfont": "^5.0.1",
     "roboto-fontface": "*",
+    "socket.io-client": "^2.3.0",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
+    "vue-socket.io-extended": "^4.0.1",
     "vue2-leaflet": "^2.5.2",
     "vuetify": "^2.2.12"
   },

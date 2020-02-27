@@ -8,6 +8,9 @@
   >
     <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
+      <span>
+        <v-icon class="mb-1" :color="connectionIcon.color" dense>{{connectionIcon.name}}</v-icon>
+      </span>
       Livemap UI
     </v-toolbar-title>
     <v-spacer />
@@ -27,12 +30,21 @@
 </template>
 
 <script>
+  const connectionIcon = [];
+  connectionIcon["connected"] = {name: "mdi-circle", color: "green"};
+  connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red"};
+
   import {axiosMixin} from '@/components/mixins/axiosMixin';
   export default {
     name: "ContainerNavBar",
     mixins: [axiosMixin],
     created() {
       this.apiRequest('get', '/account');
+    },
+    computed: {
+      connectionIcon: function() {
+        return this.$socket.connected?connectionIcon["connected"]:connectionIcon["disconnected"];
+      }
     },
     methods: {
       toggleSidebarLeft() {
