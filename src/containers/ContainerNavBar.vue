@@ -8,10 +8,20 @@
   >
     <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
-      <span>
-        <v-icon class="mb-1" :color="connectionIcon.color" dense>{{connectionIcon.name}}</v-icon>
-      </span>
-      Livemap UI
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-icon
+            class="mb-1"
+            :color="connectionIcon.color"
+            dense
+            v-on="on"
+          >
+            {{connectionIcon.name}}
+          </v-icon>
+        </template>
+        <span>{{connectionIcon.tooltip}}</span>
+      </v-tooltip>
+      <span class="pl-3">Livemap UI</span>
     </v-toolbar-title>
     <v-spacer />
     <v-chip
@@ -31,8 +41,8 @@
 
 <script>
   const connectionIcon = [];
-  connectionIcon["connected"] = {name: "mdi-circle", color: "green"};
-  connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red"};
+  connectionIcon["connected"] = {name: "mdi-circle", color: "green", tooltip: "Server connected"};
+  connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red", tooltip: "No server connection"};
 
   import {axiosMixin} from '@/components/mixins/axiosMixin';
   export default {
