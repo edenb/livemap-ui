@@ -42,7 +42,7 @@ function apiLogin(path, data) {
     let token = response.data.access_token;
     localStorage.setItem("jwt", token);
     if (token) {
-      this.$router.push("/home");
+      this.$router.push("/worldmap");
     }
   })
   .catch((err) => {

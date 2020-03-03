@@ -7,7 +7,18 @@
     <v-list dense>
       <v-list-item
         link
-        @click="changeRoute('users', 1)"
+        @click="changeRoute('worldmap', 1)"
+      >
+        <v-list-item-action>
+          <v-icon>mdi-map-outline</v-icon>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>Map</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item
+        link
+        @click="changeRoute('users', 2)"
       >
         <v-list-item-action>
           <v-icon>mdi-account-multiple-outline</v-icon>
@@ -18,7 +29,7 @@
       </v-list-item>
       <v-list-item
         link
-        @click="changeRoute('devices', 2)"
+        @click="changeRoute('devices', 3)"
       >
         <v-list-item-action>
           <v-icon>mdi-devices</v-icon>
@@ -29,7 +40,7 @@
       </v-list-item>
       <v-list-item
         link
-        @click="changeRoute('positions', 3)"
+        @click="changeRoute('positions', 4)"
       >
         <v-list-item-action>
           <v-icon>mdi-map-marker-outline</v-icon>
@@ -38,9 +49,9 @@
           <v-list-item-title>Positions</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-            <v-list-item
+      <v-list-item
         link
-        @click="changeRoute('staticlayers', 4)"
+        @click="changeRoute('staticlayers', 5)"
       >
         <v-list-item-action>
           <v-icon>mdi-map-outline</v-icon>
@@ -63,7 +74,7 @@
       <v-divider> default </v-divider>
       <v-list-item
         link
-        @click="changeRoute('logout', 5)"
+        @click="changeRoute('logout', 6)"
       >
         <v-list-item-action>
           <v-icon>mdi-exit-to-app</v-icon>

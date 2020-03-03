@@ -5,6 +5,7 @@ import Router from 'vue-router'
 const ContainerMain = () => import('@/containers/ContainerMain')
 
 // Views
+const Worldmap = () => import('@/views/worldmap')
 const Users = () => import('@/views/users')
 const Devices = () => import('@/views/devices')
 const Positions = () => import('@/views/positions')
@@ -39,6 +40,14 @@ function configRoutes () {
         requiresAuth: true
       },
       children: [
+        {
+          path: '/worldmap',
+          name: 'worldmap',
+          component: Worldmap,
+          meta: {
+            requiresAuth: true
+          },
+        },
         {
           path: '/users',
           name: 'users',
