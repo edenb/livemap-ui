@@ -23,7 +23,9 @@
           v-for="lastPosition in lastPositions"
           :key="lastPosition.raw.device_id"
           :lat-lng="lastPosition.latLng"
-        />
+        >
+          <l-popup :content="lastPosition.popup" />
+        </l-marker>
       </l-feature-group>
     </l-map>
   </v-layout>
@@ -31,7 +33,7 @@
 
 <script>
 import {axiosMixin} from '@/components/mixins/axiosMixin';
-import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker} from 'vue2-leaflet';
+import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup} from 'vue2-leaflet';
 export default {
   mixins: [axiosMixin],
   components: {
@@ -39,7 +41,8 @@ export default {
     LTileLayer,
     LControlLayers,
     LFeatureGroup,
-    LMarker
+    LMarker,
+    LPopup
   },
   data () {
     return {
@@ -103,7 +106,48 @@ function createMarker(payload) {
   let newMarker = {};
   newMarker.raw = payload;
   newMarker.latLng = {lat: payload.loc_lat, lon: payload.loc_lon};
+  newMarker.popup = getPopupText(payload);
 
   return newMarker;
+}
+
+const loc_type_str = {
+  'rec': 'Recorded',
+  'left': 'Last known'
+};
+
+function getPopupText(dev) {
+  let htmlText = '', PopupType;
+
+  const PopupTime = new Date(dev.loc_timestamp);
+  // If loc_type is defined use predefined label
+  if (dev.loc_type) {
+    PopupType = loc_type_str[dev.loc_type];
+    htmlText += '<b>' + dev.alias + '</b>';
+    if (typeof PopupType !== 'undefined') {
+      htmlText += ' (' + PopupType + ')';
+    }
+    htmlText += '<br>';
+    htmlText += PopupTime.toLocaleString() + '<br>';
+  } else {
+    if (dev.loc_attr) {
+      if (dev.loc_attr.labelshowalias) {
+        htmlText += '<b>' + dev.alias + '</b><br>';
+      }
+      if (dev.loc_attr.labelshowtime) {
+        htmlText += PopupTime.toLocaleString() + '<br>';
+      }
+      if (dev.loc_attr.labelcustomhtml) {
+        htmlText += dev.loc_attr.labelcustomhtml;
+      }
+    }
+  }
+
+  if (htmlText === '') {
+    // Show at least the alias
+    htmlText = '<b>' + dev.alias + '</b>';
+  }
+
+  return htmlText;
 }
 </script>
