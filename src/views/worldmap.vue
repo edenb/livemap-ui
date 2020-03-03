@@ -6,7 +6,10 @@
       :zoom="zoom"
       :center="center"
     >
-      <l-control-layers position="topright"/>
+      <l-control-layers
+        position="topright"
+        :collapsed="false"
+      />
       <l-tile-layer
         v-for="tileProvider in tileProviders"
         :key="tileProvider.name"
@@ -46,8 +49,8 @@ export default {
   },
   data () {
     return {
-      zoom: 8,
-      center: [52, 5],
+      zoom: 2,
+      center: [0,0],
       tileProviders: [
         {
           name: 'OpenStreetMap',
@@ -94,7 +97,6 @@ export default {
           this.lastPositions.splice(idx, 1);
         }
         this.lastPositions.push(newMarker);
-        //console.log(newMarker);
       } catch(err) {
         console.log(err);
       }
