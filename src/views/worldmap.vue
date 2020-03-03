@@ -21,7 +21,7 @@
       >
         <l-marker
           v-for="lastPosition in lastPositions"
-          :key="lastPosition.device.device_id"
+          :key="lastPosition.raw.device_id"
           :lat-lng="lastPosition.latLng"
         />
       </l-feature-group>
@@ -69,15 +69,29 @@ export default {
     //this.$refs.worldmap.mapObject.ANY_LEAFLET_MAP_METHOD();
     });
   },
+  created() {
+    this.apiRequest('get', '/positions');
+  },
+  watch: {
+    response: function () {
+      if (this.response.data) {
+        this.lastPositions = [];
+        for (let position of this.response.data) {
+          this.lastPositions.push(createMarker(position));
+        }
+      }
+    }
+  },
   sockets: {
     positionUpdate(socketPayloadStr) {
       try {
-        const newMarker = createMarker(JSON.parse(socketPayloadStr));
-        let idx = this.lastPositions.findIndex(x => x.device.device_id === newMarker.device.device_id);
+        const newMarker = createMarker(JSON.parse(socketPayloadStr).data);
+        let idx = this.lastPositions.findIndex(x => x.raw.device_id === newMarker.raw.device_id);
         if (idx >=0) {
           this.lastPositions.splice(idx, 1);
         }
         this.lastPositions.push(newMarker);
+        //console.log(newMarker);
       } catch(err) {
         console.log(err);
       }
@@ -85,10 +99,10 @@ export default {
   }
 }
 
-function createMarker(socketPayload) {
+function createMarker(payload) {
   let newMarker = {};
-  newMarker.latLng = {lat: socketPayload.data.loc_lat, lon: socketPayload.data.loc_lon};
-  newMarker.device = socketPayload.data;
+  newMarker.raw = payload;
+  newMarker.latLng = {lat: payload.loc_lat, lon: payload.loc_lon};
 
   return newMarker;
 }
