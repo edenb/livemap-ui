@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store'
 
 // Containers
 const ContainerMain = () => import('@/containers/ContainerMain')
@@ -100,7 +101,8 @@ function configRoutes () {
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
-      if (localStorage.getItem("jwt") == null) {
+      console.log(`Authorized: ${store.state.authorized}`)
+      if(!store.state.authorized) {
         next({
           path: "/"
         });

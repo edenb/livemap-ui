@@ -28,12 +28,11 @@
       class="ma-2"
       color="secondary"
       text-color="white"
-      v-if="response.data && response.data.length!==0"
     >
       <v-avatar left>
         <v-icon>mdi-account-circle</v-icon>
       </v-avatar>
-      {{this.response.data.fullname}}
+      {{$store.state.user.fullname}}
     </v-chip>
     <v-app-bar-nav-icon @click.stop="toggleSidebarRight" />
   </v-app-bar>
@@ -41,15 +40,14 @@
 
 <script>
   const connectionIcon = [];
-  connectionIcon["connected"] = {name: "mdi-circle", color: "green", tooltip: "Server connected"};
-  connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red", tooltip: "No server connection"};
+  connectionIcon["connected"] = {name: "mdi-circle", color: "green", tooltip: "Live connection"};
+  connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red", tooltip: "No live connection"};
 
-  import {axiosMixin} from '@/components/mixins/axiosMixin';
+  import {apiMixin} from '@/components/mixins/apiMixin';
   export default {
     name: "ContainerNavBar",
-    mixins: [axiosMixin],
+    mixins: [apiMixin],
     created() {
-      this.apiRequest('get', '/account');
     },
     computed: {
       connectionIcon: function() {

@@ -35,10 +35,10 @@
 </template>
 
 <script>
-import {axiosMixin} from '@/components/mixins/axiosMixin';
+import {apiMixin} from '@/components/mixins/apiMixin';
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup} from 'vue2-leaflet';
 export default {
-  mixins: [axiosMixin],
+  mixins: [apiMixin],
   components: {
     LMap,
     LTileLayer,
@@ -89,6 +89,10 @@ export default {
     }
   },
   sockets: {
+    connect() {
+      console.log('Connected!!');
+      this.$socket.client.emit('authenticate', 'Authenticated!!');
+    },
     positionUpdate(socketPayloadStr) {
       try {
         const newMarker = createMarker(JSON.parse(socketPayloadStr).data);

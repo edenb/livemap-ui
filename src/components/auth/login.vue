@@ -84,9 +84,9 @@
 </template>
 
 <script>
-  import {axiosMixin} from '@/components/mixins/axiosMixin'
+  import {apiMixin} from '@/components/mixins/apiMixin'
   export default {
-    mixins: [axiosMixin],
+    mixins: [apiMixin],
     data: () => ({
       username: "",
       usernameRules: [
@@ -101,11 +101,40 @@
     methods: {
       loginUser() {
         if (this.username && this.password) { 
-          this.apiLogin("/login",
-            {"username": this.username, "password": this.password}
-          )
+          this.apiRequest('post', '/login', {"username": this.username, "password": this.password})
+            .then((response) => {
+              console.log(`User token: ${response.data.access_token}`);
+              return this.$store.dispatch('setUserToken', response.data.access_token);
+            })
+            .then(() => {
+              this.$socket.client.open();
+              this.$router.push("/worldmap");
+            })
+            .catch((err) => {
+              this.loading = false;
+              if (err.response && err.response.status) {
+                this.errorResponseText = getErrorResponseText(err.response.status);
+                if (err.response.status == 401) {
+                  this.$store.dispatch('revokeUserToken');
+                } 
+              } else {
+                this.errorResponseText = "No server connection";
+              }
+            })
+          }
         }
-      }
     }
-  };
+  }
+
+function getErrorResponseText(status) {
+  let errorResponseText = "";
+  switch(status) {
+    case 401:
+      errorResponseText = "Login failed"
+      break;
+    default:
+      errorResponseText = "Server busy";
+  }
+  return errorResponseText;
+}
 </script>

@@ -9,13 +9,13 @@ module.exports = {
   },
   "devServer": {
     "stats": "verbose",
-    "proxy": {
-      "/api": {
-        "target": "http://localhost:3000",
-        "logLevel": "debug",
-        "changeOrigin": true
-      }
-    }
+    //"proxy": {
+    //  "/api": {
+    //    "target": "http://localhost:3000",
+    //    "logLevel": "debug",
+    //    "changeOrigin": true
+    //  }
+    //}
   },
   "transpileDependencies": [
     "vuetify"

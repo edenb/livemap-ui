@@ -12,10 +12,10 @@
 </template>
 
 <script>
-  import {axiosMixin} from '@/components/mixins/axiosMixin';
+  import {apiMixin} from '@/components/mixins/apiMixin';
   export default {
     name: "Devices",
-    mixins: [axiosMixin],
+    mixins: [apiMixin],
     created() {
       this.apiRequest('get', '/devices');
     },

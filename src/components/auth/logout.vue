@@ -3,11 +3,10 @@
 </template>
 
 <script>
-  import {axiosMixin} from '@/components/mixins/axiosMixin'
   export default {
-    mixins: [axiosMixin],
     created() {
-      this.apiLogout();
+      this.$store.dispatch('revokeUserToken');
+      this.$router.push("/");
     }
   };
 </script>

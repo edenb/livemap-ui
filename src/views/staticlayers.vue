@@ -13,12 +13,12 @@
 </template>
 
 <script>
-  import {axiosMixin} from '@/components/mixins/axiosMixin';
+  import {apiMixin} from '@/components/mixins/apiMixin';
   import {LMap, LTileLayer, LGeoJson} from 'vue2-leaflet';
   import L from 'leaflet';
   export default {
     name: "StaticLayers",
-    mixins: [axiosMixin],
+    mixins: [apiMixin],
     components: {
       LMap,
       LTileLayer,
