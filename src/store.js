@@ -7,7 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     user: {},
-    token: '',
+    token: localStorage.getItem('jwt'),
     authorized: false
   },
   getters: {
@@ -37,12 +37,14 @@ export default new Vuex.Store({
           .then((response) => {
             //console.log(`User ID: ${response.data.fullname}`);
             commit('SET_USER', response.data);
+            localStorage.setItem('jwt', token);
             resolve(response);
           })
          .catch((err) => {
             console.log(`Error: ${err}`);
             commit('DEL_TOKEN'); //ToDo: Alleen bij 401
             commit('DEL_USER');
+            localStorage.removeItem('jwt');
             reject(err);
           });
       })
@@ -50,6 +52,7 @@ export default new Vuex.Store({
     revokeUserToken({commit}) {
       commit('DEL_TOKEN');
       commit('DEL_USER');
+      localStorage.removeItem('jwt')
     }
   }
 })

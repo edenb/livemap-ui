@@ -102,12 +102,25 @@ function configRoutes () {
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
       console.log(`Authorized: ${store.state.authorized}`)
-      if(!store.state.authorized) {
+      // Re-authenticate if a token is present but user not authorized
+      if(store.state.token!=='' && !store.state.authorized) {
+        console.log(`Start re-authorize`)
+        store.dispatch('setUserToken', store.state.token)
+          .then(() => {
+            console.log(`Re-authorized`);
+            next();
+          })
+          .catch(() => {
+            next({
+              path: "/"
+            });
+          })
+      } else if(store.state.authorized) {
+        next();
+      } else {
         next({
           path: "/"
         });
-      } else {
-        next();
       }
     } else {
       next();

@@ -107,34 +107,12 @@
               return this.$store.dispatch('setUserToken', response.data.access_token);
             })
             .then(() => {
-              this.$socket.client.open();
               this.$router.push("/worldmap");
             })
             .catch((err) => {
-              this.loading = false;
-              if (err.response && err.response.status) {
-                this.errorResponseText = getErrorResponseText(err.response.status);
-                if (err.response.status == 401) {
-                  this.$store.dispatch('revokeUserToken');
-                } 
-              } else {
-                this.errorResponseText = "No server connection";
-              }
             })
           }
         }
     }
   }
-
-function getErrorResponseText(status) {
-  let errorResponseText = "";
-  switch(status) {
-    case 401:
-      errorResponseText = "Login failed"
-      break;
-    default:
-      errorResponseText = "Server busy";
-  }
-  return errorResponseText;
-}
 </script>

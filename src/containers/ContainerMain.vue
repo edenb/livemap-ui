@@ -3,7 +3,6 @@
     <ContainerNavBar/>
     <ContainerSidebarLeft/>
     <ContainerSidebarRight/>
-
     <v-content>
       <v-container
         class="px-0 py-0 fill-height "
@@ -21,13 +20,10 @@
   import ContainerSidebarRight from '@/containers/ContainerSidebarRight';
   export default {
     name: "ContainerMain",
-    props: {
-      source: String,
-    },
     components: {
       ContainerNavBar,
       ContainerSidebarLeft,
       ContainerSidebarRight
-    }
+    },
   }
 </script>

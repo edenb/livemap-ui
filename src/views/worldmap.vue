@@ -76,7 +76,11 @@ export default {
     });
   },
   created() {
-    this.apiRequest('get', '/positions');
+    this.$socket.client.open();
+    this.apiRequest('get', '/positions')
+      .then(() => {
+        this.$socket.client.emit('authenticate', 'Authenticated!!');
+      })
   },
   watch: {
     response: function () {
@@ -91,7 +95,7 @@ export default {
   sockets: {
     connect() {
       console.log('Connected!!');
-      this.$socket.client.emit('authenticate', 'Authenticated!!');
+      //this.$socket.client.emit('authenticate', 'Authenticated!!');
     },
     positionUpdate(socketPayloadStr) {
       try {
