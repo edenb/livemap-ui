@@ -24,16 +24,52 @@
       <span class="pl-3">Livemap UI</span>
     </v-toolbar-title>
     <v-spacer />
-    <v-chip
-      class="ma-2"
-      color="secondary"
-      text-color="white"
+
+    <v-menu
+      bottom
+      left
+      :nudge-bottom="8"
+      origin="top right"
+      transition="scale-transition"
+      offset-y
     >
-      <v-avatar left>
-        <v-icon>mdi-account-circle</v-icon>
-      </v-avatar>
-      {{$store.state.user.fullname}}
-    </v-chip>
+      <template v-slot:activator="{ on } ">
+        <v-chip
+          class="ma-2"
+          color="secondary"
+          v-on="on"
+        >
+          <v-avatar left>
+            <v-icon>mdi-account-circle</v-icon>
+          </v-avatar>
+          {{$store.state.user.fullname}}
+        </v-chip>
+      </template>
+      <v-card>
+        <v-list dense>
+          <v-subheader>ACCOUNT</v-subheader>
+          <v-list-item>
+            <v-list-item-avatar color="secondary" size="36">
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{$store.state.user.username}}</v-list-item-title>
+              <v-list-item-subtitle>Username</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar color="secondary" size="36">
+              <v-icon>mdi-account-key</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{$store.state.user.role}}</v-list-item-title>
+              <v-list-item-subtitle>Permission level</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-menu>
+
     <v-app-bar-nav-icon @click.stop="toggleSidebarRight" />
   </v-app-bar>
 </template>
