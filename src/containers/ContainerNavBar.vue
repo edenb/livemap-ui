@@ -21,17 +21,15 @@
         </template>
         <span>{{connectionIcon.tooltip}}</span>
       </v-tooltip>
-      <span class="pl-3">Livemap UI</span>
+      <span class="hidden-xs-only pl-3">Livemap UI</span>
     </v-toolbar-title>
     <v-spacer />
 
     <v-menu
       bottom
       left
-      :nudge-bottom="8"
       origin="top right"
       transition="scale-transition"
-      offset-y
     >
       <template v-slot:activator="{ on } ">
         <v-chip
@@ -39,28 +37,32 @@
           color="secondary"
           v-on="on"
         >
-          <v-avatar left>
+          <v-avatar left class="ml-0 mr-0">
             <v-icon>mdi-account-circle</v-icon>
           </v-avatar>
-          {{$store.state.user.fullname}}
+          <span class="hidden-xs-only ml-2">
+            {{$store.state.user.fullname}}
+          </span>
         </v-chip>
       </template>
       <v-card>
+        <v-toolbar
+          color="secondary"
+          dark
+          dense
+        >
+          <v-toolbar-title>{{$store.state.user.fullname}}</v-toolbar-title>
+        </v-toolbar>
         <v-list dense>
-          <v-subheader>ACCOUNT</v-subheader>
           <v-list-item>
-            <v-list-item-avatar color="secondary" size="36">
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-avatar>
+              <v-icon class="mr-2">mdi-account</v-icon>
             <v-list-item-content>
               <v-list-item-title>{{$store.state.user.username}}</v-list-item-title>
               <v-list-item-subtitle>Username</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar color="secondary" size="36">
-              <v-icon>mdi-account-key</v-icon>
-            </v-list-item-avatar>
+              <v-icon class="mr-2">mdi-account-key</v-icon>
             <v-list-item-content>
               <v-list-item-title>{{$store.state.user.role}}</v-list-item-title>
               <v-list-item-subtitle>Permission level</v-list-item-subtitle>
