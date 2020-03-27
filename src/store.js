@@ -8,7 +8,9 @@ export default new Vuex.Store({
   state: {
     user: {},
     token: localStorage.getItem('jwt'),
-    authorized: false
+    authorized: false,
+    mapZoom: 2,
+    mapCenter: [0, 0]
   },
   getters: {
 
@@ -27,6 +29,12 @@ export default new Vuex.Store({
     },
     DEL_TOKEN(state) {
       state.token = '';
+    },
+    SET_MAPZOOM(state, mapZoom) {
+      state.mapZoom = mapZoom;
+    },
+    SET_MAPCENTER(state, mapCenter) {
+      state.mapCenter = mapCenter;
     }
   },
   actions: {
@@ -53,6 +61,12 @@ export default new Vuex.Store({
       commit('DEL_TOKEN');
       commit('DEL_USER');
       localStorage.removeItem('jwt')
+    },
+    setMapZoom({commit}, mapZoom) {
+      commit('SET_MAPZOOM', mapZoom);
+    },
+    setMapCenter({commit}, mapCenter) {
+      commit('SET_MAPCENTER', mapCenter);
     }
   }
 })

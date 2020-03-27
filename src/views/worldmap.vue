@@ -1,37 +1,36 @@
 <template>
-  <v-layout child-flex>
-    <l-map
-      ref="worldmap"
-      style="z-index: 1;"
-      :zoom="zoom"
-      :center="center"
+  <l-map
+    ref="worldmap"
+    style="z-index: 1;"
+    :center="center"
+    @update:zoom="zoomUpdate"
+    @update:center="centerUpdate"
+  >
+    <l-control-layers
+      position="topright"
+      :collapsed="false"
+    />
+    <l-tile-layer
+      v-for="tileProvider in tileProviders"
+      :key="tileProvider.name"
+      :name="tileProvider.name"
+      :visible="tileProvider.visible"
+      :url="tileProvider.url"
+      :attribution="tileProvider.attribution"
+      layer-type="base"/>
+    <l-feature-group
+      layer-type="overlay"
+      name="Devices"
     >
-      <l-control-layers
-        position="topright"
-        :collapsed="false"
-      />
-      <l-tile-layer
-        v-for="tileProvider in tileProviders"
-        :key="tileProvider.name"
-        :name="tileProvider.name"
-        :visible="tileProvider.visible"
-        :url="tileProvider.url"
-        :attribution="tileProvider.attribution"
-        layer-type="base"/>
-      <l-feature-group
-        layer-type="overlay"
-        name="Devices"
+      <l-marker
+        v-for="lastPosition in lastPositions"
+        :key="lastPosition.raw.device_id"
+        :lat-lng="lastPosition.latLng"
       >
-        <l-marker
-          v-for="lastPosition in lastPositions"
-          :key="lastPosition.raw.device_id"
-          :lat-lng="lastPosition.latLng"
-        >
-          <l-popup :content="lastPosition.popup" />
-        </l-marker>
-      </l-feature-group>
-    </l-map>
-  </v-layout>
+        <l-popup :content="lastPosition.popup" />
+      </l-marker>
+    </l-feature-group>
+  </l-map>
 </template>
 
 <script>
@@ -49,8 +48,8 @@ export default {
   },
   data () {
     return {
-      zoom: 2,
-      center: [0,0],
+      zoom: this.$store.state.mapZoom,
+      center: this.$store.state.mapCenter,
       tileProviders: [
         {
           name: 'OpenStreetMap',
@@ -90,6 +89,14 @@ export default {
           this.lastPositions.push(createMarker(position));
         }
       }
+    }
+  },
+  methods: {
+    zoomUpdate(zoom) {
+      this.$store.dispatch('setMapZoom', zoom);
+    },
+    centerUpdate(center) {
+      this.$store.dispatch('setMapCenter', center);
     }
   },
   sockets: {
