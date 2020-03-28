@@ -9,6 +9,9 @@
 </script>
 
 <style lang="scss">
-  // Import Main styles for this application
-  //@import 'assets/scss/style';
+// Import Main styles for this application
+//@import 'assets/scss/style';
+html, body {
+  overflow-y: hidden
+}
 </style>

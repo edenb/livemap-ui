@@ -1,15 +1,13 @@
 <template>
-  <v-layout child-flex>
-    <l-map
-      ref="staticlayers"
-      style="z-index: 1;"
-      :zoom="zoom"
-      :center="center"
-    >
-      <l-tile-layer :url="url"/>
-      <l-geo-json :geojson="allLayers" :options="options"/>
-    </l-map>
-  </v-layout>
+  <l-map
+    ref="staticlayers"
+    style="z-index: 1;"
+    :zoom="zoom"
+    :center="center"
+  >
+    <l-tile-layer :url="url"/>
+    <l-geo-json :geojson="allLayers" :options="options"/>
+  </l-map>
 </template>
 
 <script>
@@ -27,8 +25,8 @@
     data () {
       return {
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        zoom: 8,
-        center: [52, 5],
+        zoom: 3,
+        center: [40, -40],
         options: {
           onEachFeature: function (feature, layer) {
             if (feature.properties && feature.properties.popup) {

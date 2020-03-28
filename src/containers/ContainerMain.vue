@@ -4,26 +4,36 @@
     <ContainerSidebarLeft/>
     <ContainerSidebarRight/>
     <v-content>
-      <v-container
-        class="px-0 py-0 fill-height "
-        fluid
-      >
-        <router-view></router-view>
-      </v-container>
+      <Vue100vh>
+        <v-container
+          pa-0
+          fluid
+        >
+          <router-view></router-view>
+        </v-container>
+      </Vue100vh>
     </v-content>
   </v-app>
 </template>
 
 <script>
+  import Vue100vh from 'vue-div-100vh'
   import ContainerNavBar from '@/containers/ContainerNavBar';
   import ContainerSidebarLeft from '@/containers/ContainerSidebarLeft';
   import ContainerSidebarRight from '@/containers/ContainerSidebarRight';
   export default {
     name: "ContainerMain",
     components: {
+      Vue100vh,
       ContainerNavBar,
       ContainerSidebarLeft,
       ContainerSidebarRight
     },
   }
 </script>
+
+<style lang="scss">
+.container {
+  height: calc(100% - 64px);
+}
+</style>

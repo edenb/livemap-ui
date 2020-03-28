@@ -1,7 +1,8 @@
 <template>
   <l-map
     ref="worldmap"
-    style="z-index: 1;"
+    style="z-index: 1"
+    :zoom="zoom"
     :center="center"
     @update:zoom="zoomUpdate"
     @update:center="centerUpdate"
@@ -73,6 +74,12 @@ export default {
     this.$nextTick(() => {
     //this.$refs.worldmap.mapObject.ANY_LEAFLET_MAP_METHOD();
     });
+  },
+  beforeCreate() {
+    if (this.$store.state.mapZoom < 0) {
+      this.$store.dispatch('setMapZoom', 3);
+      this.$store.dispatch('setMapCenter', { lng: -40, lat: 40 });
+    }
   },
   created() {
     this.$socket.client.open();
