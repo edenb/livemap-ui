@@ -6,6 +6,7 @@
         fluid
       >
         <v-row
+          class="ma-2"
           align="center"
           justify="center"
         >
