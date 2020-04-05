@@ -135,11 +135,8 @@ export default {
         .then((response) => {
           this.allDevices = response.data
         })
-        .catch((err) => {
-          // Do not reload the table on internal server error
-          if(err.response.status < 500) {
-            this.loadTable();
-          }
+        .catch(() => {
+          // Ignore failed (re)loads
         })
     },
     editItem (item) {
