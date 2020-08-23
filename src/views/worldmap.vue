@@ -109,7 +109,7 @@ export default {
   sockets: {
     connect() {
       console.log('Connected!!');
-      //this.$socket.client.emit('authenticate', 'Authenticated!!');
+      this.$socket.client.emit('token', this.$store.state.token);
     },
     positionUpdate(socketPayloadStr) {
       try {
