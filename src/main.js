@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 Vue.config.performance = true
 
 const socket = io(process.env.VUE_APP_SERVER_URL || 'http://localhost:3000', {
-  autoConnect: false
+  autoConnect: true
 });
 
 Vue.use(VueSocketIOExt, socket, {store});

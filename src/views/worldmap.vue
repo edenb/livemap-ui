@@ -82,11 +82,12 @@ export default {
     }
   },
   created() {
-    this.$socket.client.open();
-    this.apiRequest('get', '/positions')
-      .then(() => {
-        this.$socket.client.emit('authenticate', 'Authenticated!!');
-      })
+    //this.$socket.client.open();
+    this.$socket.client.emit('token', this.$store.state.token);
+    this.apiRequest('get', '/positions');
+    //  .then(() => {
+    //    this.$socket.client.emit('authenticate', 'Authenticated!!');
+    //  })
   },
   watch: {
     response: function () {
@@ -108,7 +109,9 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('Connected!!');
+      this.$socket.client.emit('token', this.$store.state.token);
+    },
+    authenticate() {
       this.$socket.client.emit('token', this.$store.state.token);
     },
     positionUpdate(socketPayloadStr) {

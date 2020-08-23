@@ -86,7 +86,7 @@
     name: "ContainerNavBar",
     mixins: [apiMixin],
     created() {
-      this.$socket.client.open();
+      //this.$socket.client.open();
     },
     computed: {
       connectionIcon: function() {
