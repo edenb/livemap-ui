@@ -3,16 +3,16 @@
     <ContainerNavBar/>
     <ContainerSidebarLeft/>
     <ContainerSidebarRight/>
-    <v-content>
+    <v-main>
       <Vue100vh>
         <v-container
           pa-0
           fluid
         >
-          <router-view></router-view>
+          <router-view/>
         </v-container>
       </Vue100vh>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
