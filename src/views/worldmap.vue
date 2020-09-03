@@ -31,12 +31,24 @@
         <l-popup :content="lastPosition.popup" />
       </l-marker>
     </l-feature-group>
+    <l-feature-group
+      layer-type="overlay"
+      v-for="(staticLayer, index) in staticLayers"
+      :key="index"
+      :name="getStaticLayerName(staticLayer, index)"
+    >
+      <l-geo-json
+        :geojson="staticLayer"
+        :options="options"
+      >
+      </l-geo-json>
+    </l-feature-group>
   </l-map>
 </template>
 
 <script>
 import {apiMixin} from '@/components/mixins/apiMixin';
-import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup} from 'vue2-leaflet';
+import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
 export default {
   mixins: [apiMixin],
   components: {
@@ -45,7 +57,8 @@ export default {
     LControlLayers,
     LFeatureGroup,
     LMarker,
-    LPopup
+    LPopup,
+    LGeoJson
   },
   data () {
     return {
@@ -67,7 +80,15 @@ export default {
             'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
         },
       ],
-      lastPositions: []
+      options: {
+        onEachFeature: function (feature, layer) {
+          if (feature.properties && feature.properties.popup) {
+            layer.bindPopup(feature.properties.popup);
+          }
+        }
+      },
+      lastPositions: [],
+      staticLayers: []
     }
   },
   mounted() {
@@ -82,22 +103,21 @@ export default {
     }
   },
   created() {
-    //this.$socket.client.open();
     this.$socket.client.emit('token', this.$store.state.token);
-    this.apiRequest('get', '/positions');
-    //  .then(() => {
-    //    this.$socket.client.emit('authenticate', 'Authenticated!!');
-    //  })
-  },
-  watch: {
-    response: function () {
-      if (this.response.data) {
+    this.apiRequest('get', '/positions')
+      .then((response) => {
         this.lastPositions = [];
-        for (let position of this.response.data) {
+        for (let position of response.data) {
           this.lastPositions.push(createMarker(position));
         }
-      }
-    }
+      })
+    this.apiRequest('get', '/staticlayers')
+      .then((response) => {
+        this.staticLayers = [];
+        for (let staticLayerData of response.data) {
+          this.staticLayers.push(staticLayerData);
+        }
+      })
   },
   methods: {
     zoomUpdate(zoom) {
@@ -105,6 +125,13 @@ export default {
     },
     centerUpdate(center) {
       this.$store.dispatch('setMapCenter', center);
+    },
+    getStaticLayerName(staticLayer, index) {
+      let name = `Overlay ${index}`
+      if (staticLayer.properties && staticLayer.properties.name) {
+        name = staticLayer.properties.name;
+      }
+      return name;
     }
   },
   sockets: {
