@@ -51,17 +51,6 @@
           <v-list-item-title>Positions</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item
-        link
-        @click="changeRoute('staticlayers', 5)"
-      >
-        <v-list-item-action>
-          <v-icon>mdi-map-outline</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Static Layers</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
       <v-divider> default </v-divider>
       <v-list-item
         link
@@ -76,7 +65,7 @@
       <v-divider> default </v-divider>
       <v-list-item
         link
-        @click="changeRoute('logout', 6)"
+        @click="changeRoute('logout', 5)"
       >
         <v-list-item-action>
           <v-icon>mdi-exit-to-app</v-icon>

@@ -10,7 +10,6 @@ const Worldmap = () => import('@/views/worldmap')
 const Users = () => import('@/views/users')
 const Devices = () => import('@/views/devices')
 const Positions = () => import('@/views/positions')
-const StaticLayers = () => import('@/views/staticlayers')
 
 // Views - Pages
 const Login = () => import('@/views/pages/login')
@@ -69,14 +68,6 @@ function configRoutes () {
           path: '/positions',
           name: 'positions',
           component: Positions,
-          meta: {
-            requiresAuth: true
-          },
-        },
-        {
-          path: '/staticlayers',
-          name: 'staticlayers',
-          component: StaticLayers,
           meta: {
             requiresAuth: true
           },
