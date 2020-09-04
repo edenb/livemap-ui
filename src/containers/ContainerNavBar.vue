@@ -82,12 +82,10 @@
   connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red", tooltip: "No live connection"};
 
   import {apiMixin} from '@/components/mixins/apiMixin';
+  import {socketMixin} from '@/components/mixins/socketMixin'
   export default {
     name: "ContainerNavBar",
-    mixins: [apiMixin],
-    created() {
-      //this.$socket.client.open();
-    },
+    mixins: [apiMixin, socketMixin],
     computed: {
       connectionIcon: function() {
         return this.$socket.connected?connectionIcon["connected"]:connectionIcon["disconnected"];

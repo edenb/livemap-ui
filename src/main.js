@@ -11,8 +11,9 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 Vue.config.productionTip = false
 Vue.config.performance = true
 
+// Create a socket but do not connect
 const socket = io(process.env.VUE_APP_SERVER_URL || 'http://localhost:3000', {
-  autoConnect: true
+  autoConnect: false
 });
 
 Vue.use(VueSocketIOExt, socket, {store});

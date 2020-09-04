@@ -48,9 +48,10 @@
 
 <script>
 import {apiMixin} from '@/components/mixins/apiMixin';
+import {socketMixin} from '@/components/mixins/socketMixin'
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
 export default {
-  mixins: [apiMixin],
+  mixins: [apiMixin, socketMixin],
   components: {
     LMap,
     LTileLayer,
@@ -135,12 +136,6 @@ export default {
     }
   },
   sockets: {
-    connect() {
-      this.$socket.client.emit('token', this.$store.state.token);
-    },
-    authenticate() {
-      this.$socket.client.emit('token', this.$store.state.token);
-    },
     positionUpdate(socketPayloadStr) {
       try {
         const newMarker = createMarker(JSON.parse(socketPayloadStr).data);
