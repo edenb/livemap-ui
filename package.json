@@ -8,9 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.19.2",
-    "leaflet": "^1.6.0",
-    "material-design-icons-iconfont": "^5.0.1",
+    "axios": "^0.20.0",
+    "leaflet": "^1.7.1",
+    "material-design-icons-iconfont": "^6.0.2",
     "roboto-fontface": "*",
     "socket.io-client": "^2.3.0",
     "vue": "^2.6.12",
@@ -22,19 +22,19 @@
     "vuex": "^3.5.1"
   },
   "devDependencies": {
-    "@mdi/js": "^4.9.95",
+    "@mdi/js": "^5.5.55",
     "@vue/cli-plugin-babel": "^4.5.4",
     "@vue/cli-plugin-eslint": "^4.5.4",
     "@vue/cli-service": "^4.5.4",
     "babel-eslint": "^10.1.0",
     "core-js": "^3.6.5",
     "deepmerge": "^4.2.2",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "fibers": "^4.0.3",
+    "eslint": "^7.8.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "fibers": "^5.0.0",
     "node-sass": "^4.14.1",
     "sass": "^1.26.10",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^10.0.2",
     "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0"
