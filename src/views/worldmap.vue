@@ -27,6 +27,8 @@
         v-for="lastPosition in lastPositions"
         :key="lastPosition.raw.device_id"
         :lat-lng="lastPosition.latLng"
+        :icon="lastPosition.icon"
+        :options="lastPosition.options"
       >
         <l-popup :content="lastPosition.popup" />
       </l-marker>
@@ -48,8 +50,9 @@
 
 <script>
 import {apiMixin} from '@/components/mixins/apiMixin';
-import {socketMixin} from '@/components/mixins/socketMixin'
+import {socketMixin} from '@/components/mixins/socketMixin';
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
+import {ExtraMarkers} from 'leaflet-extra-markers';
 export default {
   mixins: [apiMixin, socketMixin],
   components: {
@@ -156,7 +159,8 @@ function createMarker(payload) {
   newMarker.raw = payload;
   newMarker.latLng = {lat: payload.loc_lat, lon: payload.loc_lon};
   newMarker.popup = getPopupText(payload);
-
+  newMarker.icon = ExtraMarkers.icon(getMarkerIcon(payload));
+  newMarker.options = getMarkerOptions(payload);
   return newMarker;
 }
 
@@ -199,4 +203,62 @@ function getPopupText(dev) {
 
   return htmlText;
 }
+
+function getMarkerIcon(dev) {
+  // Default marker icon
+  let cIcon = 'home';
+  let cPrefix = 'mdi'; // Ignore prefix provided by the device
+  let cMarkerColor = 'cyan';
+  let cIconColor = 'white';
+  let cShape = 'circle';
+
+  // If loc_type is defined use predefined marker/icon sets
+  if (dev.loc_type) {
+    if (dev.loc_type === 'rec') {
+      cIcon = 'circle';
+      cMarkerColor = 'blue';
+    }
+    if ((dev.loc_type === 'now') || (dev.loc_type === 'left')) {
+      cIcon = 'circle';
+      cMarkerColor = 'green';
+    }
+  } else {
+    if (dev.loc_attr) {
+      if (dev.loc_attr.miconname) {
+        cIcon = dev.loc_attr.miconname;
+      }
+      if (dev.loc_attr.mcolor) {
+        cMarkerColor = dev.loc_attr.mcolor;
+      }
+      if (dev.loc_attr.miconcolor) {
+        cIconColor = dev.loc_attr.miconcolor;
+      }
+    }
+  }
+  let customIcon = { icon: `${cPrefix}-${cIcon}`,
+                     prefix: cPrefix,
+                     markerColor: cMarkerColor,
+                     iconColor: cIconColor,
+                     shape: cShape};
+  return customIcon
+}
+
+function getMarkerOptions(dev) {
+  // Default marker options
+  let cOpacity = 1.0;
+
+  // Define icon opacity
+  if (dev.loc_type && dev.loc_type === 'left') {
+    cOpacity = 0.5;
+  } else {
+    if (dev.loc_attr && dev.loc_attr.mopacity) {
+      cOpacity = dev.loc_attr.mopacity;
+    }
+  }
+  return {opacity: cOpacity};
+}
 </script>
+
+<style scoped>
+@import '../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
+</style>
