@@ -41,7 +41,7 @@
     >
       <l-geo-json
         :geojson="staticLayer"
-        :options="options"
+        :options="getGeoJsonOptions(staticLayer)"
       >
       </l-geo-json>
     </l-feature-group>
@@ -51,6 +51,7 @@
 <script>
 import {apiMixin} from '@/components/mixins/apiMixin';
 import {socketMixin} from '@/components/mixins/socketMixin';
+import * as L from "leaflet";
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
 import {ExtraMarkers} from 'leaflet-extra-markers';
 export default {
@@ -84,13 +85,6 @@ export default {
             'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
         },
       ],
-      options: {
-        onEachFeature: function (feature, layer) {
-          if (feature.properties && feature.properties.popup) {
-            layer.bindPopup(feature.properties.popup);
-          }
-        }
-      },
       lastPositions: [],
       staticLayers: []
     }
@@ -136,6 +130,39 @@ export default {
         name = staticLayer.properties.name;
       }
       return name;
+    },
+    getGeoJsonOptions(staticLayer) {
+      return {
+        pointToLayer: (feature, latlng) => {
+          return L.marker(latlng, {
+            opacity: (staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.opacity) || 0.8,
+            icon: ExtraMarkers.icon({
+              icon: `mdi-${(staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.icon) || 'star'}`,
+              prefix: 'mdi',
+              markerColor: (staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.markercolor) || 'green',
+              iconColor: (staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.iconcolor) || 'white',
+              shape: 'circle'
+            })
+          });
+        },
+        style: (feature) => {
+          // Only apply style to (multi)lines and polygons
+          if (feature.geometry.type !== 'Point') {
+            return {
+              color: (staticLayer.properties && staticLayer.properties.line && staticLayer.properties.line.color) || 'red',
+              weight: (staticLayer.properties && staticLayer.properties.line && staticLayer.properties.line.weight) || 5,
+              opacity: (staticLayer.properties && staticLayer.properties.line && staticLayer.properties.line.opacity) || 0.65
+            };
+          } else {
+            return {};
+          }
+        },
+        onEachFeature: (feature, layer) => {
+         if (feature.properties && feature.properties.popup) {
+            layer.bindPopup(feature.properties.popup);
+          }
+        }
+      }
     }
   },
   sockets: {
