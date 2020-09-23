@@ -40,8 +40,8 @@
       :name="getStaticLayerName(staticLayer, index)"
     >
       <l-geo-json
-        :geojson="staticLayer"
-        :options="getGeoJsonOptions(staticLayer)"
+        :geojson="staticLayer.geojson"
+        :options="staticLayer.options"
       >
       </l-geo-json>
     </l-feature-group>
@@ -112,8 +112,11 @@ export default {
     this.apiRequest('get', '/staticlayers')
       .then((response) => {
         this.staticLayers = [];
-        for (let staticLayerData of response.data) {
-          this.staticLayers.push(staticLayerData);
+        for (let geojson of response.data) {
+          let staticLayer = {};
+          staticLayer.geojson = geojson;
+          staticLayer.options = this.getGeoJsonOptions(geojson);
+          this.staticLayers.push(staticLayer);
         }
       })
   },
@@ -131,16 +134,16 @@ export default {
       }
       return name;
     },
-    getGeoJsonOptions(staticLayer) {
+    getGeoJsonOptions(geojson) {
       return {
         pointToLayer: (feature, latlng) => {
           return L.marker(latlng, {
-            opacity: (staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.opacity) || 0.8,
+            opacity: (geojson.properties && geojson.properties.marker && geojson.properties.marker.opacity) || 0.8,
             icon: ExtraMarkers.icon({
-              icon: `mdi-${(staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.icon) || 'star'}`,
+              icon: `mdi-${(geojson.properties && geojson.properties.marker && geojson.properties.marker.icon) || 'star'}`,
               prefix: 'mdi',
-              markerColor: (staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.markercolor) || 'green',
-              iconColor: (staticLayer.properties && staticLayer.properties.marker && staticLayer.properties.marker.iconcolor) || 'white',
+              markerColor: (geojson.properties && geojson.properties.marker && geojson.properties.marker.markercolor) || 'green',
+              iconColor: (geojson.properties && geojson.properties.marker && geojson.properties.marker.iconcolor) || 'white',
               shape: 'circle'
             })
           });
@@ -149,16 +152,16 @@ export default {
           // Only apply style to (multi)lines and polygons
           if (feature.geometry.type !== 'Point') {
             return {
-              color: (staticLayer.properties && staticLayer.properties.line && staticLayer.properties.line.color) || 'red',
-              weight: (staticLayer.properties && staticLayer.properties.line && staticLayer.properties.line.weight) || 5,
-              opacity: (staticLayer.properties && staticLayer.properties.line && staticLayer.properties.line.opacity) || 0.65
+              color: (geojson.properties && geojson.properties.line && geojson.properties.line.color) || 'red',
+              weight: (geojson.properties && geojson.properties.line && geojson.properties.line.weight) || 5,
+              opacity: (geojson.properties && geojson.properties.line && geojson.properties.line.opacity) || 0.65
             };
           } else {
             return {};
           }
         },
         onEachFeature: (feature, layer) => {
-         if (feature.properties && feature.properties.popup) {
+          if (feature.properties && feature.properties.popup) {
             layer.bindPopup(feature.properties.popup);
           }
         }
