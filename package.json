@@ -23,7 +23,7 @@
     "vuex": "^3.5.1"
   },
   "devDependencies": {
-    "@mdi/js": "^5.5.55",
+    "@mdi/js": "^5.6.55",
     "@vue/cli-plugin-babel": "^4.5.6",
     "@vue/cli-plugin-eslint": "^4.5.6",
     "@vue/cli-service": "^4.5.6",
@@ -34,7 +34,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "fibers": "^5.0.0",
     "node-sass": "^4.14.1",
-    "sass": "^1.26.10",
+    "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
     "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-template-compiler": "^2.6.12",
