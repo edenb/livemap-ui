@@ -37,7 +37,7 @@
       layer-type="overlay"
       v-for="(staticLayer, index) in staticLayers"
       :key="index"
-      :name="getStaticLayerName(staticLayer, index)"
+      :name="getStaticLayerName(staticLayer.geojson, index)"
     >
       <l-geo-json
         :geojson="staticLayer.geojson"
@@ -127,10 +127,10 @@ export default {
     centerUpdate(center) {
       this.$store.dispatch('setMapCenter', center);
     },
-    getStaticLayerName(staticLayer, index) {
+    getStaticLayerName(geojson, index) {
       let name = `Overlay ${index}`
-      if (staticLayer.properties && staticLayer.properties.name) {
-        name = staticLayer.properties.name;
+      if (geojson.properties && geojson.properties.name) {
+        name = geojson.properties.name;
       }
       return name;
     },
@@ -161,8 +161,18 @@ export default {
           }
         },
         onEachFeature: (feature, layer) => {
-          if (feature.properties && feature.properties.popup) {
-            layer.bindPopup(feature.properties.popup);
+          if (feature.properties) {
+            if (feature.properties.popup) {
+              layer.bindPopup(feature.properties.popup);
+            } else {
+              let popupText = '';
+              let popupKeys = Object.keys(feature.properties);
+              let popupValues = Object.values(feature.properties);
+              for (let i = 0; i < popupKeys.length; i += 1) {
+                popupText += popupKeys[i] + ': ' + popupValues[i] + '<br>';
+              }
+              layer.bindPopup(popupText);
+            }
           }
         }
       }
