@@ -16,7 +16,7 @@
     "socket.io-client": "^2.3.0",
     "vue": "^2.6.12",
     "vue-div-100vh": "^0.1.2",
-    "vue-router": "^3.4.3",
+    "vue-router": "^3.4.4",
     "vue-socket.io-extended": "^4.0.4",
     "vue2-leaflet": "^2.5.2",
     "vuetify": "^2.3.10",
