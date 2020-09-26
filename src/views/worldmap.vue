@@ -52,6 +52,7 @@
 import {apiMixin} from '@/components/mixins/apiMixin';
 import {socketMixin} from '@/components/mixins/socketMixin';
 import * as L from "leaflet";
+import 'leaflet/dist/leaflet.css'; // Leaflet stylesheet in script section (see vue2leaflet FAQ)
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
 import {ExtraMarkers} from 'leaflet-extra-markers';
 export default {
@@ -299,6 +300,6 @@ function getMarkerOptions(dev) {
 }
 </script>
 
-<style scoped>
+<style>
 @import '../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
 </style>
