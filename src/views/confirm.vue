@@ -1,10 +1,31 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
+  <v-dialog
+    v-model="dialog"
+    :max-width="options.width"
+    :style="{ zIndex: options.zIndex }"
+    @keydown.esc="cancel"
+  >
     <v-card>
-      <v-toolbar dark :color="options.color" dense flat>
-        <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
+      <v-toolbar
+        dark
+        :color="options.color"
+        dense
+        flat
+      >
+        <v-toolbar-title
+          class="white--text"
+        >
+          {{ title }}
+        </v-toolbar-title>
       </v-toolbar>
-      <v-card-text v-show="!!message" class="pa-4">{{ message }}</v-card-text>
+      <div v-for="message in messages" :key="message">
+        <v-card-text
+          v-show="!!message"
+         class="px-4 py-1"
+        >
+          {{ message }}
+        </v-card-text>
+      </div>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <v-btn color="primary darken-1" text @click.native="agree">Yes</v-btn>
@@ -48,7 +69,7 @@ export default {
     dialog: false,
     resolve: null,
     reject: null,
-    message: null,
+    messages: [],
     title: null,
     options: {
       color: 'primary',
@@ -57,10 +78,10 @@ export default {
     }
   }),
   methods: {
-    open(title, message, options) {
+    open(title, messages, options) {
       this.dialog = true
       this.title = title
-      this.message = message
+      this.messages = messages
       this.options = Object.assign(this.options, options)
       return new Promise((resolve, reject) => {
         this.resolve = resolve
