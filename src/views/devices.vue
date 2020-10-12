@@ -93,9 +93,9 @@ export default {
       allDevices: [],
       selected: [],
       headers: [
-        { text: 'Alias', value: 'alias' },
-        { text: 'Identifier', value: 'identifier' },
-        { text: 'API key', value: 'api_key' }
+        { text: 'Name', value: 'alias' },
+        { text: 'Owner', value: 'owner' },
+        { text: 'Shared with', value: 'shared' }
       ],
       search: '',
       newDevice: {
