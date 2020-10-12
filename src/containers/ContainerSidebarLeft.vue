@@ -31,7 +31,6 @@
       <v-list-item
         link
         @click="changeRoute('devices', 3)"
-        v-if="$store.state.user.role==='admin'"
       >
         <v-list-item-action>
           <v-icon>mdi-devices</v-icon>

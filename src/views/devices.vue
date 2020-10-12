@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     loadTable () {
-      this.apiRequest('get', '/devices')
+      this.apiRequest('get', `users/${this.$store.state.user.user_id}/devices`)
         .then((response) => {
           this.allDevices = response.data
         })
