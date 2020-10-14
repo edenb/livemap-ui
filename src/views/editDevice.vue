@@ -19,7 +19,7 @@
               <v-text-field v-model="device.identifier" :disabled="device.device_id >= 0" label="Identifier"></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="device.api_key" label="API key"></v-text-field>
+              <v-text-field v-model="device.api_key" disabled label="API key"></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-text-field v-model="device.fixed_loc_lat" label="Fixed latitude"></v-text-field>
