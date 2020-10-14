@@ -103,8 +103,8 @@ export default {
         alias: '',
         identifier: '',
         api_key: this.$store.state.user.api_key,
-        fixed_loc_lat: 0,
-        fixed_loc_lon: 0
+        fixed_loc_lat: null,
+        fixed_loc_lon: null
       },
     }
   },
@@ -154,6 +154,7 @@ export default {
       this.$refs.editDevice.open(device)
         .then(() => {
           this.loadTable();
+          this.selected = [];
         })
     }
   }
