@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     open(device) {
-      this.device = device;
+      this.device = {...device};
       this.showDialog = true
       return new Promise((resolve, reject) => {
         this.resolve = resolve
@@ -96,7 +96,6 @@ export default {
               this.reject(true)
             } else {
               this.resolve(false)
-
             }
           })
           .finally(() => {
