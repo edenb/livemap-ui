@@ -70,36 +70,37 @@ export default {
     changed() {
       // Existing devices already have an ID
       if (this.device.device_id >= 0) {
-        this.apiRequest('put', `/devices/${this.device.device_id}`, this.device)
+        this.apiRequest('put', `users/${this.$store.state.user.user_id}/devices/${this.device.device_id}`, this.device)
           .then(() => {
             this.resolve(true)
-            this.showDialog = false
-          })
+           })
           .catch((err) => {
             // Only throw an error on server errors
-            if(err.response.status < 500) {
+            if(err.response.status >= 500) {
               this.reject(true)
-              this.showDialog = false
             } else {
               this.resolve(false)
-              this.showDialog = false
             }
+          })
+          .finally(() => {
+            this.showDialog = false
           })
       } else {
-        this.apiRequest('post', '/devices', this.device)
+        this.apiRequest('post', `users/${this.$store.state.user.user_id}/devices`, this.device)
           .then(() => {
             this.resolve(true)
-            this.showDialog = false
           })
           .catch((err) => {
             // Only throw an error on server errors
-            if(err.response.status < 500) {
+            if(err.response.status >= 500) {
               this.reject(true)
-              this.showDialog = false
             } else {
               this.resolve(false)
-              this.showDialog = false
+
             }
+          })
+          .finally(() => {
+            this.showDialog = false
           })
       }
     },
