@@ -136,7 +136,7 @@ export default {
         { color: 'red' })
         .then((confirm) => {
           if (confirm) {
-            this.apiRequest('delete', `/devices/${deviceIdList}`)
+            this.apiRequest('delete', `users/${this.$store.state.user.user_id}/devices/${deviceIdList}`)
               .then(() => {
                 this.loadTable();
                 this.selected = [];
