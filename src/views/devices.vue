@@ -19,6 +19,7 @@
         >
           <confirm ref="confirm"></confirm>
           <editDevice ref="editDevice"></editDevice>
+          <editSharedUser ref="editSharedUser"></editSharedUser>
           <v-toolbar-title>Devices</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field
@@ -62,6 +63,19 @@
             small
             icon
             :disabled="selected.length==0"
+            @click="shareItem()"
+          >
+            <v-icon dark>
+              mdi-share-all
+            </v-icon>
+          </v-btn>
+          <v-btn
+            color="white"
+            fab
+            dark
+            small
+            icon
+            :disabled="selected.length==0"
             @click="deleteItem()"
           >
             <v-icon dark>
@@ -78,10 +92,12 @@
 import {apiMixin} from '@/components/mixins/apiMixin';
 import Confirm from '@/views/confirm.vue';
 import EditDevice from '@/views/editDevice.vue';
+import EditSharedUser from '@/views/editSharedUser.vue';
 export default {
   components: {
     Confirm,
-    EditDevice
+    EditDevice,
+    EditSharedUser
   },
   name: "Devices",
   mixins: [apiMixin],
@@ -119,20 +135,24 @@ export default {
         })
     },
     editItem () {
-      this.showDialog(this.selected[0]);
+      this.showDialogDevice(this.selected[0]);
     },
     newItem () {
-      this.showDialog(this.newDevice);
+      this.showDialogDevice(this.newDevice);
+    },
+    shareItem () {
+      this.showDialogSharedUser(this.selected);
     },
     deleteItem () {
       let deviceIdList = [];
+      let deviceAliasList = [];
       let messageText = [];
       messageText.push('Are you sure you want to delete the following devices?');
       for (let item of this.selected) {
         deviceIdList.push(item.device_id);
-        messageText.push(' •  ' + item.alias);
+        deviceAliasList.push(item.alias);
       }
-      this.$refs.confirm.open('Delete', messageText,
+      this.$refs.confirm.open('Delete', messageText, deviceAliasList,
         { color: 'red' })
         .then((confirm) => {
           if (confirm) {
@@ -150,8 +170,15 @@ export default {
           }
         })
     },
-    showDialog (device) {
+    showDialogDevice (device) {
       this.$refs.editDevice.open(device)
+        .then(() => {
+          this.loadTable();
+          this.selected = [];
+        })
+    },
+    showDialogSharedUser (devices) {
+      this.$refs.editSharedUser.open(devices)
         .then(() => {
           this.loadTable();
           this.selected = [];

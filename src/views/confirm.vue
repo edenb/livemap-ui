@@ -18,14 +18,23 @@
           {{ title }}
         </v-toolbar-title>
       </v-toolbar>
-      <div v-for="message in messages" :key="message">
-        <v-card-text
-          v-show="!!message"
-         class="px-4 py-1"
+      <v-card-text
+        v-for="message in messages" :key="message"
+        v-show="!!message"
+      >
+        {{ message }}
+      </v-card-text>
+      <v-card-text>
+        <v-chip-group
+          column
         >
-          {{ message }}
-        </v-card-text>
-      </div>
+          <v-chip
+            v-for="item in items" :key="item"
+          >
+            {{ item }}
+          </v-chip>
+        </v-chip-group>
+      </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <v-btn color="primary darken-1" text @click.native="agree">Yes</v-btn>
@@ -78,10 +87,11 @@ export default {
     }
   }),
   methods: {
-    open(title, messages, options) {
+    open(title, messages, items, options) {
       this.dialog = true
       this.title = title
       this.messages = messages
+      this.items = items
       this.options = Object.assign(this.options, options)
       return new Promise((resolve, reject) => {
         this.resolve = resolve
