@@ -16,10 +16,10 @@
     "socket.io-client": "^2.3.1",
     "vue": "^2.6.12",
     "vue-div-100vh": "^0.1.2",
-    "vue-router": "^3.4.5",
+    "vue-router": "^3.4.7",
     "vue-socket.io-extended": "^4.0.5",
-    "vue2-leaflet": "^2.5.2",
-    "vuetify": "^2.3.12",
+    "vue2-leaflet": "^2.6.0",
+    "vuetify": "^2.3.14",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "fibers": "^5.0.0",
     "node-sass": "^4.14.1",
     "sass": "^1.26.11",
-    "sass-loader": "^10.0.2",
+    "sass-loader": "^10.0.3",
     "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0"
