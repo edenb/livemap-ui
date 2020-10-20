@@ -84,6 +84,19 @@
           </v-btn>
         </v-toolbar>
       </template>
+      <template v-slot:[`item.shared`]="{ item }">
+        <v-chip-group
+          column
+        >
+          <v-chip
+            :small="$vuetify.breakpoint.mobile"
+            v-for="sharedUser in item.shared" :key="sharedUser"
+            v-show="typeof sharedUser === 'string'"
+          >
+            {{ sharedUser }}
+          </v-chip>
+        </v-chip-group>
+      </template>
     </v-data-table>
   </v-container>
 </template>
