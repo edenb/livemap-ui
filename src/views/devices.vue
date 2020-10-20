@@ -89,9 +89,11 @@
           column
         >
           <v-chip
+            dark
             :small="$vuetify.breakpoint.mobile"
             v-for="sharedUser in item.shared" :key="sharedUser"
             v-show="typeof sharedUser === 'string'"
+            :color="getColor(sharedUser)"
           >
             {{ sharedUser }}
           </v-chip>
@@ -135,6 +137,7 @@ export default {
         fixed_loc_lat: null,
         fixed_loc_lon: null
       },
+      usernameColors: []
     }
   },
   methods: {
@@ -196,6 +199,17 @@ export default {
           this.loadTable();
           this.selected = [];
         })
+    },
+    getColor (key) {
+      const colors = ['red', 'purple', 'indigo', 'light blue', 'teal', 'light green', 'lime', 'orange'];
+      let i = 0;
+      while (i < this.usernameColors.length && this.usernameColors[i] !== key) {
+        i++;
+      }
+      if (i === this.usernameColors.length && typeof key === 'string') {
+        this.usernameColors.push(key);
+      }
+      return colors[i%(colors.length)];
     }
   }
 }
