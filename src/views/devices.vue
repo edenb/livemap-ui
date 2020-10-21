@@ -86,6 +86,9 @@
       </template>
       <template v-slot:[`item.shared`]="{ item }">
         <v-chip-group
+          v-if="item.shared"
+          multiple
+          max=0
           column
         >
           <v-chip
@@ -126,7 +129,7 @@ export default {
       headers: [
         { text: 'Name', value: 'alias' },
         { text: 'Owner', value: 'owner' },
-        { text: 'Shared with', value: 'shared' }
+        { text: 'Shared With', value: 'shared' }
       ],
       search: '',
       newDevice: {
