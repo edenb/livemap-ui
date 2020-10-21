@@ -201,7 +201,7 @@ export default {
         })
     },
     getColor (key) {
-      const colors = ['red', 'purple', 'indigo', 'light blue', 'teal', 'light green', 'lime', 'orange'];
+      const colors = ['blue', 'cyan', 'teal', 'green', 'amber', 'orange', 'pink', 'indigo'];
       let i = 0;
       while (i < this.usernameColors.length && this.usernameColors[i] !== key) {
         i++;
