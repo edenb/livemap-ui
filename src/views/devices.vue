@@ -148,6 +148,11 @@ export default {
       this.apiRequest('get', `users/${this.$store.state.user.user_id}/devices`)
         .then((response) => {
           this.allDevices = response.data
+          this.allDevices.forEach((element) => {
+            if (element.shared) {
+              element.shared.sort();
+            }
+          });
         })
         .catch(() => {
           // Ignore failed (re)loads
