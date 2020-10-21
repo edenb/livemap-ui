@@ -49,7 +49,7 @@
             dark
             small
             icon
-            :disabled="selected.length!=1"
+            :disabled="selectedOwned(selected) !== 1"
             @click="editItem()"
           >
             <v-icon dark>
@@ -62,7 +62,7 @@
             dark
             small
             icon
-            :disabled="selected.length==0"
+            :disabled="selectedOwned(selected) === 0"
             @click="shareItem()"
           >
             <v-icon dark>
@@ -148,9 +148,9 @@ export default {
       this.apiRequest('get', `users/${this.$store.state.user.user_id}/devices`)
         .then((response) => {
           this.allDevices = response.data
-          this.allDevices.forEach((element) => {
-            if (element.shared) {
-              element.shared.sort();
+          this.allDevices.forEach((el) => {
+            if (el.shared) {
+              el.shared.sort();
             }
           });
         })
@@ -159,13 +159,19 @@ export default {
         })
     },
     editItem () {
-      this.showDialogDevice(this.selected[0]);
+      const ownedSelected = this.selected.filter((el) => {
+        return el.api_key && el.api_key === this.$store.state.user.api_key;
+      });
+      this.showDialogDevice(ownedSelected[0]);
     },
     newItem () {
       this.showDialogDevice(this.newDevice);
     },
     shareItem () {
-      this.showDialogSharedUser(this.selected);
+      const ownedSelected = this.selected.filter((el) => {
+        return el.api_key && el.api_key === this.$store.state.user.api_key;
+      });
+      this.showDialogSharedUser(ownedSelected);
     },
     deleteItem () {
       let deviceIdList = [];
@@ -218,6 +224,15 @@ export default {
         this.usernameColors.push(key);
       }
       return colors[i%(colors.length)];
+    },
+    selectedOwned (devices) {
+      let total = 0;
+      devices.forEach(el => {
+        if (el.api_key && el.api_key === this.$store.state.user.api_key) {
+          total++;
+        }
+      });
+      return total;
     }
   }
 }
