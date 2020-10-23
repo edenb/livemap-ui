@@ -16,10 +16,26 @@
               <v-text-field v-model="device.alias" label="Alias"></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="device.identifier" :disabled="device.device_id >= 0" label="Identifier"></v-text-field>
+              <v-text-field
+                :append-icon="showIdentifier ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showIdentifier ? 'text' : 'password'"
+                :readonly="device.device_id >= 0"
+                v-model="device.identifier"
+                label="Identifier"
+                class="input-group--focused"
+                @click:append="showIdentifier = !showIdentifier"
+              />
             </v-col>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="device.api_key" disabled label="API key"></v-text-field>
+              <v-text-field
+                :append-icon="showApiKey ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showApiKey ? 'text' : 'password'"
+                readonly
+                v-model="device.api_key"
+                label="API key"
+                class="input-group--focused"
+                @click:append="showApiKey = !showApiKey"
+              />
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-text-field v-model="device.fixed_loc_lat" label="Fixed latitude"></v-text-field>
@@ -53,6 +69,8 @@ export default {
   data () {
     return {
       showDialog: false,
+      showApiKey: false,
+      showIdentifier: false,
       resolve: null,
       reject: null,
       device: {}
@@ -61,7 +79,13 @@ export default {
   methods: {
     open(device) {
       this.device = {...device};
-      this.showDialog = true
+      this.showApiKey = false;
+      if (device.device_id >= 0) {
+        this.showIdentifier = false;
+      } else {
+        this.showIdentifier = true;
+      }
+      this.showDialog = true;
       return new Promise((resolve, reject) => {
         this.resolve = resolve
         this.reject = reject
