@@ -77,10 +77,10 @@ export default {
     }
   },
   methods: {
-    open(device) {
-      this.device = {...device};
+    open(orgDevice) {
+      this.device = orgDevice;
       this.showApiKey = false;
-      if (device.device_id >= 0) {
+      if (this.device.device_id >= 0) {
         this.showIdentifier = false;
       } else {
         this.showIdentifier = true;

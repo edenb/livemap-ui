@@ -204,14 +204,12 @@ export default {
       this.$refs.editDevice.open(device)
         .then(() => {
           this.loadTable();
-          this.selected = [];
         })
     },
     showDialogSharedUser (devices) {
       this.$refs.editSharedUser.open(devices)
         .then(() => {
           this.loadTable();
-          this.selected = [];
         })
     },
     getColor (key) {
