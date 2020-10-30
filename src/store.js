@@ -7,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     user: {},
+    lastPositions: [],
     token: localStorage.getItem('jwt'),
     authorized: false,
     mapZoom: -1,
@@ -29,6 +30,15 @@ export default new Vuex.Store({
     },
     DEL_TOKEN(state) {
       state.token = '';
+    },
+    CLEAR_LASTPOSITIONS(state) {
+      state.lastPositions = [];
+    },
+    ADD_LASTPOSITIONS(state, lastPosition) {
+      state.lastPositions.push(lastPosition);
+    },
+    DEL_LASTPOSITIONS(state, index) {
+      state.lastPositions.splice(index, 1);
     },
     SET_MAPZOOM(state, mapZoom) {
       state.mapZoom = mapZoom;
@@ -61,6 +71,20 @@ export default new Vuex.Store({
       commit('DEL_TOKEN');
       commit('DEL_USER');
       localStorage.removeItem('jwt')
+    },
+    clearLastPositions({commit}) {
+      commit('CLEAR_LASTPOSITIONS');
+    },
+    addLastPositions({commit}, payload) {
+      commit('ADD_LASTPOSITIONS', payload.marker);
+      // If present remove the previous position of the device
+      // i.e. the device with the same id as the last one added
+      if (typeof payload.cb === 'function') {
+        let idx = this.state.lastPositions.findIndex(payload.cb);
+        if (idx >=0) {
+          commit('DEL_LASTPOSITIONS', idx);
+        }
+      }
     },
     setMapZoom({commit}, mapZoom) {
       commit('SET_MAPZOOM', mapZoom);

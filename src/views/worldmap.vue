@@ -24,7 +24,7 @@
       name="Devices"
     >
       <l-marker
-        v-for="lastPosition in lastPositions"
+        v-for="lastPosition in $store.state.lastPositions"
         :key="lastPosition.raw.device_id"
         :lat-lng="lastPosition.latLng"
         :icon="lastPosition.icon"
@@ -86,7 +86,6 @@ export default {
             'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
         },
       ],
-      lastPositions: [],
       staticLayers: []
     }
   },
@@ -105,9 +104,9 @@ export default {
     this.$socket.client.emit('token', this.$store.state.token);
     this.apiRequest('get', '/positions')
       .then((response) => {
-        this.lastPositions = [];
+        this.$store.dispatch('clearLastPositions');
         for (let position of response.data) {
-          this.lastPositions.push(createMarker(position));
+          this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
         }
       })
     this.apiRequest('get', '/staticlayers')
@@ -183,11 +182,8 @@ export default {
     positionUpdate(socketPayloadStr) {
       try {
         const newMarker = createMarker(JSON.parse(socketPayloadStr).data);
-        let idx = this.lastPositions.findIndex(x => x.raw.device_id === newMarker.raw.device_id);
-        if (idx >=0) {
-          this.lastPositions.splice(idx, 1);
-        }
-        this.lastPositions.push(newMarker);
+        const cbFindDuplicates = (e, i, a) => e.raw.device_id === a[a.length-1].raw.device_id;
+        this.$store.dispatch('addLastPositions', {marker: newMarker, cb: cbFindDuplicates});
       } catch(err) {
         console.log(err);
       }
