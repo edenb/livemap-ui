@@ -2,6 +2,7 @@
   <l-map
     ref="worldmap"
     style="z-index: 1"
+    :options="{ tap: false }"
     :zoom="zoom"
     :center="center"
     @update:zoom="zoomUpdate"
