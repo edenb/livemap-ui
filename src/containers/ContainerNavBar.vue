@@ -5,6 +5,7 @@
     clipped-right
     color="primary"
     dark
+    :dense="$vuetify.breakpoint.mobile"
   >
     <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
