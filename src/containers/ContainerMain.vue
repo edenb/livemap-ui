@@ -1,23 +1,24 @@
 <template>
   <v-app id="app">
-    <ContainerNavBar/>
-    <ContainerSidebarLeft/>
-    <ContainerSidebarRight/>
-    <v-main>
-      <Vue100vh>
+    <Vue100vh>
+      <ContainerNavBar/>
+      <ContainerSidebarLeft/>
+      <ContainerSidebarRight/>
+      <v-main style="height: 100%">
         <v-container
-          pa-0
-          fluid
-        >
-          <router-view/>
+            style="height: 100%"
+            pa-0
+            fluid
+          >
+            <router-view/>
         </v-container>
-      </Vue100vh>
-    </v-main>
+      </v-main>
+    </Vue100vh>
   </v-app>
 </template>
 
 <script>
-  import Vue100vh from 'vue-div-100vh'
+  import Vue100vh from 'vue-div-100vh';
   import ContainerNavBar from '@/containers/ContainerNavBar';
   import ContainerSidebarLeft from '@/containers/ContainerSidebarLeft';
   import ContainerSidebarRight from '@/containers/ContainerSidebarRight';
@@ -31,9 +32,3 @@
     },
   }
 </script>
-
-<style lang="scss">
-.container {
-  height: calc(100% - 64px);
-}
-</style>
