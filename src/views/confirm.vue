@@ -79,6 +79,7 @@ export default {
     resolve: null,
     reject: null,
     messages: [],
+    items: [],
     title: null,
     options: {
       color: 'primary',
