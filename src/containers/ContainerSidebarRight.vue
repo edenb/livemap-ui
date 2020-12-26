@@ -6,31 +6,51 @@
     right
     stateless
   >
-    <v-list dense>
-      <v-list-item
-        @click.stop="drawerRight = !drawerRight"
-      >
-        <v-list-item-action>
-          <v-icon>mdi-window-close</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Close</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
+    <v-data-table
+      dense
+      :headers="headers"
+      :items="deviceList"
+      :sort-by="['alias']"
+      hide-default-header
+      hide-default-footer
+      @click:row="openDevicePopup"
+    ></v-data-table>
   </v-navigation-drawer>
 </template>
 
 <script>
-  export default {
-    name: "ContainerSidebarRight",
-    data: () => ({
-      drawerRight: false,
-    }),
-    mounted () {
-      this.$root.$on('toggle-sidebar-right', () => {
-        this.drawerRight = !this.drawerRight
+export default {
+  name: "ContainerSidebarRight",
+  data () {
+    return {
+      drawerRight: true,
+      headers: [
+        {
+          text: 'ID',
+          align: 'start',
+          sortable: false,
+          value: 'device_id',
+        },
+        { text: 'Name', value: 'alias' },
+      ],
+    }
+  },
+  computed: {
+    deviceList: function() {
+      return this.$store.state.lastPositions.map(({ raw }) => {
+        return {alias: raw.alias, device_id: raw.device_id}
       })
     }
+  },
+  mounted() {
+    this.$root.$on('toggle-sidebar-right', () => {
+      this.drawerRight = !this.drawerRight
+    })
+  },
+  methods: {
+    openDevicePopup(row) {
+      this.$root.$emit('open-device-popup', row.device_id)
+    }
   }
+}
 </script>

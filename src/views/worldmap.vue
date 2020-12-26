@@ -23,6 +23,7 @@
     <l-feature-group
       layer-type="overlay"
       name="Devices"
+      ref="deviceLayer"
     >
       <l-marker
         v-for="lastPosition in $store.state.lastPositions"
@@ -69,6 +70,8 @@ export default {
   },
   data () {
     return {
+      map: null,
+      deviceLayer: null,
       zoom: this.$store.state.mapZoom,
       center: this.$store.state.mapCenter,
       tileProviders: [
@@ -92,7 +95,11 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-    //this.$refs.worldmap.mapObject.ANY_LEAFLET_MAP_METHOD();
+      this.deviceLayer = this.$refs.deviceLayer.mapObject;
+      this.map = this.$refs.worldmap.mapObject;
+    });
+    this.$root.$on('open-device-popup', (device_id) => {
+      this.openPopup(device_id);
     });
   },
   beforeCreate() {
@@ -176,6 +183,18 @@ export default {
             }
           }
         }
+      }
+    },
+    openPopup(device_id) {
+      if (this.deviceLayer !== null) {
+        this.deviceLayer.eachLayer((layer) => {
+          if (layer.options.device_id === device_id) {
+            layer.openPopup();
+            if (this.map !== null) {
+              this.map.panTo(layer.getLatLng())
+            }
+          }
+        })
       }
     }
   },
@@ -293,7 +312,7 @@ function getMarkerOptions(dev) {
       cOpacity = dev.loc_attr.mopacity;
     }
   }
-  return {opacity: cOpacity};
+  return {opacity: cOpacity, device_id: dev.device_id};
 }
 </script>
 
