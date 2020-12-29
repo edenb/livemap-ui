@@ -14,7 +14,13 @@
       hide-default-header
       hide-default-footer
       @click:row="openDevicePopup"
-    ></v-data-table>
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>Devices</v-toolbar-title>
+        </v-toolbar>
+      </template>
+    </v-data-table>
   </v-navigation-drawer>
 </template>
 
@@ -25,12 +31,6 @@ export default {
     return {
       drawerRight: true,
       headers: [
-        {
-          text: 'ID',
-          align: 'start',
-          sortable: false,
-          value: 'device_id',
-        },
         { text: 'Name', value: 'alias' },
       ],
     }
@@ -54,3 +54,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.v-data-table td {
+    border-bottom: none !important;
+}
+</style>
