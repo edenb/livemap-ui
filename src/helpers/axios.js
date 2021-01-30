@@ -1,9 +1,10 @@
 import Axios from 'axios'
 import store from '@/store'
+import Configuration from '@/configuration'
 
 const apiConfig = {
-  apiURL: (process.env.VUE_APP_SERVER_URL || 'http://localhost:3000') + 
-          (process.env.VUE_APP_API_PATH || '/api/v1'),
+  apiURL: (Configuration.value('envServerUrl') || 'http://localhost:3000') +
+          (Configuration.value('envApiPath') || '/api/v1'),
   timeout: 8000,
   withCredentials: true
 }

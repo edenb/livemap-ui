@@ -5,6 +5,7 @@ import router from '@/router'
 import VueSocketIOExt from 'vue-socket.io-extended'
 import io from 'socket.io-client'
 import store from '@/store.js'
+import Configuration from '@/configuration'
 //import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
@@ -12,7 +13,7 @@ Vue.config.productionTip = false
 Vue.config.performance = true
 
 // Create a socket but do not connect
-const socket = io(process.env.VUE_APP_SERVER_URL || 'http://localhost:3000', {
+const socket = io(Configuration.value('envServerUrl') || 'http://localhost:3000', {
   autoConnect: false
 });
 
