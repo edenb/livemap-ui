@@ -34,7 +34,7 @@ export default {
   name: "ContainerSidebarRight",
   data () {
     return {
-      drawerRight: true,
+      drawerRight: !this.$vuetify.breakpoint.mobile,
       headers: [
         { text: 'Name', value: 'alias' },
       ],
