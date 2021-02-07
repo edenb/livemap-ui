@@ -24,6 +24,9 @@
           <v-list-item-content>
             <v-list-item-title v-text="device.alias"></v-list-item-title>
           </v-list-item-content>
+          <v-list-item-action>
+            <v-list-item-action-text v-text="getAgeText(device.timestamp)"></v-list-item-action-text>
+          </v-list-item-action>
         </v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -48,7 +51,8 @@ export default {
           device_id: raw.device_id,
           icon: icon.options.icon,
           iconColor: icon.options.iconColor,
-          markerColor: icon.options.markerColor
+          markerColor: icon.options.markerColor,
+          timestamp: raw.loc_timestamp
         }
       })
       // Sort device list in alphabetical order (by device alias)
@@ -64,6 +68,24 @@ export default {
   methods: {
     openDevicePopup(device_id) {
       this.$root.$emit('open-device-popup', device_id)
+    },
+    getAgeText(birth) {
+      const tsBirth = new Date(birth)
+      const tsNow = new Date(Date.now())
+      const td = (tsNow-tsBirth)/1000
+      if (td<60) {
+        return `<1m`
+      }
+      if (td<3600) {
+        return `${(td/60).toFixed()}m`
+      }
+      if (td<(3600*24)) {
+        return `${(td/3600).toFixed()}h`
+      }
+      if (td<(3600*24*99)) {
+        return `${(td/(3600*24)).toFixed()}d`
+      }
+      return `>99d`
     }
   }
 }
