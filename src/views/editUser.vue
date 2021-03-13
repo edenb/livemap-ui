@@ -40,6 +40,12 @@
       </v-card-text>
 
       <v-card-actions>
+        <template v-if="errorResponseText!==''">
+          <v-icon medium color="error">mdi-alert</v-icon>
+          <div class="error--text px-2">
+            {{errorResponseText}}
+          </div>
+        </template>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="noChange">Cancel</v-btn>
         <v-btn color="blue darken-1" text @click="changed">Save</v-btn>
@@ -71,6 +77,7 @@ export default {
   methods: {
     open(orgUser) {
       this.user = orgUser;
+      this.errorResponseText = '';
       this.showApiKey = false;
       this.showDialog = true;
       return new Promise((resolve, reject) => {
@@ -84,6 +91,7 @@ export default {
         this.apiRequest('put', `users/${this.user.user_id}`, this.user)
           .then(() => {
             this.resolve(true)
+            this.showDialog = false
            })
           .catch((err) => {
             // Only throw an error on server errors
@@ -93,13 +101,11 @@ export default {
               this.resolve(false)
             }
           })
-          .finally(() => {
-            this.showDialog = false
-          })
       } else {
         this.apiRequest('post', `users`, this.user)
           .then(() => {
             this.resolve(true)
+            this.showDialog = false
           })
           .catch((err) => {
             // Only throw an error on server errors
@@ -108,9 +114,6 @@ export default {
             } else {
               this.resolve(false)
             }
-          })
-          .finally(() => {
-            this.showDialog = false
           })
       }
     },

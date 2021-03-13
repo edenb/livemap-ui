@@ -13,7 +13,6 @@ export const apiMixin = {
   },
   methods: {
     apiRequest: apiRequest,
-    getErrorResponseText: getErrorResponseText,
   }
 }
 
@@ -28,10 +27,14 @@ function apiRequest(method, path, data) {
       })
       .catch((err) => {
         if (err.response && err.response.status) {
-          this.errorResponseText = getErrorResponseText(err.response.status);
-          if (err.response.status == 401) {
+          if (err.response.data !== '') {
+            this.errorResponseText = err.response.data;
+          } else {
+            this.errorResponseText = err.response.statusText;
+          }
+          //if (err.response.status == 401) {
             //this.$store.dispatch('revokeUserToken');
-          } 
+          //} 
         } else {
           this.errorResponseText = "No server connection";
         }
@@ -42,16 +45,4 @@ function apiRequest(method, path, data) {
         this.loading = false;
       });
   });
-}
-
-function getErrorResponseText(status) {
-  let errorResponseText = "";
-  switch(status) {
-    case 401:
-      errorResponseText = "Login failed"
-      break;
-    default:
-      errorResponseText = "Server busy";
-  }
-  return errorResponseText;
 }
