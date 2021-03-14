@@ -112,10 +112,20 @@ export default {
       this.apiRequest('get', `users`)
         .then((response) => {
           this.allUsers = response.data
+          this.selected = this.updateSelected(this.allUsers, this.selected)
         })
         .catch(() => {
           // Ignore failed (re)loads
         })
+    },
+    updateSelected (users, selected) {
+      let newSelected = []
+      for (let user of selected) {
+        if (users.find(el => el.user_id === user.user_id)) {
+          newSelected.push(user);
+        }
+      }
+      return newSelected
     },
     editItem () {
       this.showDialogUser(this.selected[0]);
@@ -133,7 +143,6 @@ export default {
             this.apiRequest('delete', `users/${this.selected[0].user_id}`)
               .then(() => {
                 this.loadTable();
-                this.selected = [];
               })
               .catch((err) => {
                 // Do not reload the table on internal server error
