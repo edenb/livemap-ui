@@ -93,28 +93,14 @@ export default {
             this.resolve(true)
             this.showDialog = false
            })
-          .catch((err) => {
-            // Only throw an error on server errors
-            if(err.response.status >= 500) {
-              this.reject(true)
-            } else {
-              this.resolve(false)
-            }
-          })
+          .catch(() => {})
       } else {
         this.apiRequest('post', `users`, this.user)
           .then(() => {
             this.resolve(true)
             this.showDialog = false
           })
-          .catch((err) => {
-            // Only throw an error on server errors
-            if(err.response.status >= 500) {
-              this.reject(true)
-            } else {
-              this.resolve(false)
-            }
-          })
+          .catch(() => {})
       }
     },
     noChange() {
