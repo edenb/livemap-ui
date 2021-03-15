@@ -13,10 +13,20 @@
         <v-container>
           <v-row>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="user.fullname" label="Full Name"></v-text-field>
+              <v-text-field v-model="user.username" label="Username"></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="4" v-if="user.user_id < 0">
+              <v-text-field
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showPassword ? 'text' : 'password'"
+                v-model="user.password"
+                label="Password"
+                class="input-group--focused"
+                @click:append="showPassword = !showPassword"
+              />
             </v-col>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="user.username" label="Username"></v-text-field>
+              <v-text-field v-model="user.fullname" label="Full Name"></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-text-field v-model="user.email" label="E-mail"></v-text-field>
@@ -68,6 +78,7 @@ export default {
     return {
       showDialog: false,
       showApiKey: false,
+      showPassword: false,
       roles: ['admin', 'manager', 'viewer'],
       resolve: null,
       reject: null,
@@ -79,6 +90,7 @@ export default {
       this.user = orgUser;
       this.errorResponseText = '';
       this.showApiKey = false;
+      this.showPassword = false;
       this.showDialog = true;
       return new Promise((resolve, reject) => {
         this.resolve = resolve

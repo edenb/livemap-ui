@@ -103,7 +103,8 @@ export default {
         username: '',
         fullname: '',
         email: '',
-        role: 'viewer'
+        role: 'manager',
+        password: ''
       }
     }
   },
