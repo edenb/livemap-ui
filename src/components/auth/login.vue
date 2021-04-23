@@ -110,10 +110,11 @@
             .then(() => {
               this.$router.push("/worldmap");
             })
-            .catch((err) => {
+            .catch(() => {
             })
           }
         }
+        
     }
   }
 </script>
