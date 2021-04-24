@@ -49,7 +49,7 @@
             small
             icon
             :disabled="selected.length !== 1"
-            @click="editItem()"
+            @click="editItem(selected[0])"
           >
             <v-icon dark>
               mdi-pencil
@@ -62,13 +62,28 @@
             small
             icon
             :disabled="selected.length !== 1 || (selected.length == 1 && selected[0].user_id == $store.state.user.user_id)"
-            @click="deleteItem()"
+            @click="deleteItem(selected[0])"
           >
             <v-icon dark>
               mdi-delete
             </v-icon>
           </v-btn>
         </v-toolbar>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          small
+          class="mr-2"
+          @click="editItem(item)"
+        >
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          small
+          @click="deleteItem(item)"
+        >
+          mdi-delete
+        </v-icon>
       </template>
     </v-data-table>
   </v-container>
@@ -95,7 +110,8 @@ export default {
       headers: [
         { text: 'Full Name', value: 'fullname' },
         { text: 'Username', value: 'username' },
-        { text: 'Role', value: 'role' }
+        { text: 'Role', value: 'role' },
+        { text: 'Actions', value: 'actions', sortable: false }
       ],
       search: '',
       newUser: {
@@ -128,20 +144,20 @@ export default {
       }
       return newSelected
     },
-    editItem () {
-      this.showDialogUser(this.selected[0]);
+    editItem (item) {
+      this.showDialogUser(item);
     },
     newItem () {
       this.showDialogUser(this.newUser);
     },
-    deleteItem () {
+    deleteItem (item) {
       let messageText = [];
       messageText.push('Are you sure you want to delete the following user?');
-      this.$refs.confirm.open('Delete', messageText, [this.selected[0].fullname],
+      this.$refs.confirm.open('Delete', messageText, [item.fullname],
         { color: 'red' })
         .then((confirm) => {
           if (confirm) {
-            this.apiRequest('delete', `users/${this.selected[0].user_id}`)
+            this.apiRequest('delete', `users/${item.user_id}`)
               .then(() => {
                 this.loadTable();
               })
