@@ -49,8 +49,8 @@
             dark
             small
             icon
-            :disabled="selectedOwned(selected) !== 1"
-            @click="editItem()"
+            :disabled="selectedOwned(selected).length!==1"
+            @click="editItem(selectedOwned(selected)[0])"
           >
             <v-icon dark>
               mdi-pencil
@@ -62,8 +62,8 @@
             dark
             small
             icon
-            :disabled="selectedOwned(selected) === 0"
-            @click="shareItem()"
+            :disabled="selectedOwned(selected).length==0"
+            @click="shareItems(selectedOwned(selected))"
           >
             <v-icon dark>
               mdi-share-all
@@ -75,14 +75,39 @@
             dark
             small
             icon
-            :disabled="selected.length==0"
-            @click="deleteItem()"
+            :disabled="selectedOwned(selected).length==0"
+            @click="deleteItems(selectedOwned(selected))"
           >
             <v-icon dark>
               mdi-delete
             </v-icon>
           </v-btn>
         </v-toolbar>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          v-if="selectedOwned([item]).length==1"
+          small
+          class="mr-2"
+          @click="editItem(item)"
+        >
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          v-if="selectedOwned([item]).length==1"
+          small
+          class="mr-2"
+          @click="shareItems([item])"
+        >
+          mdi-share-all
+        </v-icon>
+        <v-icon
+          v-if="selectedOwned([item]).length==1"
+          small
+          @click="deleteItems([item])"
+        >
+          mdi-delete
+        </v-icon>
       </template>
       <template v-slot:[`item.shared`]="{ item }">
         <v-chip-group
@@ -129,7 +154,8 @@ export default {
       headers: [
         { text: 'Name', value: 'alias' },
         { text: 'Owner', value: 'owner' },
-        { text: 'Shared With', value: 'shared' }
+        { text: 'Shared With', value: 'shared' },
+        { text: 'Actions', value: 'actions', sortable: false }
       ],
       search: '',
       newDevice: {
@@ -158,27 +184,21 @@ export default {
           // Ignore failed (re)loads
         })
     },
-    editItem () {
-      const ownedSelected = this.selected.filter((el) => {
-        return el.api_key && el.api_key === this.$store.state.user.api_key;
-      });
-      this.showDialogDevice(ownedSelected[0]);
+    editItem (item) {
+      this.showDialogDevice(item);
     },
     newItem () {
       this.showDialogDevice(this.newDevice);
     },
-    shareItem () {
-      const ownedSelected = this.selected.filter((el) => {
-        return el.api_key && el.api_key === this.$store.state.user.api_key;
-      });
-      this.showDialogSharedUser(ownedSelected);
+    shareItems (items) {
+      this.showDialogSharedUser(items);
     },
-    deleteItem () {
+    deleteItems (items) {
       let deviceIdList = [];
       let deviceAliasList = [];
       let messageText = [];
       messageText.push('Are you sure you want to delete the following devices?');
-      for (let item of this.selected) {
+      for (let item of items) {
         deviceIdList.push(item.device_id);
         deviceAliasList.push(item.alias);
       }
@@ -224,13 +244,9 @@ export default {
       return colors[i%(colors.length)];
     },
     selectedOwned (devices) {
-      let total = 0;
-      devices.forEach(el => {
-        if (el.api_key && el.api_key === this.$store.state.user.api_key) {
-          total++;
-        }
+      return devices.filter((el) => {
+        return el.api_key && el.api_key === this.$store.state.user.api_key;
       });
-      return total;
     }
   }
 }
