@@ -19,6 +19,7 @@
         >
           <confirm ref="confirm"></confirm>
           <editUser ref="editUser"></editUser>
+          <editPassword ref="editPassword"></editPassword>
           <v-toolbar-title>Users</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field
@@ -61,6 +62,19 @@
             dark
             small
             icon
+            :disabled="selected.length !== 1"
+            @click="editPasswordItem(selected[0])"
+          >
+            <v-icon dark>
+              mdi-lock-reset
+            </v-icon>
+          </v-btn>
+          <v-btn
+            color="white"
+            fab
+            dark
+            small
+            icon
             :disabled="selected.length !== 1 || (selected.length == 1 && selected[0].user_id == $store.state.user.user_id)"
             @click="deleteItem(selected[0])"
           >
@@ -80,6 +94,13 @@
         </v-icon>
         <v-icon
           small
+          class="mr-2"
+          @click="editPasswordItem(item)"
+        >
+          mdi-lock-reset
+        </v-icon>
+        <v-icon
+          small
           @click="deleteItem(item)"
         >
           mdi-delete
@@ -93,10 +114,12 @@
 import {apiMixin} from '@/components/mixins/apiMixin';
 import Confirm from '@/views/confirm.vue';
 import EditUser from '@/views/editUser.vue';
+import EditPassword from '@/views/editPassword.vue';
 export default {
   components: {
     Confirm,
-    EditUser
+    EditUser,
+    EditPassword
   },
   name: "Users",
   mixins: [apiMixin],
@@ -170,8 +193,17 @@ export default {
           }
         })
     },
+    editPasswordItem (item) {
+      this.showDialogPassword(item);
+    },
     showDialogUser (user) {
       this.$refs.editUser.open(user)
+        .then(() => {
+          this.loadTable();
+        })
+    },
+    showDialogPassword (user) {
+      this.$refs.editPassword.open(user)
         .then(() => {
           this.loadTable();
         })
