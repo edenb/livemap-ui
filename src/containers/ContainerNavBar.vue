@@ -26,6 +26,19 @@
     </v-toolbar-title>
     <v-spacer />
 
+    <serverInfo ref="serverInfo"></serverInfo>
+    <v-btn
+      color="white"
+      fab
+      dark
+      small
+      icon
+      @click="showServerInfo()"
+    >
+      <v-icon dark>
+        mdi-information-outline
+      </v-icon>
+    </v-btn>
     <v-menu
       bottom
       left
@@ -83,8 +96,12 @@
   connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red", tooltip: "No live connection"};
 
   import {apiMixin} from '@/components/mixins/apiMixin';
-  import {socketMixin} from '@/components/mixins/socketMixin'
+  import {socketMixin} from '@/components/mixins/socketMixin';
+  import ServerInfo from '@/views/serverInfo.vue';
   export default {
+    components: {
+      ServerInfo
+    },
     name: "ContainerNavBar",
     mixins: [apiMixin, socketMixin],
     computed: {
@@ -99,6 +116,9 @@
       toggleSidebarRight() {
         this.$root.$emit('toggle-sidebar-right')
       },
+      showServerInfo () {
+        this.$refs.serverInfo.open();
+      }
     }
   }
 </script>
