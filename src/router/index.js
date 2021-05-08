@@ -9,7 +9,6 @@ const ContainerMain = () => import('@/containers/ContainerMain')
 const Worldmap = () => import('@/views/worldmap')
 const Users = () => import('@/views/users')
 const Devices = () => import('@/views/devices')
-const Positions = () => import('@/views/positions')
 
 // Views - Pages
 const Login = () => import('@/views/pages/login')
@@ -60,14 +59,6 @@ function configRoutes () {
           path: '/devices',
           name: 'devices',
           component: Devices,
-          meta: {
-            requiresAuth: true
-          },
-        },
-        {
-          path: '/positions',
-          name: 'positions',
-          component: Positions,
           meta: {
             requiresAuth: true
           },
