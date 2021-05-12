@@ -2,11 +2,17 @@ import Axios from 'axios'
 import store from '@/store'
 import Configuration from '@/configuration'
 
+const serverUrl = Configuration.value('envServerUrl') || 'http://localhost:3000';
+const apiPath = Configuration.value('envApiPath') || '/api/v1';
+
 const apiConfig = {
-  apiURL: (Configuration.value('envServerUrl') || 'http://localhost:3000') +
-          (Configuration.value('envApiPath') || '/api/v1'),
+  apiURL: serverUrl + apiPath,
   timeout: 8000,
   withCredentials: true
+}
+
+export function getServerUrl() {
+  return serverUrl;
 }
 
 export default function httpRequest(method, path, data) {
@@ -26,7 +32,7 @@ export default function httpRequest(method, path, data) {
       resolve(response);
     })
     .catch((err) => {
-      reject(err)
+      reject(err);
     });
   });
 }

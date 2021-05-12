@@ -27,11 +27,30 @@
             <v-list-item-subtitle>{{ info.application.about }}</v-list-item-subtitle>
             <v-divider class="mr-1 mt-4"></v-divider>
           </div>
+          <div>
+            <v-list-item-title>
+              <span class="overline mb-1">Server</span>
+              <transition :duration="1000" name="fade">
+                <span v-if="copied[0]" class="caption green--text">
+                  Copied!
+                </span>
+              </transition>
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <div>
+                {{ serverUrl }}
+                <v-icon small class="ml-2" @click="copy(serverUrl, 0)">
+                  mdi-content-copy
+                </v-icon>
+              </div>
+            </v-list-item-subtitle>
+            <v-divider class="mr-1 mt-4"></v-divider>
+          </div>
           <div v-if="info.mqtt">
             <v-list-item-title>
               <span class="overline mb-1">MQTT broker</span>
               <transition :duration="1000" name="fade">
-                <span v-if="copied" class="caption green--text">
+                <span v-if="copied[1]" class="caption green--text">
                   Copied!
                 </span>
               </transition>
@@ -39,7 +58,7 @@
             <v-list-item-subtitle>
               <div>
                 {{ info.mqtt.url }}
-                <v-icon small class="ml-2" @click="copy(info.mqtt.url)">
+                <v-icon small class="ml-2" @click="copy(info.mqtt.url, 1)">
                   mdi-content-copy
                 </v-icon>
               </div>
@@ -69,6 +88,7 @@
 
 <script>
 import {apiMixin} from '@/components/mixins/apiMixin';
+import {getServerUrl} from '@/helpers/axios';
 export default {
   name: "Serverinfo",
   mixins: [apiMixin],
@@ -78,7 +98,8 @@ export default {
       resolve: null,
       reject: null,
       info: {},
-      copied: false,
+      serverUrl: '',
+      copied: [false, false],
       options: {
         color: 'primary',
         width: 340,
@@ -87,17 +108,9 @@ export default {
     }
   },
   methods: {
-    loadInfo () {
-      this.apiRequest('get', `server/info`)
-        .then((response) => {
-          this.info = response.data
-        })
-        .catch(() => {
-          // Ignore failed (re)loads
-        })
-    },
     open() {
       this.dialog = true
+      this.serverUrl = getServerUrl()
       this.apiRequest('get', `server/info`)
         .then((response) => {
           this.info = response.data
@@ -110,10 +123,11 @@ export default {
     cancel() {
       this.dialog = false
     },
-    async copy(s) {
-      this.copied = true
-      await navigator.clipboard.writeText(s)
-      this.copied = false
+    async copy(clipboardText, copiedIdx) {
+      // Use splice to make variable reactive
+      this.copied.splice(copiedIdx, copiedIdx + 1, true);
+       await navigator.clipboard.writeText(clipboardText)
+      this.copied.splice(copiedIdx, copiedIdx + 1, false);
     }
   }
 }
