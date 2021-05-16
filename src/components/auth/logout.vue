@@ -9,6 +9,9 @@
     created() {
       this.socketDeAuth();
       this.$store.dispatch('revokeUserToken');
+      this.$store.dispatch('clearLastPositions');
+      this.$store.dispatch('clearMapZoom');
+      this.$store.dispatch('clearMapCenter');
       this.$router.push("/");
     }
   };
