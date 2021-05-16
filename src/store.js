@@ -10,8 +10,8 @@ export default new Vuex.Store({
     lastPositions: [],
     token: localStorage.getItem('jwt'),
     authorized: false,
-    mapZoom: -1,
-    mapCenter: {}
+    mapZoom: null,
+    mapCenter: null
   },
   getters: {
 
