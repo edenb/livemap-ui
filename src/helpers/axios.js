@@ -7,7 +7,7 @@ const apiPath = Configuration.value('envApiPath') || '/api/v1';
 
 const apiConfig = {
   apiURL: serverUrl + apiPath,
-  timeout: 8000,
+  timeout: 30000,
   withCredentials: true
 }
 
