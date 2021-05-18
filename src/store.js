@@ -10,8 +10,8 @@ export default new Vuex.Store({
     lastPositions: [],
     token: localStorage.getItem('jwt'),
     authorized: false,
-    mapZoom: -1,
-    mapCenter: {}
+    mapZoom: null,
+    mapCenter: null
   },
   getters: {
 
@@ -40,8 +40,14 @@ export default new Vuex.Store({
     DEL_LASTPOSITIONS(state, index) {
       state.lastPositions.splice(index, 1);
     },
+    CLEAR_MAPZOOM(state) {
+      state.mapZoom = null;
+    },
     SET_MAPZOOM(state, mapZoom) {
       state.mapZoom = mapZoom;
+    },
+    CLEAR_MAPCENTER(state) {
+      state.mapCenter = null;
     },
     SET_MAPCENTER(state, mapCenter) {
       state.mapCenter = mapCenter;
@@ -86,8 +92,14 @@ export default new Vuex.Store({
         }
       }
     },
+    clearMapZoom({commit}) {
+      commit('CLEAR_MAPZOOM');
+    },
     setMapZoom({commit}, mapZoom) {
       commit('SET_MAPZOOM', mapZoom);
+    },
+    clearMapCenter({commit}) {
+      commit('CLEAR_MAPCENTER');
     },
     setMapCenter({commit}, mapCenter) {
       commit('SET_MAPCENTER', mapCenter);

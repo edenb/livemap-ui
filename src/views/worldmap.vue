@@ -72,8 +72,8 @@ export default {
     return {
       map: null,
       deviceLayer: null,
-      zoom: this.$store.state.mapZoom,
-      center: this.$store.state.mapCenter,
+      zoom: this.$store.state.mapZoom || 3,
+      center: this.$store.state.mapCenter || { lng: -40, lat: 40 },
       tileProviders: [
         {
           name: 'OpenStreetMap',
@@ -102,12 +102,6 @@ export default {
       this.openPopup(device_id);
     });
   },
-  beforeCreate() {
-    if (this.$store.state.mapZoom < 0) {
-      this.$store.dispatch('setMapZoom', 3);
-      this.$store.dispatch('setMapCenter', { lng: -40, lat: 40 });
-    }
-  },
   created() {
     this.$socket.client.emit('token', this.$store.state.token);
     this.apiRequest('get', '/positions')
@@ -116,6 +110,12 @@ export default {
         for (let position of response.data) {
           this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
         }
+        this.$nextTick(() => {
+          const bounds = this.deviceLayer.getBounds().pad(0.2);
+          const paddingRight = this.map.getSize().x - this.map.getContainer().clientWidth;
+          const paddingBottom = this.map.getSize().y - this.map.getContainer().clientHeight;
+          this.map.flyToBounds((bounds), {paddingBottomRight: [paddingRight, paddingBottom]});
+        });
       })
     this.apiRequest('get', '/staticlayers')
       .then((response) => {
