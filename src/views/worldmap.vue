@@ -111,10 +111,12 @@ export default {
           this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
         }
         this.$nextTick(() => {
-          const bounds = this.deviceLayer.getBounds().pad(0.2);
-          const paddingRight = this.map.getSize().x - this.map.getContainer().clientWidth;
-          const paddingBottom = this.map.getSize().y - this.map.getContainer().clientHeight;
-          this.map.flyToBounds((bounds), {paddingBottomRight: [paddingRight, paddingBottom]});
+          if (this.$store.state.mapZoom === null || this.$store.state.mapCenter === null) {
+            const bounds = this.deviceLayer.getBounds().pad(0.2);
+            const paddingRight = this.map.getSize().x - this.map.getContainer().clientWidth;
+            const paddingBottom = this.map.getSize().y - this.map.getContainer().clientHeight;
+            this.map.flyToBounds((bounds), {paddingBottomRight: [paddingRight, paddingBottom]});
+          }
         });
       })
     this.apiRequest('get', '/staticlayers')
