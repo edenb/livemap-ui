@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "dotenv": "^9.0.2",
+    "dotenv": "^10.0.0",
     "leaflet": "^1.7.1",
     "leaflet-extra-markers": "^1.2.1",
     "material-design-icons-iconfont": "^6.1.0",
