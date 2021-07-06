@@ -87,7 +87,7 @@ export default new Vuex.Store({
       // i.e. the device with the same id as the last one added
       if (typeof payload.cb === 'function') {
         let idx = this.state.lastPositions.findIndex(payload.cb);
-        if (idx >=0) {
+        if (idx >= 0 && idx !== this.state.lastPositions.length-1) {
           commit('DEL_LASTPOSITIONS', idx);
         }
       }
