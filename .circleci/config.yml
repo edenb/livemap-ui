@@ -1,0 +1,13 @@
+version: 2.1
+orbs:
+  docker: circleci/docker@1.7.0
+workflows:
+  deploy:
+    jobs:
+      - docker/publish:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          tag: $CIRCLE_SHA1,latest
+          update-description: true
+          filters:
+            branches:
+              only: master
