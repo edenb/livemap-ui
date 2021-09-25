@@ -10,5 +10,5 @@ workflows:
           update-description: true
           filters:
             branches:
-              ignore: master
+              only: master
               
