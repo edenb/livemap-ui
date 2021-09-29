@@ -11,4 +11,11 @@ workflows:
           filters:
             branches:
               only: master
-              
+  build-only:
+    jobs:
+      - docker/publish:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          deploy: false
+          filters:
+            branches:
+              ignore: master
