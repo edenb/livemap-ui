@@ -6,7 +6,6 @@ import VueSocketIOExt from 'vue-socket.io-extended'
 import io from 'socket.io-client'
 import store from '@/store.js'
 import Configuration from '@/configuration'
-//import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.config.productionTip = false
