@@ -1,9 +1,13 @@
 <template>
-  <v-dialog v-if="user" v-model="showDialog" max-width="500px">
+  <v-dialog
+    v-if="user"
+    v-model="showDialog"
+    max-width="500px"
+  >
     <v-card>
       <v-card-title>
         <span class="headline px-3">{{ formTitle }}</span>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <template v-if="user.user_id >= 0">
           <span class="subtitle-1 px-3">User ID: {{ user.user_id }}</span>
         </template>
@@ -12,34 +16,72 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="user.username" label="Username"></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" v-if="user.user_id < 0">
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
               <v-text-field
+                v-model="user.username"
+                label="Username"
+              />
+            </v-col>
+            <v-col
+              v-if="user.user_id < 0"
+              cols="12"
+              sm="6"
+              md="4"
+            >
+              <v-text-field
+                v-model="user.password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
-                v-model="user.password"
                 label="Password"
                 class="input-group--focused"
                 @click:append="showPassword = !showPassword"
               />
             </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="user.fullname" label="Full Name"></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="user.email" label="E-mail"></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-select v-model="user.role" :items="roles" label="Role"></v-select>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
               <v-text-field
+                v-model="user.fullname"
+                label="Full Name"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
+              <v-text-field
+                v-model="user.email"
+                label="E-mail"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
+              <v-select
+                v-model="user.role"
+                :items="roles"
+                label="Role"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
+              <v-text-field
+                v-model="user.api_key"
                 :append-icon="showApiKey ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showApiKey ? 'text' : 'password'"
                 readonly
-                v-model="user.api_key"
                 label="API key"
                 class="input-group--focused"
                 @click:append="showApiKey = !showApiKey"
@@ -51,14 +93,31 @@
 
       <v-card-actions>
         <template v-if="errorResponseText!==''">
-          <v-icon medium color="error">mdi-alert</v-icon>
+          <v-icon
+            medium
+            color="error"
+          >
+            mdi-alert
+          </v-icon>
           <div class="error--text px-2">
-            {{errorResponseText}}
+            {{ errorResponseText }}
           </div>
         </template>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="noChange">Cancel</v-btn>
-        <v-btn color="blue darken-1" text @click="changed">Save</v-btn>
+        <v-spacer />
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="noChange"
+        >
+          Cancel
+        </v-btn>
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="changed"
+        >
+          Save
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -69,11 +128,6 @@ import {apiMixin} from '@/components/mixins/apiMixin';
 export default {
   name: "EditUser",
   mixins: [apiMixin],
-  computed: {
-    formTitle: function () {
-      return this.user.user_id < 0 ? 'New User' : 'Edit User'
-    }
-  },
   data () {
     return {
       showDialog: false,
@@ -83,6 +137,11 @@ export default {
       resolve: null,
       reject: null,
       user: {}
+    }
+  },
+  computed: {
+    formTitle: function () {
+      return this.user.user_id < 0 ? 'New User' : 'Edit User'
     }
   },
   methods: {

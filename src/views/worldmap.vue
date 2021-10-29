@@ -19,11 +19,12 @@
       :visible="tileProvider.visible"
       :url="tileProvider.url"
       :attribution="tileProvider.attribution"
-      layer-type="base"/>
+      layer-type="base"
+    />
     <l-feature-group
+      ref="deviceLayer"
       layer-type="overlay"
       name="Devices"
-      ref="deviceLayer"
     >
       <l-marker
         v-for="lastPosition in $store.state.lastPositions"
@@ -36,16 +37,15 @@
       </l-marker>
     </l-feature-group>
     <l-feature-group
-      layer-type="overlay"
       v-for="(staticLayer, index) in staticLayers"
       :key="index"
+      layer-type="overlay"
       :name="getStaticLayerName(staticLayer.geojson, index)"
     >
       <l-geo-json
         :geojson="staticLayer.geojson"
         :options="staticLayer.options"
-      >
-      </l-geo-json>
+      />
     </l-feature-group>
   </l-map>
 </template>
@@ -58,7 +58,6 @@ import 'leaflet/dist/leaflet.css'; // Leaflet stylesheet in script section (see 
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
 import {ExtraMarkers} from 'leaflet-extra-markers';
 export default {
-  mixins: [apiMixin, socketMixin],
   components: {
     LMap,
     LTileLayer,
@@ -68,6 +67,7 @@ export default {
     LPopup,
     LGeoJson
   },
+  mixins: [apiMixin, socketMixin],
   data () {
     return {
       map: null,

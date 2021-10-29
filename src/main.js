@@ -23,12 +23,12 @@ new Vue({
   el: '#app',
   store,
   router,
+  components: {
+    App
+  },
   template: '<App/>',
   vuetify,
   icons: {
     iconfont: 'mdiSvg'
-  },
-  components: {
-    App
   },
 })

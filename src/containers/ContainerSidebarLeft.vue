@@ -17,9 +17,9 @@
         </v-list-item-content>
       </v-list-item>
       <v-list-item
+        v-if="$store.state.user.role==='admin'"
         link
         @click="changeRoute('users', 2)"
-        v-if="$store.state.user.role==='admin'"
       >
         <v-list-item-action>
           <v-icon>mdi-account-multiple-outline</v-icon>
