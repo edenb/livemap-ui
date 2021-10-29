@@ -1,5 +1,5 @@
 <template>
- <v-app id="app">
+  <v-app id="app">
     <v-main>
       <v-container
         class="fill-height"
@@ -31,29 +31,29 @@
                 absolute
                 bottom
                 color="primary"
-              ></v-progress-linear>
+              />
               <v-card-text>
                 <v-form
                   ref="form"
                   v-model="valid"
                 >
                   <v-text-field
+                    v-model="username"
                     label="Username"
                     name="username"
                     prepend-icon="person"
                     type="text"
-                    v-model="username"
                     :rules="usernameRules"
                     required
                     @keyup.enter="loginUser"
                   />
                   <v-text-field
                     id="password"
+                    v-model="password"
                     label="Password"
                     name="password"
                     prepend-icon="lock"
                     type="password"
-                    v-model="password"
                     :rules="passwordRules"
                     required
                     @keyup.enter="loginUser"
@@ -62,9 +62,14 @@
               </v-card-text>
               <v-card-actions class="px-4">
                 <template v-if="errorResponseText!==''">
-                  <v-icon medium color="error">mdi-alert</v-icon>
+                  <v-icon
+                    medium
+                    color="error"
+                  >
+                    mdi-alert
+                  </v-icon>
                   <div class="error--text px-2">
-                    {{errorResponseText}}
+                    {{ errorResponseText }}
                   </div>
                 </template>
                 <v-spacer />

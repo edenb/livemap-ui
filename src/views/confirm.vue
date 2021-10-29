@@ -19,8 +19,9 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text
-        v-for="message in messages" :key="message"
+        v-for="message in messages"
         v-show="!!message"
+        :key="message"
       >
         {{ message }}
       </v-card-text>
@@ -29,16 +30,29 @@
           column
         >
           <v-chip
-            v-for="item in items" :key="item"
+            v-for="item in items"
+            :key="item"
           >
             {{ item }}
           </v-chip>
         </v-chip-group>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-spacer></v-spacer>
-        <v-btn color="primary darken-1" text @click.native="agree">Yes</v-btn>
-        <v-btn color="grey" text @click.native="cancel">Cancel</v-btn>
+        <v-spacer />
+        <v-btn
+          color="primary darken-1"
+          text
+          @click.native="agree"
+        >
+          Yes
+        </v-btn>
+        <v-btn
+          color="grey"
+          text
+          @click.native="cancel"
+        >
+          Cancel
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
