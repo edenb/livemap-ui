@@ -10,23 +10,23 @@
     <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-icon
             class="mb-1"
             :color="connectionIcon.color"
             dense
             v-on="on"
           >
-            {{connectionIcon.name}}
+            {{ connectionIcon.name }}
           </v-icon>
         </template>
-        <span>{{connectionIcon.tooltip}}</span>
+        <span>{{ connectionIcon.tooltip }}</span>
       </v-tooltip>
       <span class="hidden-xs-only pl-3">Livemap UI</span>
     </v-toolbar-title>
     <v-spacer />
 
-    <serverInfo ref="serverInfo"></serverInfo>
+    <serverInfo ref="serverInfo" />
     <v-btn
       color="white"
       fab
@@ -45,17 +45,20 @@
       origin="top right"
       transition="scale-transition"
     >
-      <template v-slot:activator="{ on } ">
+      <template #activator="{ on } ">
         <v-chip
           class="ma-2"
           color="secondary"
           v-on="on"
         >
-          <v-avatar left class="ml-0 mr-0">
+          <v-avatar
+            left
+            class="ml-0 mr-0"
+          >
             <v-icon>mdi-account-circle</v-icon>
           </v-avatar>
           <span class="hidden-xs-only ml-2">
-            {{$store.state.user.fullname}}
+            {{ $store.state.user.fullname }}
           </span>
         </v-chip>
       </template>
@@ -65,20 +68,24 @@
           dark
           dense
         >
-          <v-toolbar-title>{{$store.state.user.fullname}}</v-toolbar-title>
+          <v-toolbar-title>{{ $store.state.user.fullname }}</v-toolbar-title>
         </v-toolbar>
         <v-list dense>
           <v-list-item>
-              <v-icon class="mr-2">mdi-account</v-icon>
+            <v-icon class="mr-2">
+              mdi-account
+            </v-icon>
             <v-list-item-content>
-              <v-list-item-title>{{$store.state.user.username}}</v-list-item-title>
+              <v-list-item-title>{{ $store.state.user.username }}</v-list-item-title>
               <v-list-item-subtitle>Username</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-              <v-icon class="mr-2">mdi-account-key</v-icon>
+            <v-icon class="mr-2">
+              mdi-account-key
+            </v-icon>
             <v-list-item-content>
-              <v-list-item-title>{{$store.state.user.role}}</v-list-item-title>
+              <v-list-item-title>{{ $store.state.user.role }}</v-list-item-title>
               <v-list-item-subtitle>Permission level</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -93,16 +100,16 @@
 <script>
   const connectionIcon = [];
   connectionIcon["connected"] = {name: "mdi-circle", color: "green", tooltip: "Live connection"};
-  connectionIcon["disconnected"] = {name: "mdi-alert-circle", color: "red", tooltip: "No live connection"};
+  connectionIcon["disconnected"] = {name: "mdi-alert", color: "red", tooltip: "No live connection"};
 
   import {apiMixin} from '@/components/mixins/apiMixin';
   import {socketMixin} from '@/components/mixins/socketMixin';
   import ServerInfo from '@/views/serverInfo.vue';
   export default {
+    name: "ContainerNavBar",
     components: {
       ServerInfo
     },
-    name: "ContainerNavBar",
     mixins: [apiMixin, socketMixin],
     computed: {
       connectionIcon: function() {

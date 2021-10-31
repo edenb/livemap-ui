@@ -8,26 +8,26 @@
   >
     <v-list dense>
       <v-subheader>DEVICES</v-subheader>
-        <v-list-item
-          v-for="(device, i) in deviceList"
-          :key="i"
-          @click="openDevicePopup(device.device_id)"
-        >
-          <v-list-item-avatar :size=25>
-            <v-icon
-              :class="device.markerColor"
-              :size=15
-              dark
-              v-text="device.icon"
-            ></v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title v-text="device.alias"></v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-list-item-action-text v-text="getAgeText(device.timestamp)"></v-list-item-action-text>
-          </v-list-item-action>
-        </v-list-item>
+      <v-list-item
+        v-for="(device, i) in deviceList"
+        :key="i"
+        @click="openDevicePopup(device.device_id)"
+      >
+        <v-list-item-avatar :size="25">
+          <v-icon
+            :class="device.markerColor"
+            :size="15"
+            dark
+            v-text="device.icon"
+          />
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title v-text="device.alias" />
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-list-item-action-text v-text="getAgeText(device.timestamp)" />
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>

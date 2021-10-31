@@ -1,7 +1,7 @@
 <template>
   <v-dialog
-    v-model="dialog"
     v-if="info && info.application"
+    v-model="dialog"
     :max-width="options.width"
     :style="{ zIndex: options.zIndex }"
     @keydown.esc="cancel"
@@ -25,13 +25,19 @@
               <span class="overline mb-1">About</span>
             </v-list-item-title>
             <v-list-item-subtitle>{{ info.application.about }}</v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4"></v-divider>
+            <v-divider class="mr-1 mt-4" />
           </div>
           <div>
             <v-list-item-title>
               <span class="overline mb-1">Server</span>
-              <transition :duration="1000" name="fade">
-                <span v-if="copied[0]" class="caption green--text">
+              <transition
+                :duration="1000"
+                name="fade"
+              >
+                <span
+                  v-if="copied[0]"
+                  class="caption green--text"
+                >
                   Copied!
                 </span>
               </transition>
@@ -39,18 +45,28 @@
             <v-list-item-subtitle>
               <div>
                 {{ serverUrl }}
-                <v-icon small class="ml-2" @click="copy(serverUrl, 0)">
+                <v-icon
+                  small
+                  class="ml-2"
+                  @click="copy(serverUrl, 0)"
+                >
                   mdi-content-copy
                 </v-icon>
               </div>
             </v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4"></v-divider>
+            <v-divider class="mr-1 mt-4" />
           </div>
           <div v-if="info.mqtt">
             <v-list-item-title>
               <span class="overline mb-1">MQTT broker</span>
-              <transition :duration="1000" name="fade">
-                <span v-if="copied[1]" class="caption green--text">
+              <transition
+                :duration="1000"
+                name="fade"
+              >
+                <span
+                  v-if="copied[1]"
+                  class="caption green--text"
+                >
                   Copied!
                 </span>
               </transition>
@@ -58,7 +74,11 @@
             <v-list-item-subtitle>
               <div>
                 {{ info.mqtt.url }}
-                <v-icon small class="ml-2" @click="copy(info.mqtt.url, 1)">
+                <v-icon
+                  small
+                  class="ml-2"
+                  @click="copy(info.mqtt.url, 1)"
+                >
                   mdi-content-copy
                 </v-icon>
               </div>
@@ -66,21 +86,27 @@
                 Port: {{ info.mqtt.port }}
               </div>
             </v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4"></v-divider>
+            <v-divider class="mr-1 mt-4" />
           </div>
           <div v-if="info.application.license">
             <v-list-item-title>
               <span class="overline mb-1">License</span>
             </v-list-item-title>
             <v-list-item-subtitle>{{ info.application.license }}</v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4"></v-divider>
+            <v-divider class="mr-1 mt-4" />
           </div>
         </v-list-item-content>
       </v-list-item>
 
       <v-card-actions class="pt-0">
-        <v-spacer></v-spacer>
-        <v-btn color="primary darken-1" text @click.native="cancel">OK</v-btn>
+        <v-spacer />
+        <v-btn
+          color="primary darken-1"
+          text
+          @click.native="cancel"
+        >
+          OK
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

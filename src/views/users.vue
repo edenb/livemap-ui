@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid pa-3>
+  <v-container
+    fluid
+    pa-3
+  >
     <v-data-table
       v-model="selected"
       :headers="headers"
@@ -10,27 +13,26 @@
       show-select
       class="elevation-1"
     >
-      <template v-slot:top>
+      <template #top>
         <v-toolbar
           flat
           dense
           color="secondary"
           dark
         >
-          <confirm ref="confirm"></confirm>
-          <editUser ref="editUser"></editUser>
-          <editPassword ref="editPassword"></editPassword>
+          <confirm ref="confirm" />
+          <editUser ref="editUser" />
+          <editPassword ref="editPassword" />
           <v-toolbar-title>Users</v-toolbar-title>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
             single-line
             hide-details
-          >
-          </v-text-field> 
-          <v-spacer></v-spacer>
+          /> 
+          <v-spacer />
           <v-btn
             color="white"
             fab
@@ -84,7 +86,7 @@
           </v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-icon
           small
           class="mr-2"
@@ -116,16 +118,13 @@ import Confirm from '@/views/confirm.vue';
 import EditUser from '@/views/editUser.vue';
 import EditPassword from '@/views/editPassword.vue';
 export default {
+  name: "Users",
   components: {
     Confirm,
     EditUser,
     EditPassword
   },
-  name: "Users",
   mixins: [apiMixin],
-  created() {
-    this.loadTable();
-  },
   data () {
     return {
       allUsers: [],
@@ -146,6 +145,9 @@ export default {
         password: ''
       }
     }
+  },
+  created() {
+    this.loadTable();
   },
   methods: {
     loadTable () {

@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid pa-3>
+  <v-container
+    fluid
+    pa-3
+  >
     <v-data-table
       v-model="selected"
       :headers="headers"
@@ -10,27 +13,26 @@
       show-select
       class="elevation-1"
     >
-      <template v-slot:top>
+      <template #top>
         <v-toolbar
           flat
           dense
           color="secondary"
           dark
         >
-          <confirm ref="confirm"></confirm>
-          <editDevice ref="editDevice"></editDevice>
-          <editSharedUser ref="editSharedUser"></editSharedUser>
+          <confirm ref="confirm" />
+          <editDevice ref="editDevice" />
+          <editSharedUser ref="editSharedUser" />
           <v-toolbar-title>Devices</v-toolbar-title>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
             single-line
             hide-details
-          >
-          </v-text-field> 
-          <v-spacer></v-spacer>
+          /> 
+          <v-spacer />
           <v-btn
             color="white"
             fab
@@ -84,7 +86,7 @@
           </v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-icon
           v-if="selectedOwned([item]).length==1"
           small
@@ -109,18 +111,19 @@
           mdi-delete
         </v-icon>
       </template>
-      <template v-slot:[`item.shared`]="{ item }">
+      <template #[`item.shared`]="{ item }">
         <v-chip-group
           v-if="item.shared"
           multiple
-          max=0
+          max="0"
           column
         >
           <v-chip
+            v-for="sharedUser in item.shared"
+            v-show="typeof sharedUser === 'string'"
+            :key="sharedUser"
             dark
             :small="$vuetify.breakpoint.mobile"
-            v-for="sharedUser in item.shared" :key="sharedUser"
-            v-show="typeof sharedUser === 'string'"
             :color="getColor(sharedUser)"
           >
             {{ sharedUser }}
@@ -137,16 +140,13 @@ import Confirm from '@/views/confirm.vue';
 import EditDevice from '@/views/editDevice.vue';
 import EditSharedUser from '@/views/editSharedUser.vue';
 export default {
+  name: "Devices",
   components: {
     Confirm,
     EditDevice,
     EditSharedUser
   },
-  name: "Devices",
   mixins: [apiMixin],
-  created() {
-    this.loadTable();
-  },
   data () {
     return {
       allDevices: [],
@@ -168,6 +168,9 @@ export default {
       },
       usernameColors: []
     }
+  },
+  created() {
+    this.loadTable();
   },
   methods: {
     loadTable () {

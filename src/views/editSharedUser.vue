@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-if="devices" v-model="showDialog" max-width="500px">
+  <v-dialog
+    v-if="devices"
+    v-model="showDialog"
+    max-width="500px"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">Share / Unshare</span>
@@ -7,8 +11,15 @@
 
       <v-card-text>
         <v-row dense>
-          <v-col cols="12" sm="6" md="4">
-            <v-text-field v-model="username" label="Username"></v-text-field>
+          <v-col
+            cols="12"
+            sm="6"
+            md="4"
+          >
+            <v-text-field
+              v-model="username"
+              label="Username"
+            />
           </v-col>
         </v-row>
       </v-card-text>
@@ -22,7 +33,8 @@
           column
         >
           <v-chip
-            v-for="device in devices" :key="device"
+            v-for="device in devices"
+            :key="device"
           >
             {{ device.alias }}
           </v-chip>
@@ -30,10 +42,28 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="noChange">Cancel</v-btn>
-        <v-btn color="blue darken-1" text @click="addUser">Share</v-btn>
-        <v-btn color="blue darken-1" text @click="removeUser">Unshare</v-btn>
+        <v-spacer />
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="noChange"
+        >
+          Cancel
+        </v-btn>
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="addUser"
+        >
+          Share
+        </v-btn>
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="removeUser"
+        >
+          Unshare
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
