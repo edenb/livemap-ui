@@ -1,6 +1,5 @@
 [![CircleCI](https://circleci.com/gh/edenb/livemap-ui.svg?style=shield)](https://circleci.com/gh/edenb/livemap-ui)
-[![Dependencies](https://img.shields.io/david/edenb/livemap-ui.svg)](https://david-dm.org/edenb/livemap-ui)
-[![DevDependencies](https://img.shields.io/david/dev/edenb/livemap-ui.svg)](https://david-dm.org/edenb/livemap-ui?type=dev)
+[![Depfu](https://badges.depfu.com/badges/ee74d952798246810bcb83f48ae3ec36/overview.svg)](https://depfu.com/github/edenb/livemap-ui?project_id=32743)
 [![CodeFactor](https://www.codefactor.io/repository/github/edenb/livemap-ui/badge)](https://www.codefactor.io/repository/github/edenb/livemap-ui)
 
 # livemap-ui
