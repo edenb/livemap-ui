@@ -90,9 +90,10 @@
 </template>
 
 <script>
-  import {apiMixin} from '@/components/mixins/apiMixin'
+  import {ApiMixin} from '@/mixins/ApiMixin'
   export default {
-    mixins: [apiMixin],
+    name: "UserLogin",
+    mixins: [ApiMixin],
     data: () => ({
       username: "",
       usernameRules: [

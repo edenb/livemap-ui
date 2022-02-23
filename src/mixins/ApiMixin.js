@@ -1,6 +1,6 @@
 import httpRequest from '@/helpers/axios';
 
-export const apiMixin = {
+export const ApiMixin = {
   data() {
     return {
       response: {},

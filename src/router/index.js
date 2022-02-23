@@ -2,17 +2,15 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
 
-// Containers
-const ContainerMain = () => import('@/containers/ContainerMain')
-
 // Views
-const Worldmap = () => import('@/views/worldmap')
-const Users = () => import('@/views/users')
-const Devices = () => import('@/views/devices')
+const TheLayout = () => import('@/layouts/TheLayout')
 
-// Views - Pages
-const Login = () => import('@/views/pages/login')
-const Logout = () => import('@/views/pages/logout')
+const WorldMap = () => import('@/views/WorldMap')
+const UserList = () => import('@/views/UserList')
+const DeviceList = () => import('@/views/DeviceList')
+
+const UserLogin = () => import('@/views/UserLogin')
+const UserLogout = () => import('@/views/UserLogout')
 
 // Prevent 'NavigationDuplicated' when navigating to the same path
 const originalPush = Router.prototype.push;
@@ -34,7 +32,7 @@ function configRoutes () {
     {
       path: '/home',
       name: 'Home',
-      component: ContainerMain,
+      component: TheLayout,
       meta: {
         requiresAuth: true
       },
@@ -42,7 +40,7 @@ function configRoutes () {
         {
           path: '/worldmap',
           name: 'worldmap',
-          component: Worldmap,
+          component: WorldMap,
           meta: {
             requiresAuth: true
           },
@@ -50,7 +48,7 @@ function configRoutes () {
         {
           path: '/users',
           name: 'users',
-          component: Users,
+          component: UserList,
           meta: {
             requiresAuth: true
           },
@@ -58,7 +56,7 @@ function configRoutes () {
         {
           path: '/devices',
           name: 'devices',
-          component: Devices,
+          component: DeviceList,
           meta: {
             requiresAuth: true
           },
@@ -68,12 +66,12 @@ function configRoutes () {
     {
       path: "/",
       name: "login",
-      component: Login,
+      component: UserLogin,
     },
     {
       path: "/logout",
       name: "logout",
-      component: Logout,
+      component: UserLogout,
       meta: {
         requiresAuth: true
       },

@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: "ContainerSidebarRight",
+  name: "TheSidebarRight",
   data () {
     return {
       drawerRight: !this.$vuetify.breakpoint.mobile,

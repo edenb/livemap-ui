@@ -1,5 +1,6 @@
 import store from '@/store'
-export const socketMixin = {
+
+export const SocketMixin = {
   created: function () {
     if (store.state.authorized) {
       this.socketAuth();

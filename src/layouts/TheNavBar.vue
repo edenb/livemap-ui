@@ -102,15 +102,15 @@
   connectionIcon["connected"] = {name: "mdi-circle", color: "green", tooltip: "Live connection"};
   connectionIcon["disconnected"] = {name: "mdi-alert", color: "red", tooltip: "No live connection"};
 
-  import {apiMixin} from '@/components/mixins/apiMixin';
-  import {socketMixin} from '@/components/mixins/socketMixin';
-  import ServerInfo from '@/views/serverInfo.vue';
+  import {ApiMixin} from '@/mixins/ApiMixin';
+  import {SocketMixin} from '@/mixins/SocketMixin';
+  import ServerInfo from '@/components/ServerInfo.vue';
   export default {
-    name: "ContainerNavBar",
+    name: "TheNavBar",
     components: {
       ServerInfo
     },
-    mixins: [apiMixin, socketMixin],
+    mixins: [ApiMixin, SocketMixin],
     computed: {
       connectionIcon: function() {
         return this.$socket.connected?connectionIcon["connected"]:connectionIcon["disconnected"];

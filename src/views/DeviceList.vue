@@ -20,9 +20,9 @@
           color="secondary"
           dark
         >
-          <confirm ref="confirm" />
-          <editDevice ref="editDevice" />
-          <editSharedUser ref="editSharedUser" />
+          <ConfirmDialog ref="confirm" />
+          <DeviceListEditDevice ref="editDevice" />
+          <DeviceListEditSharedUser ref="editSharedUser" />
           <v-toolbar-title>Devices</v-toolbar-title>
           <v-spacer />
           <v-text-field
@@ -135,18 +135,18 @@
 </template>
 
 <script>
-import {apiMixin} from '@/components/mixins/apiMixin';
-import Confirm from '@/views/confirm.vue';
-import EditDevice from '@/views/editDevice.vue';
-import EditSharedUser from '@/views/editSharedUser.vue';
+import {ApiMixin} from '@/mixins/ApiMixin';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import DeviceListEditDevice from '@/components/DeviceListEditDevice.vue';
+import DeviceListEditSharedUser from '@/components/DeviceListEditSharedUser.vue';
 export default {
-  name: "Devices",
+  name: "DeviceList",
   components: {
-    Confirm,
-    EditDevice,
-    EditSharedUser
+    ConfirmDialog,
+    DeviceListEditDevice,
+    DeviceListEditSharedUser
   },
-  mixins: [apiMixin],
+  mixins: [ApiMixin],
   data () {
     return {
       allDevices: [],

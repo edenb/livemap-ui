@@ -51,8 +51,8 @@
 </template>
 
 <script>
-import {apiMixin} from '@/components/mixins/apiMixin';
-import {socketMixin} from '@/components/mixins/socketMixin';
+import {ApiMixin} from '@/mixins/ApiMixin';
+import {SocketMixin} from '@/mixins/SocketMixin';
 import * as L from "leaflet";
 import 'leaflet/dist/leaflet.css'; // Leaflet stylesheet in script section (see vue2leaflet FAQ)
 import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
@@ -67,7 +67,7 @@ export default {
     LPopup,
     LGeoJson
   },
-  mixins: [apiMixin, socketMixin],
+  mixins: [ApiMixin, SocketMixin],
   data () {
     return {
       map: null,
