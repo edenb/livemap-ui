@@ -113,11 +113,11 @@
 </template>
 
 <script>
-import {apiMixin} from '@/components/mixins/apiMixin';
+import {ApiMixin} from '@/mixins/ApiMixin';
 import {getServerUrl} from '@/helpers/axios';
 export default {
-  name: "Serverinfo",
-  mixins: [apiMixin],
+  name: "ServerInfo",
+  mixins: [ApiMixin],
   data () {
     return {
       dialog: false,

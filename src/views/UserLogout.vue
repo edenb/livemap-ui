@@ -3,9 +3,10 @@
 </template>
 
 <script>
-  import {socketMixin} from '@/components/mixins/socketMixin'
+  import {SocketMixin} from '@/mixins/SocketMixin'
   export default {
-    mixins: [socketMixin],
+    name: "UserLogout",
+    mixins: [SocketMixin],
     created() {
       this.socketDeAuth();
       this.$store.dispatch('revokeUserToken');

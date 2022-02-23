@@ -57,7 +57,7 @@
 
 <script>
   export default {
-    name: "ContainerSidebarLeft",
+    name: "TheSidebarLeft",
     data: () => ({
       drawerLeft: null,
       selectedIndex: 1,

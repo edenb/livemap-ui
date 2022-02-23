@@ -102,10 +102,10 @@
 </template>
 
 <script>
-import {apiMixin} from '@/components/mixins/apiMixin';
+import {ApiMixin} from '@/mixins/ApiMixin';
 export default {
   name: "EditDevice",
-  mixins: [apiMixin],
+  mixins: [ApiMixin],
   data () {
     return {
       showDialog: false,

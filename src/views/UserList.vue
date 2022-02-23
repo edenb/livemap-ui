@@ -20,9 +20,9 @@
           color="secondary"
           dark
         >
-          <confirm ref="confirm" />
-          <editUser ref="editUser" />
-          <editPassword ref="editPassword" />
+          <ConfirmDialog ref="confirm" />
+          <UserListEditUser ref="editUser" />
+          <UserListChangePassword ref="editPassword" />
           <v-toolbar-title>Users</v-toolbar-title>
           <v-spacer />
           <v-text-field
@@ -113,18 +113,18 @@
 </template>
 
 <script>
-import {apiMixin} from '@/components/mixins/apiMixin';
-import Confirm from '@/views/confirm.vue';
-import EditUser from '@/views/editUser.vue';
-import EditPassword from '@/views/editPassword.vue';
+import {ApiMixin} from '@/mixins/ApiMixin';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import UserListEditUser from '@/components/UserListEditUser.vue';
+import UserListChangePassword from '@/components/UserListChangePassword.vue';
 export default {
-  name: "Users",
+  name: "UserList",
   components: {
-    Confirm,
-    EditUser,
-    EditPassword
+    ConfirmDialog,
+    UserListEditUser,
+    UserListChangePassword
   },
-  mixins: [apiMixin],
+  mixins: [ApiMixin],
   data () {
     return {
       allUsers: [],

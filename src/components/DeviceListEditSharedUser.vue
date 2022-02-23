@@ -70,10 +70,10 @@
 </template>
 
 <script>
-import {apiMixin} from '@/components/mixins/apiMixin';
+import {ApiMixin} from '@/mixins/ApiMixin';
 export default {
   name: "EditSharedUser",
-  mixins: [apiMixin],
+  mixins: [ApiMixin],
   data () {
     return {
       showDialog: false,
