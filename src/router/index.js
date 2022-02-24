@@ -30,15 +30,16 @@ const router = new Router({
 function configRoutes () {
   return [
     {
-      path: '/home',
-      name: 'Home',
+      path: "/",
+      redirect: "worldmap"
+    },
+    {
+      path: '',
+      name: '',
       component: TheLayout,
-      meta: {
-        requiresAuth: true
-      },
       children: [
         {
-          path: '/worldmap',
+          path: 'worldmap',
           name: 'worldmap',
           component: WorldMap,
           meta: {
@@ -46,7 +47,7 @@ function configRoutes () {
           },
         },
         {
-          path: '/users',
+          path: 'users',
           name: 'users',
           component: UserList,
           meta: {
@@ -54,7 +55,7 @@ function configRoutes () {
           },
         },
         {
-          path: '/devices',
+          path: 'devices',
           name: 'devices',
           component: DeviceList,
           meta: {
@@ -64,7 +65,7 @@ function configRoutes () {
       ]
     },
     {
-      path: "/",
+      path: "/login",
       name: "login",
       component: UserLogin,
     },
@@ -75,6 +76,10 @@ function configRoutes () {
       meta: {
         requiresAuth: true
       },
+    },
+    {
+      path: "/*",
+      redirect: "/"
     },
   ]
 }
@@ -92,14 +97,14 @@ router.beforeEach((to, from, next) => {
           })
           .catch(() => {
             next({
-              path: "/"
+              path: "/login"
             });
           })
       } else if(store.state.authorized) {
         next();
       } else {
         next({
-          path: "/"
+          path: "/login"
         });
       }
     } else {
