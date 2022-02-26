@@ -8,7 +8,7 @@ module.exports = {
   ],
   configureWebpack: {
     plugins: [
-      new Dotenv()
+      //new Dotenv()
     ]
   }
 }
