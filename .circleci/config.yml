@@ -16,7 +16,10 @@ jobs:
 workflows:
   lint-build-deploy:
     jobs:
-      - lint
+      - lint:
+          filters:
+            branches:
+              only: master
       - docker/publish:
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           tag: $CIRCLE_SHA1,latest
@@ -28,7 +31,10 @@ workflows:
               only: master
   lint-build:
     jobs:
-      - lint
+      - lint:
+          filters:
+            branches:
+              ignore: master
       - docker/publish:
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           deploy: false
