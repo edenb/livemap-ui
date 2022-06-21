@@ -18,14 +18,19 @@
             :class="device.markerColor"
             :size="15"
             dark
-            v-text="device.icon"
-          />
+          >
+            {{ device.icon }}
+          </v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title v-text="device.alias" />
+          <v-list-item-title>
+            {{ device.alias }}
+          </v-list-item-title>
         </v-list-item-content>
         <v-list-item-action>
-          <v-list-item-action-text v-text="getAgeText(device.timestamp)" />
+          <v-list-item-action-text>
+            {{ getAgeText(device.timestamp) }}
+          </v-list-item-action-text>
         </v-list-item-action>
       </v-list-item>
     </v-list>
