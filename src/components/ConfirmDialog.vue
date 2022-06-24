@@ -42,14 +42,14 @@
         <v-btn
           color="primary darken-1"
           text
-          @click.native="agree"
+          @click="agree"
         >
           Yes
         </v-btn>
         <v-btn
           color="grey"
           text
-          @click.native="cancel"
+          @click="cancel"
         >
           Cancel
         </v-btn>

@@ -1,10 +1,10 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+//import Vue from 'vue';
+import { createStore } from 'vuex';
 import httpRequest from '@/helpers/axios';
 
-Vue.use(Vuex);
+//Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store = createStore({
   state: {
     user: {},
     lastPositions: [],
@@ -106,3 +106,5 @@ export default new Vuex.Store({
     }
   }
 })
+
+export default store;

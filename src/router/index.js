@@ -1,5 +1,6 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+//import Vue from 'vue'
+//import Router from 'vue-router'
+import { createWebHistory, createRouter } from 'vue-router'
 import store from '@/store'
 
 // Views
@@ -13,17 +14,21 @@ const UserLogin = () => import('@/views/UserLogin')
 const UserLogout = () => import('@/views/UserLogout')
 
 // Prevent 'NavigationDuplicated' when navigating to the same path
-const originalPush = Router.prototype.push;
-Router.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err)
-};
+//const originalPush = Router.prototype.push;
+//Router.prototype.push = function push(location) {
+//  return originalPush.call(this, location).catch(err => err)
+//};
 
-Vue.use(Router)
+//Vue.use(Router)
 
-const router = new Router({
-  mode: 'hash', // https://router.vuejs.org/api/#mode
-  linkActiveClass: 'active',
-  scrollBehavior: () => ({ y: 0 }),
+//const router = new Router({
+//  mode: 'hash', // https://router.vuejs.org/api/#mode
+//  linkActiveClass: 'active',
+//  scrollBehavior: () => ({ y: 0 }),
+//  routes: configRoutes()
+//})
+const router = createRouter({
+  history: createWebHistory(),
   routes: configRoutes()
 })
 

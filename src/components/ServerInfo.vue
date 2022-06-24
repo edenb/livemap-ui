@@ -103,7 +103,7 @@
         <v-btn
           color="primary darken-1"
           text
-          @click.native="cancel"
+          @click="cancel"
         >
           OK
         </v-btn>

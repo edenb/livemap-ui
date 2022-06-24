@@ -123,9 +123,9 @@
             v-show="typeof sharedUser === 'string'"
             :key="sharedUser"
             dark
-            :small="$vuetify.breakpoint.mobile"
             :color="getColor(sharedUser)"
           >
+            <!-- Removed from v-chip :small="$vuetify.breakpoint.mobile" -->
             {{ sharedUser }}
           </v-chip>
         </v-chip-group>
