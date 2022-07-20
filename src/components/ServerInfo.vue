@@ -7,27 +7,31 @@
     @keydown.esc="cancel"
   >
     <v-card>
-      <v-toolbar
+      <v-app-bar
         dark
         :color="options.color"
         dense
         flat
       >
-        <v-toolbar-title class="white--text">
+        <v-app-bar-title class="white--text">
           {{ info.application.name }}
-        </v-toolbar-title>
-      </v-toolbar>
+        </v-app-bar-title>
+      </v-app-bar>
 
-      <v-list-item three-line>
-        <v-list-item-content>
-          <div v-if="info.application.about && info.application.about.length>0">
+      <div v-if="info.application.about && info.application.about.length>0">
+        <v-list-item>
+          <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">About</span>
             </v-list-item-title>
             <v-list-item-subtitle>{{ info.application.about }}</v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4" />
-          </div>
-          <div>
+          </v-list-item-header>
+        </v-list-item>
+        <v-divider class="mr-1 mt-4" />
+      </div>
+      <div>
+        <v-list-item>
+          <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">Server</span>
               <transition
@@ -46,17 +50,20 @@
               <div>
                 {{ serverUrl }}
                 <v-icon
+                  icon="mdi-content-copy"
                   small
                   class="ml-2"
                   @click="copy(serverUrl, 0)"
-                >
-                  mdi-content-copy
-                </v-icon>
+                />
               </div>
             </v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4" />
-          </div>
-          <div v-if="info.mqtt">
+          </v-list-item-header>
+        </v-list-item>
+        <v-divider class="mr-1 mt-4" />
+      </div>
+      <div v-if="info.mqtt">
+        <v-list-item>
+          <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">MQTT broker</span>
               <transition
@@ -75,28 +82,31 @@
               <div>
                 {{ info.mqtt.url }}
                 <v-icon
+                  icon="mdi-content-copy"
                   small
                   class="ml-2"
                   @click="copy(info.mqtt.url, 1)"
-                >
-                  mdi-content-copy
-                </v-icon>
+                />
               </div>
               <div>
                 Port: {{ info.mqtt.port }}
               </div>
             </v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4" />
-          </div>
-          <div v-if="info.application.license">
+          </v-list-item-header>
+        </v-list-item>
+        <v-divider class="mr-1 mt-4" />
+      </div>
+      <div v-if="info.application.license">
+        <v-list-item>
+          <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">License</span>
             </v-list-item-title>
             <v-list-item-subtitle>{{ info.application.license }}</v-list-item-subtitle>
-            <v-divider class="mr-1 mt-4" />
-          </div>
-        </v-list-item-content>
-      </v-list-item>
+          </v-list-item-header>
+        </v-list-item>
+        <v-divider class="mr-1 mt-4" />
+      </div>
 
       <v-card-actions class="pt-0">
         <v-spacer />
@@ -128,8 +138,8 @@ export default {
       copied: [false, false],
       options: {
         color: 'primary',
-        width: 340,
-        zIndex: 200
+        width: 480,
+        zIndex: 2000
       }
     }
   },

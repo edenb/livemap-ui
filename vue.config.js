@@ -1,24 +1,8 @@
-module.exports = {
-  "lintOnSave": false,
-  "runtimeCompiler": true,
-  "transpileDependencies": [
-    "vuetify"
-  ],
-  chainWebpack: (config) => {
-    config.resolve.alias.set('vue', '@vue/compat')
-
-    config.module
-      .rule('vue')
-      .use('vue-loader')
-      .tap((options) => {
-        return {
-          ...options,
-          compilerOptions: {
-            compatConfig: {
-              MODE: 2
-            }
-          }
-        }
-      })
+const { defineConfig } = require('@vue/cli-service')
+module.exports = defineConfig({
+  pluginOptions: {
+    vuetify: {
+			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
+		}
   }
-}
+})

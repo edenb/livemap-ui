@@ -5,6 +5,7 @@
     :options="{ tap: false }"
     :zoom="zoom"
     :center="center"
+    @ready="onMapReady"
     @update:zoom="zoomUpdate"
     @update:center="centerUpdate"
   >
@@ -54,8 +55,8 @@
 import {ApiMixin} from '@/mixins/ApiMixin';
 import {SocketMixin} from '@/mixins/SocketMixin';
 import * as L from "leaflet";
-import 'leaflet/dist/leaflet.css'; // Leaflet stylesheet in script section (see vue2leaflet FAQ)
-import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
+import 'leaflet/dist/leaflet.css';
+import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from '@vue-leaflet/vue-leaflet';
 import {ExtraMarkers} from 'leaflet-extra-markers';
 export default {
   components: {
@@ -72,6 +73,7 @@ export default {
     return {
       map: null,
       deviceLayer: null,
+      staticLayer: {},
       zoom: this.$store.state.mapZoom || 3,
       center: this.$store.state.mapCenter || { lng: -40, lat: 40 },
       tileProviders: [
@@ -94,32 +96,67 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.deviceLayer = this.$refs.deviceLayer.mapObject;
-      this.map = this.$refs.worldmap.mapObject;
-    });
-    this.$root.$on('open-device-popup', (device_id) => {
-      this.openPopup(device_id);
-    });
-  },
-  created() {
+    //this.$nextTick(() => {
+      //console.log('test')
+      //this.map = this.$refs.map.leafletObject;
+
+      //console.log(this.map)
+      //this.map.eachLayer(function(layer){
+        //console.log(layer)
+      //});
+      
+      //this.deviceLayer = this.$refs.worldmap.deviceLayer;
+
+    //});
+    //this.$bus.$on('open-device-popup', (device_id) => {
+    //  this.openPopup(device_id);
+    //});
+//  },
+//  created() {
     this.$socket.client.emit('token', this.$store.state.token);
-    this.apiRequest('get', '/positions')
+    
+    
+  },
+  methods: {
+    onMapReady() {
+      console.log("Ready")
+      this.map = this.$refs.worldmap.leafletObject;
+      console.log(this.map.getCenter());
+      this.map.eachLayer(function(layer){
+        console.log('*')
+        console.log(layer)
+      });
+      this.deviceLayer = this.$refs.deviceLayer.leafletObject;
+      //this.loadDeviceLayer();
+      this.loadStaticLayers();
+      
+    },
+    zoomUpdate(zoom) {
+      this.$store.dispatch('setMapZoom', zoom);
+    },
+    centerUpdate(center) {
+      this.$store.dispatch('setMapCenter', center);
+    },
+    loadDeviceLayer() {
+      this.apiRequest('get', '/positions')
       .then((response) => {
+        console.log("Positions loaded")
         this.$store.dispatch('clearLastPositions');
         for (let position of response.data) {
           this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
         }
         if (this.$store.state.mapZoom === null || this.$store.state.mapCenter === null) {
-          this.$nextTick(() => {
+          //this.$nextTick(() => {
             const bounds = this.deviceLayer.getBounds().pad(0.2);
             const paddingRight = this.map.getSize().x - this.map.getContainer().clientWidth;
             const paddingBottom = this.map.getSize().y - this.map.getContainer().clientHeight;
             this.map.flyToBounds((bounds), {paddingBottomRight: [paddingRight, paddingBottom]});
-          });
+          //});
         }
       })
-    this.apiRequest('get', '/staticlayers')
+    },
+    loadStaticLayers() {
+      this.apiRequest('get', '/staticlayers')
       .then((response) => {
         this.staticLayers = [];
         for (let geojson of response.data) {
@@ -129,13 +166,6 @@ export default {
           this.staticLayers.push(staticLayer);
         }
       })
-  },
-  methods: {
-    zoomUpdate(zoom) {
-      this.$store.dispatch('setMapZoom', zoom);
-    },
-    centerUpdate(center) {
-      this.$store.dispatch('setMapCenter', center);
     },
     getStaticLayerName(geojson, index) {
       let name = `Overlay ${index}`

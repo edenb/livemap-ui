@@ -94,11 +94,10 @@
       <v-card-actions>
         <template v-if="errorResponseText!==''">
           <v-icon
+            icon="mdi-alert"
             medium
             color="error"
-          >
-            mdi-alert
-          </v-icon>
+          />
           <div class="error--text px-2">
             {{ errorResponseText }}
           </div>

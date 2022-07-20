@@ -6,20 +6,18 @@
     color="primary"
     dark
   >
-  <!-- Removed from v-app-bar :dense="$vuetify.breakpoint.mobile" -->
-  >
+    <!-- Removed from v-app-bar :dense="$vuetify.breakpoint.mobile" -->
     <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
           <v-icon
+            :icon="connectionIcon.name"
             class="mb-1"
             :color="connectionIcon.color"
-            dense
-            v-on="on"
-          >
-            {{ connectionIcon.name }}
-          </v-icon>
+            size="x-small"
+            v-bind="props"
+          />
         </template>
         <span>{{ connectionIcon.tooltip }}</span>
       </v-tooltip>
@@ -36,27 +34,27 @@
       icon
       @click="showServerInfo()"
     >
-      <v-icon dark>
-        mdi-information-outline
-      </v-icon>
+      <v-icon
+        icon="mdi-information-outline"
+        dark
+      />
     </v-btn>
     <v-menu
       bottom
       left
       origin="top right"
-      transition="scale-transition"
     >
-      <template #activator="{ on } ">
+      <template #activator="{ props } ">
         <v-chip
           class="ma-2"
           color="secondary"
-          v-on="on"
+          v-bind="props"
         >
           <v-avatar
             left
             class="ml-0 mr-0"
           >
-            <v-icon>mdi-account-circle</v-icon>
+            <v-icon icon="mdi-account-circle" />
           </v-avatar>
           <span class="hidden-xs-only ml-2">
             {{ $store.state.user.fullname }}
@@ -73,18 +71,21 @@
         </v-toolbar>
         <v-list dense>
           <v-list-item>
-            <v-icon class="mr-2">
+            <v-icon
+              icon="mdi-account"
+              class="mr-2"
               mdi-account
-            </v-icon>
+            />
             <v-list-item-content>
               <v-list-item-title>{{ $store.state.user.username }}</v-list-item-title>
               <v-list-item-subtitle>Username</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-icon class="mr-2">
-              mdi-account-key
-            </v-icon>
+            <v-icon
+              icon="mdi-account-key"
+              class="mr-2"
+            />
             <v-list-item-content>
               <v-list-item-title>{{ $store.state.user.role }}</v-list-item-title>
               <v-list-item-subtitle>Permission level</v-list-item-subtitle>
@@ -119,10 +120,10 @@
     },
     methods: {
       toggleSidebarLeft() {
-        this.$root.$emit('toggle-sidebar-left')
+        this.$bus.$emit('toggle-sidebar-left')
       },
       toggleSidebarRight() {
-        this.$root.$emit('toggle-sidebar-right')
+        this.$bus.$emit('toggle-sidebar-right')
       },
       showServerInfo () {
         this.$refs.serverInfo.open();

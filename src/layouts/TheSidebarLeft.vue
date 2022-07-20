@@ -1,56 +1,34 @@
 <template>
   <v-navigation-drawer
     v-model="drawerLeft"
-    app
-    clipped
   >
-    <v-list dense>
+    <v-list nav>
       <v-list-item
         link
+        title="Map"
+        prepend-icon="mdi-map-outline"
         @click="changeRoute('worldmap', 1)"
-      >
-        <v-list-item-action>
-          <v-icon>mdi-map-outline</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Map</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      />
       <v-list-item
         v-if="$store.state.user.role==='admin'"
         link
+        title="Users"
+        prepend-icon="mdi-account-multiple-outline"
         @click="changeRoute('users', 2)"
-      >
-        <v-list-item-action>
-          <v-icon>mdi-account-multiple-outline</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Users</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      />
       <v-list-item
         link
+        title="Devices"
+        prepend-icon="mdi-devices"
         @click="changeRoute('devices', 3)"
-      >
-        <v-list-item-action>
-          <v-icon>mdi-devices</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Devices</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      />
       <v-divider> default </v-divider>
       <v-list-item
         link
+        title="Logout"
+        prepend-icon="mdi-exit-to-app"
         @click="changeRoute('logout', 4)"
-      >
-        <v-list-item-action>
-          <v-icon>mdi-exit-to-app</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Logout</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -63,7 +41,7 @@
       selectedIndex: 1,
     }),
     mounted () {
-      this.$root.$on('toggle-sidebar-left', () => {
+      this.$bus.$on('toggle-sidebar-left', () => {
         this.drawerLeft = !this.drawerLeft
       })
     },

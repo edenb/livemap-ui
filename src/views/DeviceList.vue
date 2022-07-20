@@ -3,7 +3,7 @@
     fluid
     pa-3
   >
-    <v-data-table
+    <v-table
       v-model="selected"
       :headers="headers"
       :items="allDevices"
@@ -130,7 +130,7 @@
           </v-chip>
         </v-chip-group>
       </template>
-    </v-data-table>
+    </v-table>
   </v-container>
 </template>
 

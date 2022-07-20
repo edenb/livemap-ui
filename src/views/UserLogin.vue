@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app">
+  <v-app>
     <v-main>
       <v-container
         class="fill-height"
@@ -63,11 +63,10 @@
               <v-card-actions class="px-4">
                 <template v-if="errorResponseText!==''">
                   <v-icon
+                    icon="mdi-alert"
                     medium
                     color="error"
-                  >
-                    mdi-alert
-                  </v-icon>
+                  />
                   <div class="error--text px-2">
                     {{ errorResponseText }}
                   </div>

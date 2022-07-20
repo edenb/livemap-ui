@@ -3,11 +3,11 @@
     v-model="drawerRight"
     app
     clipped
-    right
+    location="right"
     stateless
   >
     <v-list dense>
-      <v-subheader>DEVICES</v-subheader>
+      <v-list-subheader>DEVICES</v-list-subheader>
       <v-list-item
         v-for="(device, i) in deviceList"
         :key="i"
@@ -15,12 +15,11 @@
       >
         <v-list-item-avatar :size="25">
           <v-icon
+            :icon="device.icon"
             :class="device.markerColor"
             :size="15"
             dark
-          >
-            {{ device.icon }}
-          </v-icon>
+          />
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
@@ -42,7 +41,7 @@ export default {
   name: "TheSidebarRight",
   data () {
     return {
-      drawerRight: !this.$vuetify.breakpoint.mobile,
+      drawerRight: true, //!this.$vuetify.breakpoint.mobile,
       headers: [
         { text: 'Name', value: 'alias' },
       ],
@@ -66,13 +65,13 @@ export default {
     }
   },
   mounted() {
-    this.$root.$on('toggle-sidebar-right', () => {
+    this.$bus.$on('toggle-sidebar-right', () => {
       this.drawerRight = !this.drawerRight
     })
   },
   methods: {
     openDevicePopup(device_id) {
-      this.$root.$emit('open-device-popup', device_id)
+      this.$bus.$emit('open-device-popup', device_id)
     },
     getAgeText(birth) {
       const tsBirth = new Date(birth)

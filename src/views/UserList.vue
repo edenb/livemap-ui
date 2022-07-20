@@ -3,7 +3,7 @@
     fluid
     pa-3
   >
-    <v-data-table
+    <v-table
       v-model="selected"
       :headers="headers"
       :items="allUsers"
@@ -108,7 +108,7 @@
           mdi-delete
         </v-icon>
       </template>
-    </v-data-table>
+    </v-table>
   </v-container>
 </template>
 
