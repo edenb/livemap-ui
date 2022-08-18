@@ -1,17 +1,21 @@
 <template>
-  <div id="worldmap" class="leaflet-container" />
+  <div
+    id="worldmap"
+    class="leaflet-container"
+  />
 </template>
 
 <script>
 import { ApiMixin } from '@/mixins/ApiMixin';
-import "leaflet/dist/leaflet.css";
+import {SocketMixin} from '@/mixins/SocketMixin';
+import 'leaflet/dist/leaflet.css';
 import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
-import L from "leaflet";
+import L from 'leaflet';
 import { ExtraMarkers } from 'leaflet-extra-markers';
 
 export default {
   name: "WorldMap",
-  mixins: [ApiMixin],
+  mixins: [ApiMixin, SocketMixin],
   data() {
     return {
       map: null,
@@ -19,7 +23,6 @@ export default {
       deviceLayer: null,
       staticLayers: null,
       layerControl: null,
-      pos: null,
       tileProviders: [
         {
           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -44,23 +47,16 @@ export default {
     this.initMap();
     this.loadDeviceLayer();
     this.loadStaticLayers();
-
-    setTimeout(() => { this.updatePos(1) }, 3000)
-    //L.marker([53, 20]).addTo(this.map);
-    //L.marker([49.5, 19.5]).addTo(this.map);
-    //L.marker([49, 25]).addTo(this.map);
-    //L.marker([-10, 25]).addTo(this.map);
-    //L.marker([10, -25]).addTo(this.map);
-    //L.marker([0, 0]).addTo(this.map);
   },
   onBeforeUnmount() {
     if (this.map) {
+      console.log('Remove map')
       this.map.remove();
     }
   },
   methods: {
     initMap() {
-      this.map = L.map("worldmap").setView([46.05, 11.05], 5);
+      this.map = L.map("worldmap").setView([32, -110], 8);
 
       let baseMaps = {};
       this.tileProviders.forEach((tileProvider) => {
@@ -73,19 +69,27 @@ export default {
       this.layerControl = L.control.layers(baseMaps, {}, { collapsed: false }).addTo(this.map);
     },
     loadDeviceLayer() {
-      this.deviceLayer = L.featureGroup([]).addTo(this.map);
-      this.deviceLayer.addLayer(L.marker([50, 14], {
-        device_id: 1, icon: ExtraMarkers.icon({
-          icon: 'mdi-home', prefix: 'mdi', markerColor: 'green',
-          iconColor: 'white'
+      this.apiRequest('get', '/positions')
+        .then((response) => {
+          this.deviceLayer = L.featureGroup().addTo(this.map);
+          //console.log("Positions loaded")
+          //this.$store.dispatch('clearLastPositions');
+          for (let dev of response.data) {
+            //this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
+            //console.log(position)
+            const popup = this.getPopupText(dev);
+            const iconAttr = this.getMarkerIconAttr(dev);
+            const opacity = this.getMarkerOpacity(dev);
+            this.updateMarker(dev.device_id, dev.loc_lat, dev.loc_lon, popup, iconAttr, opacity);
+          }
+          this.fitMarkers();
+          this.layerControl.addOverlay(this.deviceLayer, "Device");
         })
-      }).addTo(this.map));
-      this.layerControl.addOverlay(this.deviceLayer, "Device");
     },
     loadStaticLayers() {
       this.apiRequest('get', '/staticlayers')
         .then((response) => {
-          this.staticLayers = L.featureGroup([]).addTo(this.map);
+          this.staticLayers = L.featureGroup().addTo(this.map);
           let layerControlStatic = [];
           let layerIndex = 1;
           for (let geojson of response.data) {
@@ -108,12 +112,35 @@ export default {
       }
       return name;
     },
-    updatePos(id) {
-      this.deviceLayer.getLayers().forEach((layer) => {
-        if (layer.options.device_id === id) {
-          layer.setLatLng([52, 5]);
+    updateMarker(id, lat, lon, popup, iconAttr, opacity) {
+      //console.log(id, lon, lat, popup);
+      if (this.deviceLayer) {
+        const allMarkers = this.deviceLayer.getLayers();
+        let marker = allMarkers.find(e => e.options.id === id);
+        if (!marker) {
+          marker = L.marker([lat, lon], {id});
+          this.deviceLayer.addLayer(marker);
+        } else {
+          marker.setLatLng([lat, lon]);
         }
-      })
+        const icon = ExtraMarkers.icon({
+          icon: iconAttr.icon,
+          prefix: iconAttr.prefix,
+          markerColor: iconAttr.markerColor,
+          iconColor: iconAttr.iconColor
+        });
+        marker.setIcon(icon);
+        marker.bindPopup(popup);
+        marker.setOpacity(opacity);
+      } else {
+        console.log("Skip position update")
+      }
+    },
+    fitMarkers() {
+      const bounds = this.deviceLayer.getBounds().pad(0.2);
+      const paddingRight = this.map.getSize().x - this.map.getContainer().clientWidth;
+      const paddingBottom = this.map.getSize().y - this.map.getContainer().clientHeight;
+      this.map.flyToBounds((bounds), {paddingBottomRight: [paddingRight, paddingBottom]});
     },
     getGeoJsonOptions(geojson) {
       return {
@@ -156,6 +183,109 @@ export default {
             }
           }
         }
+      }
+    },
+    getPopupText(dev) {
+      const loc_type_str = {
+        'rec': 'Recorded',
+        'left': 'Last known'
+      };
+      let htmlText = '', PopupType;
+
+      const PopupTime = new Date(dev.loc_timestamp);
+      // If loc_type is defined use predefined label
+      if (dev.loc_type) {
+        PopupType = loc_type_str[dev.loc_type];
+        htmlText += '<b>' + dev.alias + '</b>';
+        if (typeof PopupType !== 'undefined') {
+          htmlText += ' (' + PopupType + ')';
+        }
+        htmlText += '<br>';
+        htmlText += PopupTime.toLocaleString() + '<br>';
+      } else {
+        if (dev.loc_attr) {
+          if (dev.loc_attr.labelshowalias) {
+            htmlText += '<b>' + dev.alias + '</b><br>';
+          }
+          if (dev.loc_attr.labelshowtime) {
+            htmlText += PopupTime.toLocaleString() + '<br>';
+          }
+          if (dev.loc_attr.labelcustomhtml) {
+            htmlText += dev.loc_attr.labelcustomhtml;
+          }
+        }
+      }
+
+      if (htmlText === '') {
+        // Show at least the alias
+        htmlText = '<b>' + dev.alias + '</b>';
+      }
+
+      return htmlText;
+    },
+    getMarkerIconAttr(dev) {
+      // Default marker icon
+      let cIcon = 'home';
+      let cPrefix = 'mdi'; // Ignore prefix provided by the device
+      let cMarkerColor = 'cyan';
+      let cIconColor = 'white';
+      let cShape = 'circle';
+
+      // If loc_type is defined use predefined marker/icon sets
+      if (dev.loc_type) {
+        if (dev.loc_type === 'rec') {
+          cIcon = 'circle';
+          cMarkerColor = 'blue';
+        }
+        if ((dev.loc_type === 'now') || (dev.loc_type === 'left')) {
+          cIcon = 'circle';
+          cMarkerColor = 'green';
+        }
+      } else {
+        if (dev.loc_attr) {
+          if (dev.loc_attr.miconname) {
+            cIcon = dev.loc_attr.miconname;
+          }
+          if (dev.loc_attr.mcolor) {
+            cMarkerColor = dev.loc_attr.mcolor;
+          }
+          if (dev.loc_attr.miconcolor) {
+            cIconColor = dev.loc_attr.miconcolor;
+          }
+        }
+      }
+      let customIconAttr = { icon: `${cPrefix}-${cIcon}`,
+                         prefix: cPrefix,
+                         markerColor: cMarkerColor,
+                         iconColor: cIconColor,
+                         shape: cShape};
+      return customIconAttr
+    },
+    getMarkerOpacity(dev) {
+      // Default marker options
+      let opacity = 1.0;
+
+      // Define icon opacity
+      if (dev.loc_type && dev.loc_type === 'left') {
+        opacity = 0.5;
+      } else {
+        if (dev.loc_attr && dev.loc_attr.mopacity) {
+          opacity = dev.loc_attr.mopacity;
+        }
+      }
+      return opacity;
+    }
+  },
+  sockets: {
+    positionUpdate(socketPayloadStr) {
+      try {
+        const dev = JSON.parse(socketPayloadStr).data;
+        const popup = this.getPopupText(dev);
+        const iconAttr = this.getMarkerIconAttr(dev);
+        const opacity = this.getMarkerOpacity(dev);
+        this.updateMarker(dev.device_id, dev.loc_lat, dev.loc_lon, popup, iconAttr, opacity);
+      } catch(err) {
+        console.log(err);
       }
     }
   }
