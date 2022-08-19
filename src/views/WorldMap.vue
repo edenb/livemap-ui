@@ -73,7 +73,6 @@ export default {
     return {
       map: null,
       deviceLayer: null,
-      staticLayer: {},
       zoom: this.$store.state.mapZoom || 3,
       center: this.$store.state.mapCenter || { lng: -40, lat: 40 },
       tileProviders: [
