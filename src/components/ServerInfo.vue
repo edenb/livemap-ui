@@ -3,20 +3,11 @@
     v-if="info && info.application"
     v-model="dialog"
     :max-width="options.width"
-    :style="{ zIndex: options.zIndex }"
-    @keydown.esc="cancel"
   >
     <v-card>
-      <v-app-bar
-        dark
-        :color="options.color"
-        dense
-        flat
-      >
-        <v-app-bar-title class="white--text">
-          {{ info.application.name }}
-        </v-app-bar-title>
-      </v-app-bar>
+      <v-card-title>
+        {{ info.application.name }}
+      </v-card-title>
 
       <div v-if="info.application.about && info.application.about.length>0">
         <v-list-item>
