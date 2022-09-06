@@ -1,17 +1,17 @@
 <template>
   <v-app>
-    <TheNavBar />
-    <TheSidebarLeft />
-    <TheSidebarRight />
-    <v-main style="height: 100%">
-      <div
-        style="height: 100%"
-        pa-0
-        fluid
-      >
-        <router-view />
-      </div>
-    </v-main>
+    <v-layout ref="app">
+      <TheNavBar />
+      <TheSidebarLeft />
+      <TheSidebarRight />
+      <v-main>
+        <div
+          style="height: 100%"
+        >
+          <router-view />
+        </div>
+      </v-main>
+    </v-layout>
   </v-app>
 </template>
 

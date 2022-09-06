@@ -11,7 +11,8 @@ const store = createStore({
     token: localStorage.getItem('jwt'),
     authorized: false,
     mapZoom: null,
-    mapCenter: null
+    mapCenter: null,
+    drawerOpen: {}
   },
   getters: {
 
@@ -51,6 +52,9 @@ const store = createStore({
     },
     SET_MAPCENTER(state, mapCenter) {
       state.mapCenter = mapCenter;
+    },
+    SET_DRAWEROPEN(state, { name, open }) {
+      state.drawerOpen[name] = open;
     }
   },
   actions: {
@@ -103,6 +107,9 @@ const store = createStore({
     },
     setMapCenter({commit}, mapCenter) {
       commit('SET_MAPCENTER', mapCenter);
+    },
+    setDrawerOpen({commit}, { name, open }) {
+      commit('SET_DRAWEROPEN', { name, open });
     }
   }
 })

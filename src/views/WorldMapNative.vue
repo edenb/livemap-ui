@@ -1,7 +1,6 @@
 <template>
   <div
     id="worldmap"
-    class="leaflet-container"
   />
 </template>
 
@@ -12,6 +11,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
 import L from 'leaflet';
 import { ExtraMarkers } from 'leaflet-extra-markers';
+import {mapState} from 'vuex';
 
 export default {
   name: "WorldMap",
@@ -42,6 +42,16 @@ export default {
         },
       ]
     };
+  },
+  computed: mapState(['drawerOpen']),
+  watch: {
+    drawerOpen: {
+      deep: true,
+      handler() {
+        console.log('changed');
+        this.map.invalidateSize();
+      }
+    }
   },
   mounted() {
     this.initMap();
@@ -294,7 +304,7 @@ export default {
 
 <style scoped>
 #worldmap {
-  width: 100%;
   height: 100%;
+  z-index: 0;
 }
 </style>

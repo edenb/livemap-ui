@@ -1,10 +1,9 @@
 <template>
   <v-navigation-drawer
-    v-model="drawerRight"
-    app
-    clipped
+    v-model="drawerOpen"
+    name="drawerRight"
     location="right"
-    stateless
+    @transitionend="onTransistionEnd"
   >
     <v-list dense>
       <v-list-subheader>DEVICES</v-list-subheader>
@@ -41,7 +40,7 @@ export default {
   name: "TheSidebarRight",
   data () {
     return {
-      drawerRight: true, //!this.$vuetify.breakpoint.mobile,
+      drawerOpen: false, //!this.$vuetify.breakpoint.mobile,
       headers: [
         { text: 'Name', value: 'alias' },
       ],
@@ -65,9 +64,11 @@ export default {
     }
   },
   mounted() {
+    this.drawerOpen = !this.$vuetify.display.mobile;
     this.$bus.$on('toggle-sidebar-right', () => {
-      this.drawerRight = !this.drawerRight
+      this.drawerOpen = !this.drawerOpen
     })
+    this.updateStore();
   },
   methods: {
     openDevicePopup(device_id) {
@@ -90,6 +91,17 @@ export default {
         return `${(td/(3600*24)).toFixed()}d`
       }
       return `>99d`
+    },
+    updateStore() {
+      this.$store.dispatch('setDrawerOpen', {
+        name: 'drawerRight',
+        open: this.drawerOpen
+      });
+    },
+    onTransistionEnd(drawer) {
+      if (drawer.propertyName==='transform') {
+        this.updateStore();
+      }
     }
   }
 }

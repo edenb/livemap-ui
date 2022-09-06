@@ -1,6 +1,8 @@
 <template>
   <v-navigation-drawer
-    v-model="drawerLeft"
+    v-model="drawerOpen"
+    name="drawerLeft"
+    @transitionend="onTransistionEnd"
   >
     <v-list nav>
       <v-list-item
@@ -34,23 +36,36 @@
 </template>
 
 <script>
-  export default {
-    name: "TheSidebarLeft",
-    data: () => ({
-      drawerLeft: null,
-      selectedIndex: 1,
-    }),
-    mounted () {
-      this.$bus.$on('toggle-sidebar-left', () => {
-        this.drawerLeft = !this.drawerLeft
-      })
+export default {
+  name: "TheSidebarLeft",
+  data: () => ({
+    drawerOpen: false,
+    selectedIndex: 1,
+  }),
+  mounted () {
+    this.drawerOpen = !this.$vuetify.display.mobile;
+    this.$bus.$on('toggle-sidebar-left', () => {
+      this.drawerOpen = !this.drawerOpen
+    })
+    this.updateStore();
+  },
+  methods: {
+    changeRoute(routeName, selectedIndex) {
+      const vm = this;
+      vm.selectedIndex = selectedIndex;
+      return vm.$router.push({ name: routeName });
     },
-    methods: {
-      changeRoute(routeName, selectedIndex) {
-        const vm = this;
-        vm.selectedIndex = selectedIndex;
-        return vm.$router.push({ name: routeName });
-      },
+    updateStore() {
+      this.$store.dispatch('setDrawerOpen', {
+        name: 'drawerLeft',
+        open: this.drawerOpen
+      });
+    },
+    onTransistionEnd(drawer) {
+      if (drawer.propertyName==='transform') {
+        this.updateStore();
+      }
     }
   }
+}
 </script>

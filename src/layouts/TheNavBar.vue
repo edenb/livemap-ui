@@ -1,12 +1,9 @@
 <template>
   <v-app-bar
-    app
-    clipped-left
-    clipped-right
+    name="navBar"
     color="primary"
-    dark
+    :density="$vuetify.display.mobile?'compact':'default'"
   >
-    <!-- Removed from v-app-bar :dense="$vuetify.breakpoint.mobile" -->
     <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
       <v-tooltip location="bottom">
@@ -56,7 +53,10 @@
           >
             <v-icon icon="mdi-account-circle" />
           </v-avatar>
-          <span class="hidden-xs-only ml-2">
+          <span
+            v-if="!$vuetify.display.mobile"
+            class="ml-2"
+          >
             {{ $store.state.user.fullname }}
           </span>
         </v-chip>
@@ -64,12 +64,11 @@
       <v-card>
         <v-toolbar
           color="secondary"
-          dark
-          dense
+          density="compact"
         >
           <v-toolbar-title>{{ $store.state.user.fullname }}</v-toolbar-title>
         </v-toolbar>
-        <v-list dense>
+        <v-list density="compact">
           <v-list-item>
             <v-icon
               icon="mdi-account"
