@@ -48,8 +48,7 @@ export default {
     drawerOpen: {
       deep: true,
       handler() {
-        console.log('changed');
-        this.map.invalidateSize();
+        this.map.invalidateSize({pan: false});
       }
     }
   },
