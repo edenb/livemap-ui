@@ -124,23 +124,24 @@ export default {
     updateMarker(id, lat, lon, popup, iconAttr, opacity) {
       //console.log(id, lon, lat, popup);
       if (this.deviceLayer) {
-        const allMarkers = this.deviceLayer.getLayers();
-        let marker = allMarkers.find(e => e.options.id === id);
-        if (!marker) {
-          marker = L.marker([lat, lon], {id});
-          this.deviceLayer.addLayer(marker);
-        } else {
-          marker.setLatLng([lat, lon]);
-        }
         const icon = ExtraMarkers.icon({
           icon: iconAttr.icon,
           prefix: iconAttr.prefix,
           markerColor: iconAttr.markerColor,
           iconColor: iconAttr.iconColor
         });
-        marker.setIcon(icon);
-        marker.bindPopup(popup);
-        marker.setOpacity(opacity);
+        const allMarkers = this.deviceLayer.getLayers();
+        let marker = allMarkers.find(e => e.options.id === id);
+        if (!marker) {
+          marker = L.marker([lat, lon], {id, icon, opacity});
+          marker.bindPopup(popup);
+          this.deviceLayer.addLayer(marker);
+        } else {
+          marker.setLatLng([lat, lon]);
+          marker.setIcon(icon);
+          marker.bindPopup(popup);
+          marker.setOpacity(opacity);
+        }
       } else {
         console.log("Skip position update")
       }
