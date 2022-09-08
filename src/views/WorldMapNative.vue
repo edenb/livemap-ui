@@ -53,13 +53,14 @@ export default {
     }
   },
   mounted() {
+    console.log('Mount map');
     this.initMap();
     this.loadDeviceLayer();
     this.loadStaticLayers();
   },
-  onBeforeUnmount() {
+  beforeUnmount() {
     if (this.map) {
-      console.log('Remove map')
+      console.log('Remove map');
       this.map.remove();
     }
   },
