@@ -16,33 +16,6 @@ import {mapState} from 'vuex';
 export default {
   name: "WorldMap",
   mixins: [ApiMixin, SocketMixin],
-  data() {
-    return {
-      map: null,
-      baseLayers: null,
-      deviceLayer: null,
-      staticLayers: null,
-      layerControl: null,
-      tileProviders: [
-        {
-          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          options: {
-            name: 'OpenStreetMap',
-            visible: true,
-            attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          }
-        },
-        {
-          urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-          options: {
-            name: 'OpenTopoMap',
-            visible: false,
-            attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-          }
-        },
-      ]
-    };
-  },
   computed: mapState(['drawerOpen']),
   watch: {
     drawerOpen: {
@@ -63,6 +36,31 @@ export default {
       console.log('Remove map');
       this.map.remove();
     }
+  },
+  created() {
+    // Leaflet objects do not have to be reactive
+    this.map = null;
+    this.deviceLayer = null;
+    this.staticLayers = null;
+    this.layerControl = null;
+    this.tileProviders = [
+      {
+        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        options: {
+          name: 'OpenStreetMap',
+          visible: true,
+          attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }
+      },
+      {
+        urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+        options: {
+          name: 'OpenTopoMap',
+          visible: false,
+          attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+        }
+      }
+    ];
   },
   methods: {
     initMap() {
