@@ -25,18 +25,6 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log('Mount map');
-    this.initMap();
-    this.loadDeviceLayer();
-    this.loadStaticLayers();
-  },
-  beforeUnmount() {
-    if (this.map) {
-      console.log('Remove map');
-      this.map.remove();
-    }
-  },
   created() {
     // Leaflet objects do not have to be reactive
     this.map = null;
@@ -61,6 +49,18 @@ export default {
         }
       }
     ];
+  },
+  mounted() {
+    console.log('Mount map');
+    this.initMap();
+    this.loadDeviceLayer();
+    this.loadStaticLayers();
+  },
+  beforeUnmount() {
+    if (this.map) {
+      console.log('Remove map');
+      this.map.remove();
+    }
   },
   methods: {
     initMap() {
