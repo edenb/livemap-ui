@@ -3,25 +3,22 @@
     <v-main>
       <v-container
         class="fill-height"
-        fluid
       >
         <v-row
-          class="ma-2"
-          align="center"
+          class="fill-height"
           justify="center"
         >
           <v-col
+            align-self="center"
             cols="12"
             sm="8"
-            md="4"
+            md="6"
           >
             <v-card
               class="elevation-12"
             >
               <v-toolbar
                 color="primary"
-                dark
-                flat
               >
                 <v-toolbar-title>Login</v-toolbar-title>
               </v-toolbar>
@@ -41,7 +38,7 @@
                     v-model="username"
                     label="Username"
                     name="username"
-                    prepend-icon="person"
+                    prepend-icon="mdi-account"
                     type="text"
                     :rules="usernameRules"
                     required
@@ -52,7 +49,7 @@
                     v-model="password"
                     label="Password"
                     name="password"
-                    prepend-icon="lock"
+                    prepend-icon="mdi-lock"
                     type="password"
                     :rules="passwordRules"
                     required
