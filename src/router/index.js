@@ -7,25 +7,10 @@ const DeviceList = () => import('@/views/DeviceList')
 const UserLogin = () => import('@/views/UserLogin')
 const UserLogout = () => import('@/views/UserLogout')
 
-// Prevent 'NavigationDuplicated' when navigating to the same path
-//const originalPush = Router.prototype.push;
-//Router.prototype.push = function push(location) {
-//  return originalPush.call(this, location).catch(err => err)
-//};
-
-//Vue.use(Router)
-
-//const router = new Router({
-//  mode: 'hash', // https://router.vuejs.org/api/#mode
-//  linkActiveClass: 'active',
-//  scrollBehavior: () => ({ y: 0 }),
-//  routes: configRoutes()
-//})
-
 const routes = [
   {
-    path: "/",
-    redirect: "worldmap"
+    path: '',
+    redirect: 'worldmap'
   },
   {
     path: '',
@@ -59,22 +44,25 @@ const routes = [
     ]
   },
   {
-    path: "/login",
-    name: "login",
+    path: '/login',
+    name: 'login',
     component: UserLogin,
   },
   {
-    path: "/logout",
-    name: "logout",
+    path: '/logout',
+    name: 'logout',
     component: UserLogout,
     meta: {
       requiresAuth: true
     },
   },
-  //{
-  //  path: "/*",
-  //  redirect: "/"
-  //},
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: 'worldmap',
+    meta: {
+      requiresAuth: false
+    }
+  },
 ]
 
 const router = createRouter({
