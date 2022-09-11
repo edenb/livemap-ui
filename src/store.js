@@ -86,7 +86,7 @@ const store = createStore({
       commit('CLEAR_LASTPOSITIONS');
     },
     addLastPositions({commit}, payload) {
-      commit('ADD_LASTPOSITIONS', payload.marker);
+      commit('ADD_LASTPOSITIONS', payload);
       // If present remove the previous position of the device
       // i.e. the device with the same id as the last one added
       if (typeof payload.cb === 'function') {

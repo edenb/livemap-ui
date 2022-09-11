@@ -5,31 +5,30 @@
     location="right"
     @transitionend="onTransistionEnd"
   >
-    <v-list dense>
+    <v-list
+      density="compact"
+      nav
+    >
       <v-list-subheader>DEVICES</v-list-subheader>
       <v-list-item
         v-for="(device, i) in deviceList"
         :key="i"
         @click="openDevicePopup(device.device_id)"
       >
-        <v-list-item-avatar :size="25">
+        <template #prepend>
           <v-icon
             :icon="device.icon"
-            :class="device.markerColor"
-            :size="15"
-            dark
+            :color="device.markerColor"
           />
-        </v-list-item-avatar>
-        <v-list-item-content>
+        </template>
+        <v-list-item-title>
+          {{ device.alias }}
+        </v-list-item-title>
+        <template #append>
           <v-list-item-title>
-            {{ device.alias }}
-          </v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-list-item-action-text>
             {{ getAgeText(device.timestamp) }}
-          </v-list-item-action-text>
-        </v-list-item-action>
+          </v-list-item-title>
+        </template>
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -48,13 +47,13 @@ export default {
   },
   computed: {
     deviceList: function() {
-      let devList = this.$store.state.lastPositions.map(({ raw, icon }) => {
+      let devList = this.$store.state.lastPositions.map(({ raw, iconAttr }) => {
         return {
           alias: raw.alias,
           device_id: raw.device_id,
-          icon: icon.options.icon,
-          iconColor: icon.options.iconColor,
-          markerColor: icon.options.markerColor,
+          icon: iconAttr.icon,
+          iconColor: iconAttr.iconColor,
+          markerColor: iconAttr.markerColor,
           timestamp: raw.loc_timestamp
         }
       })

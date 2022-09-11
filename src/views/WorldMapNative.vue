@@ -55,6 +55,9 @@ export default {
     this.initMap();
     this.loadDeviceLayer();
     this.loadStaticLayers();
+    this.$bus.$on('open-device-popup', (device_id) => {
+      this.openPopup(device_id);
+    });
   },
   beforeUnmount() {
     if (this.map) {
@@ -81,14 +84,19 @@ export default {
         .then((response) => {
           this.deviceLayer = L.featureGroup().addTo(this.map);
           //console.log("Positions loaded")
-          //this.$store.dispatch('clearLastPositions');
+          this.$store.dispatch('clearLastPositions');
           for (let dev of response.data) {
-            //this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
-            //console.log(position)
             const popup = this.getPopupText(dev);
             const iconAttr = this.getMarkerIconAttr(dev);
             const opacity = this.getMarkerOpacity(dev);
             this.updateMarker(dev.device_id, dev.loc_lat, dev.loc_lon, popup, iconAttr, opacity);
+            this.$store.dispatch('addLastPositions', {
+              raw: dev,
+              latLng: { lat: dev.loc_lat, lon: dev.loc_lon },
+              popup,
+              iconAttr,
+              opacity
+            });
           }
           this.fitMarkers();
           this.layerControl.addOverlay(this.deviceLayer, "Device");
@@ -283,6 +291,18 @@ export default {
         }
       }
       return opacity;
+    },
+    openPopup(id) {
+      if (this.deviceLayer !== null) {
+        this.deviceLayer.eachLayer((layer) => {
+          if (layer.options.id === id) {
+            layer.openPopup();
+            if (this.map !== null) {
+              this.map.panTo(layer.getLatLng())
+            }
+          }
+        })
+      }
     }
   },
   sockets: {
@@ -293,6 +313,15 @@ export default {
         const iconAttr = this.getMarkerIconAttr(dev);
         const opacity = this.getMarkerOpacity(dev);
         this.updateMarker(dev.device_id, dev.loc_lat, dev.loc_lon, popup, iconAttr, opacity);
+        const cbFindDuplicates = (e, i, a) => e.raw.device_id === a[a.length-1].raw.device_id;
+        this.$store.dispatch('addLastPositions', {
+          raw: dev,
+          latLng: { lat: dev.loc_lat, lon: dev.loc_lon },
+          popup,
+          iconAttr,
+          opacity,
+          cb: cbFindDuplicates
+        });
       } catch(err) {
         console.log(err);
       }
