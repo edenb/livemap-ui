@@ -16,10 +16,16 @@
         @click="openDevicePopup(device.device_id)"
       >
         <template #prepend>
-          <v-icon
-            :icon="device.icon"
+          <v-avatar
             :color="device.markerColor"
-          />
+            size="small"
+          >
+            <v-icon
+              :icon="device.icon"
+              :color="device.iconColor"
+              size="x-small"
+            />
+          </v-avatar>
         </template>
         <v-list-item-title>
           {{ device.alias }}
