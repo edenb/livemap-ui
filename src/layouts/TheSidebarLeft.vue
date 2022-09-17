@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    v-model="drawerOpen"
+    v-model="drawer"
     name="drawerLeft"
     @transitionend="onTransistionEnd"
   >
@@ -36,18 +36,29 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: "TheSidebarLeft",
   data: () => ({
-    drawerOpen: false,
+    drawer: false,
     selectedIndex: 1,
   }),
+  computed: {
+    ...mapState(['drawerOpen']),
+  },
   mounted () {
-    this.drawerOpen = !this.$vuetify.display.mobile;
-    this.$bus.$on('toggle-sidebar-left', () => {
-      this.drawerOpen = !this.drawerOpen
+    if ('left' in this.drawerOpen) {
+      this.drawer = this.drawerOpen.left;
+    } else {
+      this.drawer = !this.$vuetify.display.mobile;
+    }
+    this.emitter.on('toggle-sidebar-left', () => {
+      this.drawer = !this.drawer
     })
-    this.updateStore();
+  },
+  beforeUnmount() {
+    this.emitter.off('toggle-sidebar-left')
   },
   methods: {
     changeRoute(routeName, selectedIndex) {
@@ -55,15 +66,12 @@ export default {
       vm.selectedIndex = selectedIndex;
       return vm.$router.push({ name: routeName });
     },
-    updateStore() {
-      this.$store.dispatch('setDrawerOpen', {
-        name: 'drawerLeft',
-        open: this.drawerOpen
-      });
-    },
-    onTransistionEnd(drawer) {
-      if (drawer.propertyName==='transform') {
-        this.updateStore();
+    onTransistionEnd(event) {
+      if (event.propertyName==='transform') {
+        this.$store.dispatch('setDrawerOpen', {
+          name: 'left',
+          open: this.drawer
+        });
       }
     }
   }

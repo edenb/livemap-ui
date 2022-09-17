@@ -1,20 +1,23 @@
 <template>
-  <div
-    id="worldmap"
-  />
+  <TheSidebarRight />
+  <div id="worldmap" />
 </template>
 
 <script>
 import { ApiMixin } from '@/mixins/ApiMixin';
-import {SocketMixin} from '@/mixins/SocketMixin';
+import { SocketMixin } from '@/mixins/SocketMixin';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
 import L from 'leaflet';
 import { ExtraMarkers } from 'leaflet-extra-markers';
-import {mapState} from 'vuex';
+import { mapState } from 'vuex';
+import TheSidebarRight from '@/layouts/TheSidebarRight';
 
 export default {
   name: "WorldMap",
+  components: {
+    TheSidebarRight
+  },
   mixins: [ApiMixin, SocketMixin],
   computed: mapState(['drawerOpen']),
   watch: {
@@ -51,19 +54,18 @@ export default {
     ];
   },
   mounted() {
-    console.log('Mount map');
     this.initMap();
     this.loadDeviceLayer();
     this.loadStaticLayers();
-    this.$bus.$on('open-device-popup', (device_id) => {
+    this.emitter.on('open-device-popup', (device_id) => {
       this.openPopup(device_id);
     });
   },
   beforeUnmount() {
     if (this.map) {
-      console.log('Remove map');
       this.map.remove();
     }
+    this.emitter.off('open-device-popup')
   },
   methods: {
     initMap() {

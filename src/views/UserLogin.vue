@@ -1,88 +1,86 @@
 <template>
-  <v-app>
-    <v-main>
-      <v-container
+  <v-main>
+    <v-container
+      class="fill-height"
+    >
+      <v-row
         class="fill-height"
+        justify="center"
       >
-        <v-row
-          class="fill-height"
-          justify="center"
+        <v-col
+          align-self="center"
+          cols="12"
+          sm="8"
+          md="6"
         >
-          <v-col
-            align-self="center"
-            cols="12"
-            sm="8"
-            md="6"
+          <v-card
+            class="elevation-12"
           >
-            <v-card
-              class="elevation-12"
+            <v-toolbar
+              color="primary"
             >
-              <v-toolbar
-                color="primary"
+              <v-toolbar-title>Login</v-toolbar-title>
+            </v-toolbar>
+            <v-progress-linear
+              :active="loading"
+              :indeterminate="loading"
+              absolute
+              bottom
+              color="primary"
+            />
+            <v-card-text>
+              <v-form
+                ref="form"
+                v-model="valid"
               >
-                <v-toolbar-title>Login</v-toolbar-title>
-              </v-toolbar>
-              <v-progress-linear
-                :active="loading"
-                :indeterminate="loading"
-                absolute
-                bottom
+                <v-text-field
+                  v-model="username"
+                  label="Username"
+                  name="username"
+                  prepend-icon="mdi-account"
+                  type="text"
+                  :rules="usernameRules"
+                  required
+                  @keyup.enter="loginUser"
+                />
+                <v-text-field
+                  id="password"
+                  v-model="password"
+                  label="Password"
+                  name="password"
+                  prepend-icon="mdi-lock"
+                  type="password"
+                  :rules="passwordRules"
+                  required
+                  @keyup.enter="loginUser"
+                />
+              </v-form>
+            </v-card-text>
+            <v-card-actions class="px-4">
+              <template v-if="errorResponseText!==''">
+                <v-icon
+                  icon="mdi-alert"
+                  medium
+                  color="error"
+                />
+                <div class="error--text px-2">
+                  {{ errorResponseText }}
+                </div>
+              </template>
+              <v-spacer />
+              <v-btn
+                :disabled="!valid"
                 color="primary"
-              />
-              <v-card-text>
-                <v-form
-                  ref="form"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    v-model="username"
-                    label="Username"
-                    name="username"
-                    prepend-icon="mdi-account"
-                    type="text"
-                    :rules="usernameRules"
-                    required
-                    @keyup.enter="loginUser"
-                  />
-                  <v-text-field
-                    id="password"
-                    v-model="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="mdi-lock"
-                    type="password"
-                    :rules="passwordRules"
-                    required
-                    @keyup.enter="loginUser"
-                  />
-                </v-form>
-              </v-card-text>
-              <v-card-actions class="px-4">
-                <template v-if="errorResponseText!==''">
-                  <v-icon
-                    icon="mdi-alert"
-                    medium
-                    color="error"
-                  />
-                  <div class="error--text px-2">
-                    {{ errorResponseText }}
-                  </div>
-                </template>
-                <v-spacer />
-                <v-btn
-                  :disabled="!valid"
-                  color="primary"
-                  @click="loginUser"
-                >
-                  Login
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+                @click="loginUser"
+              >
+                Login
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 
 <script>

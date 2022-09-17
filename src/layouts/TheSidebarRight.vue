@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    v-model="drawerOpen"
+    v-model="drawer"
     name="drawerRight"
     location="right"
     @transitionend="onTransistionEnd"
@@ -11,28 +11,29 @@
     >
       <v-list-subheader>DEVICES</v-list-subheader>
       <v-list-item
-        v-for="(device, i) in deviceList"
+        v-for="(device, i) in lastPositionsOrdered"
         :key="i"
-        @click="openDevicePopup(device.device_id)"
+        @click="openDevicePopup(device.raw.device_id)"
       >
         <template #prepend>
           <v-avatar
-            :color="device.markerColor"
+            variant="elevated"
+            :color="device.iconAttr.markerColor"
             size="small"
           >
             <v-icon
-              :icon="device.icon"
-              :color="device.iconColor"
+              :icon="device.iconAttr.icon"
+              :color="device.iconAttr.iconColor"
               size="x-small"
             />
           </v-avatar>
         </template>
         <v-list-item-title>
-          {{ device.alias }}
+          {{ device.raw.alias }}
         </v-list-item-title>
         <template #append>
           <v-list-item-title>
-            {{ getAgeText(device.timestamp) }}
+            {{ getAgeText(device.raw.loc_timestamp) }}
           </v-list-item-title>
         </template>
       </v-list-item>
@@ -41,43 +42,42 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: "TheSidebarRight",
   data () {
     return {
-      drawerOpen: false, //!this.$vuetify.breakpoint.mobile,
+      drawer: false,
       headers: [
         { text: 'Name', value: 'alias' },
       ],
     }
   },
   computed: {
-    deviceList: function() {
-      let devList = this.$store.state.lastPositions.map(({ raw, iconAttr }) => {
-        return {
-          alias: raw.alias,
-          device_id: raw.device_id,
-          icon: iconAttr.icon,
-          iconColor: iconAttr.iconColor,
-          markerColor: iconAttr.markerColor,
-          timestamp: raw.loc_timestamp
-        }
-      })
-      // Sort device list in alphabetical order (by device alias)
-      devList.sort((a, b) => a.alias.localeCompare(b.alias))
-      return devList
+    ...mapState(['lastPositions', 'drawerOpen']),
+    lastPositionsOrdered: function() {
+      let lastPositionsOrdered = this.lastPositions;
+      lastPositionsOrdered.sort((a, b) => a.raw.alias.localeCompare(b.raw.alias))
+      return lastPositionsOrdered
     }
   },
   mounted() {
-    this.drawerOpen = !this.$vuetify.display.mobile;
-    this.$bus.$on('toggle-sidebar-right', () => {
-      this.drawerOpen = !this.drawerOpen
+    if ('right' in this.drawerOpen) {
+      this.drawer = this.drawerOpen.right;
+    } else {
+      this.drawer = !this.$vuetify.display.mobile;
+    }
+    this.emitter.on('toggle-sidebar-right', () => {
+      this.drawer = !this.drawer;
     })
-    this.updateStore();
+  },
+  beforeUnmount() {
+    this.emitter.off('toggle-sidebar-right')
   },
   methods: {
     openDevicePopup(device_id) {
-      this.$bus.$emit('open-device-popup', device_id)
+      this.emitter.emit('open-device-popup', device_id);
     },
     getAgeText(birth) {
       const tsBirth = new Date(birth)
@@ -97,15 +97,12 @@ export default {
       }
       return `>99d`
     },
-    updateStore() {
-      this.$store.dispatch('setDrawerOpen', {
-        name: 'drawerRight',
-        open: this.drawerOpen
-      });
-    },
-    onTransistionEnd(drawer) {
-      if (drawer.propertyName==='transform') {
-        this.updateStore();
+    onTransistionEnd(event) {
+      if (event.propertyName==='transform') {
+        this.$store.dispatch('setDrawerOpen', {
+          name: 'right',
+          open: this.drawer
+        });
       }
     }
   }

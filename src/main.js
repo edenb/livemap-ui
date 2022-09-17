@@ -7,7 +7,7 @@ import store from '@/store.js'
 import VueSocketIOExt from 'vue-socket.io-extended'
 import io from 'socket.io-client'
 import Configuration from '@/configuration'
-import $bus from '@/helpers/event.js';
+import mitt from 'mitt'
 
 //loadFonts()
 // Create a socket but do not connect
@@ -17,12 +17,11 @@ const socket = io(Configuration.value('envServerUrl') || 'http://localhost:3000'
 
 const app = createApp(App)
 
-app.config.globalProperties.$bus = $bus;
+const emitter = mitt()
+app.config.globalProperties.emitter = emitter
 
 app.use(router)
   .use(store)
   .use(vuetify)
   .use(VueSocketIOExt, socket) //, { store })
   .mount('#app')
-
-

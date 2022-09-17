@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app" />
+  <div />
 </template>
 
 <script>

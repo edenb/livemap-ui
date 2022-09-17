@@ -119,10 +119,10 @@
     },
     methods: {
       toggleSidebarLeft() {
-        this.$bus.$emit('toggle-sidebar-left')
+        this.emitter.emit('toggle-sidebar-left')
       },
       toggleSidebarRight() {
-        this.$bus.$emit('toggle-sidebar-right')
+        this.emitter.emit('toggle-sidebar-right')
       },
       showServerInfo () {
         this.$refs.serverInfo.open();
