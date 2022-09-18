@@ -43,22 +43,22 @@
         </v-toolbar>
         <v-list density="compact">
           <v-list-item>
-            <v-icon icon="mdi-account" class="mr-2" mdi-account />
-            <v-list-item-content>
-              <v-list-item-title>{{
-                $store.state.user.username
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Username</v-list-item-subtitle>
-            </v-list-item-content>
+            <template #prepend>
+              <v-icon>mdi-account</v-icon>
+            </template>
+            <v-list-item-title>
+              {{ $store.state.user.username }}
+            </v-list-item-title>
+            <v-list-item-subtitle> Username </v-list-item-subtitle>
           </v-list-item>
           <v-list-item>
-            <v-icon icon="mdi-account-key" class="mr-2" />
-            <v-list-item-content>
-              <v-list-item-title>{{
-                $store.state.user.role
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Permission level</v-list-item-subtitle>
-            </v-list-item-content>
+            <template #prepend>
+              <v-icon>mdi-account-key</v-icon>
+            </template>
+            <v-list-item-title>
+              {{ $store.state.user.role }}
+            </v-list-item-title>
+            <v-list-item-subtitle> Permission level </v-list-item-subtitle>
           </v-list-item>
         </v-list>
       </v-card>
