@@ -12,7 +12,7 @@
         @click="changeRoute('worldmap', 1)"
       />
       <v-list-item
-        v-if="$store.state.user.role==='admin'"
+        v-if="$store.state.user.role === 'admin'"
         link
         title="Users"
         prepend-icon="mdi-account-multiple-outline"
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "TheSidebarLeft",
@@ -45,20 +45,20 @@ export default {
     selectedIndex: 1,
   }),
   computed: {
-    ...mapState(['drawerOpen']),
+    ...mapState(["drawerOpen"]),
   },
-  mounted () {
-    if ('left' in this.drawerOpen) {
+  mounted() {
+    if ("left" in this.drawerOpen) {
       this.drawer = this.drawerOpen.left;
     } else {
       this.drawer = !this.$vuetify.display.mobile;
     }
-    this.emitter.on('toggle-sidebar-left', () => {
-      this.drawer = !this.drawer
-    })
+    this.emitter.on("toggle-sidebar-left", () => {
+      this.drawer = !this.drawer;
+    });
   },
   beforeUnmount() {
-    this.emitter.off('toggle-sidebar-left')
+    this.emitter.off("toggle-sidebar-left");
   },
   methods: {
     changeRoute(routeName, selectedIndex) {
@@ -67,13 +67,13 @@ export default {
       return vm.$router.push({ name: routeName });
     },
     onTransistionEnd(event) {
-      if (event.propertyName==='transform') {
-        this.$store.dispatch('setDrawerOpen', {
-          name: 'left',
-          open: this.drawer
+      if (event.propertyName === "transform") {
+        this.$store.dispatch("setDrawerOpen", {
+          name: "left",
+          open: this.drawer,
         });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

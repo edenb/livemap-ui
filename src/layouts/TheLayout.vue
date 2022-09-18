@@ -11,15 +11,15 @@
 </template>
 
 <script>
-  //import Vue100vh from 'vue-div-100vh';
-  import TheNavBar from '@/layouts/TheNavBar';
-  import TheSidebarLeft from '@/layouts/TheSidebarLeft';
-  export default {
-    name: "TheLayout",
-    components: {
-      //Vue100vh,
-      TheNavBar,
-      TheSidebarLeft
-    },
-  }
+//import Vue100vh from 'vue-div-100vh';
+import TheNavBar from "@/layouts/TheNavBar";
+import TheSidebarLeft from "@/layouts/TheSidebarLeft";
+export default {
+  name: "TheLayout",
+  components: {
+    //Vue100vh,
+    TheNavBar,
+    TheSidebarLeft,
+  },
+};
 </script>

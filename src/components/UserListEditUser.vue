@@ -1,9 +1,5 @@
 <template>
-  <v-dialog
-    v-if="user"
-    v-model="showDialog"
-    max-width="500px"
-  >
+  <v-dialog v-if="user" v-model="showDialog" max-width="500px">
     <v-card>
       <v-card-title>
         <span class="headline px-3">{{ formTitle }}</span>
@@ -16,22 +12,10 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
-              <v-text-field
-                v-model="user.username"
-                label="Username"
-              />
+            <v-col cols="12" sm="6" md="4">
+              <v-text-field v-model="user.username" label="Username" />
             </v-col>
-            <v-col
-              v-if="user.user_id < 0"
-              cols="12"
-              sm="6"
-              md="4"
-            >
+            <v-col v-if="user.user_id < 0" cols="12" sm="6" md="4">
               <v-text-field
                 v-model="user.password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -41,42 +25,16 @@
                 @click:append="showPassword = !showPassword"
               />
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
-              <v-text-field
-                v-model="user.fullname"
-                label="Full Name"
-              />
+            <v-col cols="12" sm="6" md="4">
+              <v-text-field v-model="user.fullname" label="Full Name" />
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
-              <v-text-field
-                v-model="user.email"
-                label="E-mail"
-              />
+            <v-col cols="12" sm="6" md="4">
+              <v-text-field v-model="user.email" label="E-mail" />
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
-              <v-select
-                v-model="user.role"
-                :items="roles"
-                label="Role"
-              />
+            <v-col cols="12" sm="6" md="4">
+              <v-select v-model="user.role" :items="roles" label="Role" />
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
+            <v-col cols="12" sm="6" md="4">
               <v-text-field
                 v-model="user.api_key"
                 :append-icon="showApiKey ? 'mdi-eye' : 'mdi-eye-off'"
@@ -92,91 +50,75 @@
       </v-card-text>
 
       <v-card-actions>
-        <template v-if="errorResponseText!==''">
-          <v-icon
-            icon="mdi-alert"
-            medium
-            color="error"
-          />
+        <template v-if="errorResponseText !== ''">
+          <v-icon icon="mdi-alert" medium color="error" />
           <div class="error--text px-2">
             {{ errorResponseText }}
           </div>
         </template>
         <v-spacer />
-        <v-btn
-          color="blue darken-1"
-          text
-          @click="noChange"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          color="blue darken-1"
-          text
-          @click="changed"
-        >
-          Save
-        </v-btn>
+        <v-btn color="blue darken-1" text @click="noChange"> Cancel </v-btn>
+        <v-btn color="blue darken-1" text @click="changed"> Save </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import {ApiMixin} from '@/mixins/ApiMixin';
+import { ApiMixin } from "@/mixins/ApiMixin";
 export default {
   name: "EditUser",
   mixins: [ApiMixin],
-  data () {
+  data() {
     return {
       showDialog: false,
       showApiKey: false,
       showPassword: false,
-      roles: ['admin', 'manager', 'viewer'],
+      roles: ["admin", "manager", "viewer"],
       resolve: null,
       reject: null,
-      user: {}
-    }
+      user: {},
+    };
   },
   computed: {
     formTitle: function () {
-      return this.user.user_id < 0 ? 'New User' : 'Edit User'
-    }
+      return this.user.user_id < 0 ? "New User" : "Edit User";
+    },
   },
   methods: {
     open(orgUser) {
       this.user = orgUser;
-      this.errorResponseText = '';
+      this.errorResponseText = "";
       this.showApiKey = false;
       this.showPassword = false;
       this.showDialog = true;
       return new Promise((resolve, reject) => {
-        this.resolve = resolve
-        this.reject = reject
-      })
+        this.resolve = resolve;
+        this.reject = reject;
+      });
     },
     changed() {
       // Existing users already have an ID
       if (this.user.user_id >= 0) {
-        this.apiRequest('put', `users/${this.user.user_id}`, this.user)
+        this.apiRequest("put", `users/${this.user.user_id}`, this.user)
           .then(() => {
-            this.resolve(true)
-            this.showDialog = false
-           })
-          .catch(() => {})
-      } else {
-        this.apiRequest('post', `users`, this.user)
-          .then(() => {
-            this.resolve(true)
-            this.showDialog = false
+            this.resolve(true);
+            this.showDialog = false;
           })
-          .catch(() => {})
+          .catch(() => {});
+      } else {
+        this.apiRequest("post", `users`, this.user)
+          .then(() => {
+            this.resolve(true);
+            this.showDialog = false;
+          })
+          .catch(() => {});
       }
     },
     noChange() {
-      this.resolve(false)
-      this.showDialog = false
-    }
-  }
-}
+      this.resolve(false);
+      this.showDialog = false;
+    },
+  },
+};
 </script>

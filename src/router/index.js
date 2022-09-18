@@ -1,96 +1,97 @@
-import { createWebHistory, createRouter } from 'vue-router'
-import store from '@/store'
-const TheLayout = () => import('@/layouts/TheLayout')
-const WorldMap = () => import('@/views/WorldMapNative')
-const UserList = () => import('@/views/UserList')
-const DeviceList = () => import('@/views/DeviceList')
-const UserLogin = () => import('@/views/UserLogin')
-const UserLogout = () => import('@/views/UserLogout')
+import { createWebHistory, createRouter } from "vue-router";
+import store from "@/store";
+const TheLayout = () => import("@/layouts/TheLayout");
+const WorldMap = () => import("@/views/WorldMapNative");
+const UserList = () => import("@/views/UserList");
+const DeviceList = () => import("@/views/DeviceList");
+const UserLogin = () => import("@/views/UserLogin");
+const UserLogout = () => import("@/views/UserLogout");
 
 const routes = [
   {
-    path: '',
-    redirect: 'worldmap'
+    path: "",
+    redirect: "worldmap",
   },
   {
-    path: '',
-    name: '',
+    path: "",
+    name: "",
     component: TheLayout,
     children: [
       {
-        path: 'worldmap',
-        name: 'worldmap',
+        path: "worldmap",
+        name: "worldmap",
         component: WorldMap,
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
       },
       {
-        path: 'users',
-        name: 'users',
+        path: "users",
+        name: "users",
         component: UserList,
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
       },
       {
-        path: 'devices',
-        name: 'devices',
+        path: "devices",
+        name: "devices",
         component: DeviceList,
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
       },
-    ]
+    ],
   },
   {
-    path: '/login',
-    name: 'login',
+    path: "/login",
+    name: "login",
     component: UserLogin,
   },
   {
-    path: '/logout',
-    name: 'logout',
+    path: "/logout",
+    name: "logout",
     component: UserLogout,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
     },
   },
   {
-    path: '/:pathMatch(.*)*',
-    redirect: 'worldmap',
+    path: "/:pathMatch(.*)*",
+    redirect: "worldmap",
     meta: {
-      requiresAuth: false
-    }
+      requiresAuth: false,
+    },
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log(`Authorized: ${store.state.authorized}`)
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    console.log(`Authorized: ${store.state.authorized}`);
     // Re-authenticate if a token is present but user not authorized
-    if(store.state.token!=='' && !store.state.authorized) {
-      console.log(`Start re-authorize`)
-      store.dispatch('setUserToken', store.state.token)
+    if (store.state.token !== "" && !store.state.authorized) {
+      console.log(`Start re-authorize`);
+      store
+        .dispatch("setUserToken", store.state.token)
         .then(() => {
           console.log(`Re-authorized`);
           next();
         })
         .catch(() => {
           next({
-            path: "/login"
+            path: "/login",
           });
-        })
-    } else if(store.state.authorized) {
+        });
+    } else if (store.state.authorized) {
       next();
     } else {
       next({
-        path: "/login"
+        path: "/login",
       });
     }
   } else {

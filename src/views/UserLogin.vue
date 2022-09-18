@@ -1,24 +1,10 @@
 <template>
   <v-main>
-    <v-container
-      class="fill-height"
-    >
-      <v-row
-        class="fill-height"
-        justify="center"
-      >
-        <v-col
-          align-self="center"
-          cols="12"
-          sm="8"
-          md="6"
-        >
-          <v-card
-            class="elevation-12"
-          >
-            <v-toolbar
-              color="primary"
-            >
+    <v-container class="fill-height">
+      <v-row class="fill-height" justify="center">
+        <v-col align-self="center" cols="12" sm="8" md="6">
+          <v-card class="elevation-12">
+            <v-toolbar color="primary">
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>
             <v-progress-linear
@@ -29,10 +15,7 @@
               color="primary"
             />
             <v-card-text>
-              <v-form
-                ref="form"
-                v-model="valid"
-              >
+              <v-form ref="form" v-model="valid">
                 <v-text-field
                   v-model="username"
                   label="Username"
@@ -57,22 +40,14 @@
               </v-form>
             </v-card-text>
             <v-card-actions class="px-4">
-              <template v-if="errorResponseText!==''">
-                <v-icon
-                  icon="mdi-alert"
-                  medium
-                  color="error"
-                />
+              <template v-if="errorResponseText !== ''">
+                <v-icon icon="mdi-alert" medium color="error" />
                 <div class="error--text px-2">
                   {{ errorResponseText }}
                 </div>
               </template>
               <v-spacer />
-              <v-btn
-                :disabled="!valid"
-                color="primary"
-                @click="loginUser"
-              >
+              <v-btn :disabled="!valid" color="primary" @click="loginUser">
                 Login
               </v-btn>
             </v-card-actions>
@@ -84,37 +59,37 @@
 </template>
 
 <script>
-  import {ApiMixin} from '@/mixins/ApiMixin'
-  export default {
-    name: "UserLogin",
-    mixins: [ApiMixin],
-    data: () => ({
-      username: "",
-      usernameRules: [
-        v => !!v || 'Username is required',
-      ],
-      password: "",
-      passwordRules: [
-        v => !!v || 'Password is required',
-      ],
-      valid: false
-    }),
-    methods: {
-      loginUser() {
-        if (this.username && this.password) { 
-          this.apiRequest('post', '/login', {"username": this.username, "password": this.password})
-            .then((response) => {
-              console.log(`User token: ${response.data.access_token}`);
-              return this.$store.dispatch('setUserToken', response.data.access_token);
-            })
-            .then(() => {
-              this.$router.push("/worldmap");
-            })
-            .catch(() => {
-            })
-          }
-        }
-        
-    }
-  }
+import { ApiMixin } from "@/mixins/ApiMixin";
+export default {
+  name: "UserLogin",
+  mixins: [ApiMixin],
+  data: () => ({
+    username: "",
+    usernameRules: [(v) => !!v || "Username is required"],
+    password: "",
+    passwordRules: [(v) => !!v || "Password is required"],
+    valid: false,
+  }),
+  methods: {
+    loginUser() {
+      if (this.username && this.password) {
+        this.apiRequest("post", "/login", {
+          username: this.username,
+          password: this.password,
+        })
+          .then((response) => {
+            console.log(`User token: ${response.data.access_token}`);
+            return this.$store.dispatch(
+              "setUserToken",
+              response.data.access_token
+            );
+          })
+          .then(() => {
+            this.$router.push("/worldmap");
+          })
+          .catch(() => {});
+      }
+    },
+  },
+};
 </script>

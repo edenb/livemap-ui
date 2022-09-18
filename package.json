@@ -32,9 +32,12 @@
     "@vue/cli-plugin-eslint": "^5.0.6",
     "@vue/cli-service": "^5.0.6",
     "@vue/compiler-sfc": "^3.2.0",
-    "eslint": "^8.18.0",
-    "eslint-plugin-vue": "^9.1.1",
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.5.1",
     "material-design-icons-iconfont": "^6.7.0",
+    "prettier": "2.7.1",
     "sass": "^1.53.0",
     "sass-loader": "^13.0.2",
     "vue-cli-plugin-vuetify": "~2.5.1",
@@ -47,13 +50,16 @@
     },
     "extends": [
       "plugin:vue/vue3-recommended",
-      "eslint:recommended"
+      "eslint:recommended",
+      "prettier"
     ],
+    "plugins": ["prettier"],
     "rules": {},
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     }
   },
+  "prettier": {},
   "browserslist": [
     "> 1%",
     "last 2 versions"

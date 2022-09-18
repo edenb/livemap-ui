@@ -1,4 +1,4 @@
-import store from '@/store'
+import store from "@/store";
 
 export const SocketMixin = {
   created: function () {
@@ -8,17 +8,17 @@ export const SocketMixin = {
   },
   methods: {
     socketAuth: socketAuth,
-    socketDeAuth: socketDeAuth
+    socketDeAuth: socketDeAuth,
   },
   sockets: {
     connect() {
-      this.$socket.client.emit('token', this.$store.state.token);
+      this.$socket.client.emit("token", this.$store.state.token);
     },
     authenticate() {
-      this.$socket.client.emit('token', this.$store.state.token);
+      this.$socket.client.emit("token", this.$store.state.token);
     },
-  }
-}
+  },
+};
 
 function socketAuth() {
   this.$socket.client.open();

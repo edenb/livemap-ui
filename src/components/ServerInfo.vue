@@ -9,13 +9,15 @@
         {{ info.application.name }}
       </v-card-title>
 
-      <div v-if="info.application.about && info.application.about.length>0">
+      <div v-if="info.application.about && info.application.about.length > 0">
         <v-list-item>
           <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">About</span>
             </v-list-item-title>
-            <v-list-item-subtitle>{{ info.application.about }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{
+              info.application.about
+            }}</v-list-item-subtitle>
           </v-list-item-header>
         </v-list-item>
         <v-divider class="mr-1 mt-4" />
@@ -25,14 +27,8 @@
           <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">Server</span>
-              <transition
-                :duration="1000"
-                name="fade"
-              >
-                <span
-                  v-if="copied[0]"
-                  class="caption green--text"
-                >
+              <transition :duration="1000" name="fade">
+                <span v-if="copied[0]" class="caption green--text">
                   Copied!
                 </span>
               </transition>
@@ -57,14 +53,8 @@
           <v-list-item-header>
             <v-list-item-title>
               <span class="overline mb-1">MQTT broker</span>
-              <transition
-                :duration="1000"
-                name="fade"
-              >
-                <span
-                  v-if="copied[1]"
-                  class="caption green--text"
-                >
+              <transition :duration="1000" name="fade">
+                <span v-if="copied[1]" class="caption green--text">
                   Copied!
                 </span>
               </transition>
@@ -79,9 +69,7 @@
                   @click="copy(info.mqtt.url, 1)"
                 />
               </div>
-              <div>
-                Port: {{ info.mqtt.port }}
-              </div>
+              <div>Port: {{ info.mqtt.port }}</div>
             </v-list-item-subtitle>
           </v-list-item-header>
         </v-list-item>
@@ -93,7 +81,9 @@
             <v-list-item-title>
               <span class="overline mb-1">License</span>
             </v-list-item-title>
-            <v-list-item-subtitle>{{ info.application.license }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{
+              info.application.license
+            }}</v-list-item-subtitle>
           </v-list-item-header>
         </v-list-item>
         <v-divider class="mr-1 mt-4" />
@@ -101,61 +91,54 @@
 
       <v-card-actions class="pt-0">
         <v-spacer />
-        <v-btn
-          color="primary darken-1"
-          text
-          @click="cancel"
-        >
-          OK
-        </v-btn>
+        <v-btn color="primary darken-1" text @click="cancel"> OK </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import {ApiMixin} from '@/mixins/ApiMixin';
-import {getServerUrl} from '@/helpers/axios';
+import { ApiMixin } from "@/mixins/ApiMixin";
+import { getServerUrl } from "@/helpers/axios";
 export default {
   name: "ServerInfo",
   mixins: [ApiMixin],
-  data () {
+  data() {
     return {
       dialog: false,
       resolve: null,
       reject: null,
       info: {},
-      serverUrl: '',
+      serverUrl: "",
       copied: [false, false],
       options: {
-        color: 'primary',
+        color: "primary",
         width: 480,
-        zIndex: 2000
-      }
-    }
+        zIndex: 2000,
+      },
+    };
   },
   methods: {
     open() {
-      this.dialog = true
-      this.serverUrl = getServerUrl()
-      this.apiRequest('get', `server/info`)
-        .then((response) => {
-          this.info = response.data
-          return new Promise((resolve, reject) => {
-            this.resolve = resolve
-            this.reject = reject
-          })
-        })
+      this.dialog = true;
+      this.serverUrl = getServerUrl();
+      this.apiRequest("get", `server/info`).then((response) => {
+        this.info = response.data;
+        return new Promise((resolve, reject) => {
+          this.resolve = resolve;
+          this.reject = reject;
+        });
+      });
     },
     cancel() {
-      this.dialog = false
+      this.dialog = false;
     },
     async copy(clipboardText, copiedIdx) {
       // Use splice to make variable reactive
       this.copied.splice(copiedIdx, copiedIdx + 1, true);
-       await navigator.clipboard.writeText(clipboardText)
+      await navigator.clipboard.writeText(clipboardText);
       this.copied.splice(copiedIdx, copiedIdx + 1, false);
-    }
-  }
-}
+    },
+  },
+};
 </script>
