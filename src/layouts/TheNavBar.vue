@@ -81,21 +81,31 @@ connectionIcon["disconnected"] = {
   tooltip: "No live connection",
 };
 
-import { ApiMixin } from "@/mixins/ApiMixin";
-import { SocketMixin } from "@/mixins/SocketMixin";
+import { inject } from "vue";
 import ServerInfo from "@/components/ServerInfo.vue";
+
 export default {
   name: "TheNavBar",
   components: {
     ServerInfo,
   },
-  mixins: [ApiMixin, SocketMixin],
+  setup() {
+    const connect = inject("connect");
+    const isConnected = inject("isConnected");
+    return {
+      connect,
+      isConnected,
+    };
+  },
   computed: {
     connectionIcon: function () {
-      return this.$socket.connected
+      return this.isConnected
         ? connectionIcon["connected"]
         : connectionIcon["disconnected"];
     },
+  },
+  mounted() {
+    this.connect(this.$store.state.token);
   },
   methods: {
     toggleSidebarLeft() {

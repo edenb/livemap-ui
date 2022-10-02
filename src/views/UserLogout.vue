@@ -3,12 +3,18 @@
 </template>
 
 <script>
-import { SocketMixin } from "@/mixins/SocketMixin";
+import { inject } from "vue";
+
 export default {
   name: "UserLogout",
-  mixins: [SocketMixin],
+  setup() {
+    const disconnect = inject("disconnect");
+    return {
+      disconnect,
+    };
+  },
   created() {
-    this.socketDeAuth();
+    this.disconnect();
     this.$store.dispatch("revokeUserToken");
     this.$store.dispatch("clearLastPositions");
     this.$store.dispatch("clearMapZoom");

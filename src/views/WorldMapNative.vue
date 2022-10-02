@@ -4,8 +4,8 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { ApiMixin } from "@/mixins/ApiMixin";
-import { SocketMixin } from "@/mixins/SocketMixin";
 import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
@@ -18,7 +18,15 @@ export default {
   components: {
     TheSidebarRight,
   },
-  mixins: [ApiMixin, SocketMixin],
+  mixins: [ApiMixin],
+  setup() {
+    const connect = inject("connect");
+    const positionUpdate = inject("positionUpdate");
+    return {
+      connect,
+      positionUpdate,
+    };
+  },
   computed: mapState(["drawerOpen"]),
   watch: {
     drawerOpen: {
@@ -26,6 +34,9 @@ export default {
       handler() {
         this.map.invalidateSize({ pan: false });
       },
+    },
+    positionUpdate(position) {
+      this.updateFromSocket(position);
     },
   },
   created() {
@@ -62,6 +73,7 @@ export default {
     this.emitter.on("open-device-popup", (device_id) => {
       this.openPopup(device_id);
     });
+    this.connect(this.$store.state.token);
   },
   beforeUnmount() {
     if (this.map) {
@@ -359,9 +371,7 @@ export default {
         });
       }
     },
-  },
-  sockets: {
-    positionUpdate(socketPayloadStr) {
+    updateFromSocket(socketPayloadStr) {
       try {
         const dev = JSON.parse(socketPayloadStr).data;
         const popup = this.getPopupText(dev);
