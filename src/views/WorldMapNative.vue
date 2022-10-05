@@ -12,6 +12,7 @@ import L from "leaflet";
 import { ExtraMarkers } from "leaflet-extra-markers";
 import { mapState } from "vuex";
 import TheSidebarRight from "@/layouts/TheSidebarRight";
+import { standardizeColor as sColor } from "@/helpers/colors";
 
 export default {
   name: "WorldMap",
@@ -167,6 +168,7 @@ export default {
           prefix: iconAttr.prefix,
           markerColor: iconAttr.markerColor,
           iconColor: iconAttr.iconColor,
+          svg: true,
         });
         const allMarkers = this.deviceLayer.getLayers();
         let marker = allMarkers.find((e) => e.options.id === id);
@@ -214,14 +216,15 @@ export default {
               markerColor:
                 (geojson.properties &&
                   geojson.properties.marker &&
-                  geojson.properties.marker.markercolor) ||
-                "green",
+                  sColor(geojson.properties.marker.markercolor)) ||
+                sColor("green"),
               iconColor:
                 (geojson.properties &&
                   geojson.properties.marker &&
-                  geojson.properties.marker.iconcolor) ||
-                "white",
+                  sColor(geojson.properties.marker.iconcolor)) ||
+                sColor("white"),
               shape: "circle",
+              svg: true,
             }),
           });
         },
@@ -232,8 +235,8 @@ export default {
               color:
                 (geojson.properties &&
                   geojson.properties.line &&
-                  geojson.properties.line.color) ||
-                "red",
+                  sColor(geojson.properties.line.color)) ||
+                sColor("red"),
               weight:
                 (geojson.properties &&
                   geojson.properties.line &&
@@ -309,19 +312,19 @@ export default {
       // Default marker icon
       let cIcon = "home";
       let cPrefix = "mdi"; // Ignore prefix provided by the device
-      let cMarkerColor = "cyan";
-      let cIconColor = "white";
+      let cMarkerColor = sColor("cyan");
+      let cIconColor = sColor("white");
       let cShape = "circle";
 
       // If loc_type is defined use predefined marker/icon sets
       if (dev.loc_type) {
         if (dev.loc_type === "rec") {
           cIcon = "circle";
-          cMarkerColor = "blue";
+          cMarkerColor = sColor("blue");
         }
         if (dev.loc_type === "now" || dev.loc_type === "left") {
           cIcon = "circle";
-          cMarkerColor = "green";
+          cMarkerColor = sColor("green");
         }
       } else {
         if (dev.loc_attr) {
@@ -329,10 +332,10 @@ export default {
             cIcon = dev.loc_attr.miconname;
           }
           if (dev.loc_attr.mcolor) {
-            cMarkerColor = dev.loc_attr.mcolor;
+            cMarkerColor = sColor(dev.loc_attr.mcolor);
           }
           if (dev.loc_attr.miconcolor) {
-            cIconColor = dev.loc_attr.miconcolor;
+            cIconColor = sColor(dev.loc_attr.miconcolor);
           }
         }
       }
