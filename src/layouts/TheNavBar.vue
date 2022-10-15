@@ -23,19 +23,21 @@
     <v-spacer />
 
     <serverInfo ref="serverInfo" />
-    <v-btn color="white" icon @click="showServerInfo()">
-      <v-icon icon="mdi-information-outline" />
-    </v-btn>
+    <v-btn
+      variant="text"
+      icon="mdi-information-outline"
+      @click="showServerInfo()"
+    />
     <v-menu bottom left origin="top right">
       <template #activator="{ props }">
-        <v-chip class="ma-2" color="white" v-bind="props">
-          <v-avatar left class="ml-0 mr-0">
-            <v-icon icon="mdi-account-circle" />
-          </v-avatar>
-          <span v-if="!$vuetify.display.mobile" class="ml-2">
-            {{ $store.state.user.fullname }}
-          </span>
+        <v-chip
+          v-if="!$vuetify.display.mobile"
+          prepend-icon="mdi-account-circle"
+          v-bind="props"
+        >
+          {{ $store.state.user.fullname }}
         </v-chip>
+        <v-btn v-else variant="text" icon="mdi-account-circle" v-bind="props" />
       </template>
       <v-card>
         <v-toolbar color="secondary" density="compact">
