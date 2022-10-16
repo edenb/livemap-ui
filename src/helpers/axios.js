@@ -17,6 +17,13 @@ export function getServerUrl() {
 }
 
 export default function httpRequest(method, path, data) {
+  let headers = {};
+  if (store.state.token) {
+    headers = {
+      Authorization: "Bearer " + store.state.token,
+    };
+  }
+
   return new Promise((resolve, reject) => {
     Axios(path, {
       method: method,
@@ -24,10 +31,7 @@ export default function httpRequest(method, path, data) {
       data: data,
       timeout: apiConfig.timeout,
       withCredentials: apiConfig.withCredentials,
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + store.state.token,
-      },
+      headers: headers,
     })
       .then((response) => {
         resolve(response);
