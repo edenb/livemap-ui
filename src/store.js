@@ -1,6 +1,6 @@
 //import Vue from 'vue';
 import { createStore } from "vuex";
-import httpRequest from "@/helpers/axios";
+import httpRequest from "@/helpers/axios.js";
 
 //Vue.use(Vuex);
 

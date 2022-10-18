@@ -1,8 +1,8 @@
 export default class ConfigProvider {
   static get CONFIG() {
     return {
-      envServerUrl: "$VUE_APP_SERVER_URL",
-      envApiPath: "$VUE_APP_API_PATH",
+      envServerUrl: "$VITE_SERVER_URL",
+      envApiPath: "$VITE_API_PATH",
     };
   }
 
@@ -17,9 +17,9 @@ export default class ConfigProvider {
       return;
     }
 
-    if (value.startsWith("$VUE_APP_")) {
+    if (value.startsWith("$VITE_")) {
       const envName = value.substr(1);
-      const envValue = process.env[envName];
+      const envValue = import.meta.env[envName];
       if (envValue) {
         return envValue;
       } else {

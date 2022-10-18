@@ -1,11 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
-import store from "@/store";
-const TheLayout = () => import("@/layouts/TheLayout");
-const WorldMap = () => import("@/views/WorldMapNative");
-const UserList = () => import("@/views/UserList");
-const DeviceList = () => import("@/views/DeviceList");
-const UserLogin = () => import("@/views/UserLogin");
-const UserLogout = () => import("@/views/UserLogout");
+import store from "@/store.js";
+const TheLayout = () => import("@/layouts/TheLayout.vue");
+const WorldMap = () => import("@/views/WorldMapNative.vue");
+const UserList = () => import("@/views/UserList.vue");
+const DeviceList = () => import("@/views/DeviceList.vue");
+const UserLogin = () => import("@/views/UserLogin.vue");
+const UserLogout = () => import("@/views/UserLogout.vue");
 
 const routes = [
   {

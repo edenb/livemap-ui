@@ -45,8 +45,8 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin";
-import { SocketMixin } from "@/mixins/SocketMixin";
+import { ApiMixin } from "@/mixins/ApiMixin.js";
+import { SocketMixin } from "@/mixins/SocketMixin.js";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {

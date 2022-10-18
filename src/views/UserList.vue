@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin";
+import { ApiMixin } from "@/mixins/ApiMixin.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import UserListEditUser from "@/components/UserListEditUser.vue";
 import UserListChangePassword from "@/components/UserListChangePassword.vue";

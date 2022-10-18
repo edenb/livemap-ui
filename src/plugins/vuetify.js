@@ -5,8 +5,6 @@ import "vuetify/styles";
 // Vuetify
 import { createVuetify } from "vuetify";
 import { aliases, mdi } from "vuetify/iconsets/mdi";
-import * as components from "vuetify/lib/components";
-import * as directives from "vuetify/lib/directives";
 
 // Colors derived from vuetify/lib/util/colors
 // primary: colors.blueGrey.base,              // #607d8b
@@ -33,8 +31,6 @@ const livemapTheme = {
 };
 
 export default createVuetify({
-  components,
-  directives,
   theme: {
     defaultTheme: "livemapTheme",
     themes: {

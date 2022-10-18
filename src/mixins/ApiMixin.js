@@ -1,4 +1,4 @@
-import httpRequest from "@/helpers/axios";
+import httpRequest from "@/helpers/axios.js";
 
 export const ApiMixin = {
   data() {

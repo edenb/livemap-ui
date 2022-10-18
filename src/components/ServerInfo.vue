@@ -89,8 +89,8 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin";
-import { getServerUrl } from "@/helpers/axios";
+import { ApiMixin } from "@/mixins/ApiMixin.js";
+import { getServerUrl } from "@/helpers/axios.js";
 export default {
   name: "ServerInfo",
   mixins: [ApiMixin],

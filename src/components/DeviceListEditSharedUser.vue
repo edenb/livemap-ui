@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin";
+import { ApiMixin } from "@/mixins/ApiMixin.js";
 export default {
   name: "EditSharedUser",
   mixins: [ApiMixin],

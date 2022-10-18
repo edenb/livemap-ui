@@ -5,14 +5,14 @@
 
 <script>
 import { inject } from "vue";
-import { ApiMixin } from "@/mixins/ApiMixin";
+import { ApiMixin } from "@/mixins/ApiMixin.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
 import { ExtraMarkers } from "leaflet-extra-markers";
 import { mapState } from "vuex";
-import TheSidebarRight from "@/layouts/TheSidebarRight";
-import { standardizeColor as sColor } from "@/helpers/colors";
+import TheSidebarRight from "@/layouts/TheSidebarRight.vue";
+import { standardizeColor as sColor } from "@/helpers/colors.js";
 
 export default {
   name: "WorldMap",

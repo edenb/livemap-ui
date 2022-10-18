@@ -4,9 +4,9 @@ import router from "./router";
 import vuetify from "./plugins/vuetify";
 //import { loadFonts } from './plugins/webfontloader'
 import store from "@/store.js";
-import Configuration from "@/configuration";
+import Configuration from "@/configuration.js";
 import mitt from "mitt";
-import socketio from "@/plugins/socketio";
+import socketio from "@/plugins/socketio.js";
 
 //loadFonts()
 

@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin";
+import { ApiMixin } from "@/mixins/ApiMixin.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import DeviceListEditDevice from "@/components/DeviceListEditDevice.vue";
 import DeviceListEditSharedUser from "@/components/DeviceListEditSharedUser.vue";

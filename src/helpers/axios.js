@@ -1,6 +1,6 @@
 import Axios from "axios";
-import store from "@/store";
-import Configuration from "@/configuration";
+import store from "@/store.js";
+import Configuration from "@/configuration.js";
 
 const serverUrl =
   Configuration.value("envServerUrl") || "http://localhost:3000";
