@@ -46,7 +46,7 @@
         <v-list density="compact">
           <v-list-item>
             <template #prepend>
-              <v-icon>mdi-account</v-icon>
+              <v-icon icon="mdi-account" />
             </template>
             <v-list-item-title>
               {{ $store.state.user.username }}
@@ -55,7 +55,7 @@
           </v-list-item>
           <v-list-item>
             <template #prepend>
-              <v-icon>mdi-account-key</v-icon>
+              <v-icon icon="mdi-account-key" />
             </template>
             <v-list-item-title>
               {{ $store.state.user.role }}
