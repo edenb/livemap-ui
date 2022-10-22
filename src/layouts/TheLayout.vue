@@ -11,13 +11,11 @@
 </template>
 
 <script>
-//import Vue100vh from 'vue-div-100vh';
 import TheNavBar from "@/layouts/TheNavBar.vue";
 import TheSidebarLeft from "@/layouts/TheSidebarLeft.vue";
 export default {
   name: "TheLayout",
   components: {
-    //Vue100vh,
     TheNavBar,
     TheSidebarLeft,
   },
@@ -26,6 +24,8 @@ export default {
 
 <style>
 body {
+  /* 100vh causes problems in Safari so a CSS trick/hack is required */
+  /* See: https://github.com/postcss/postcss-100vh-fix */
   height: 100vh;
 }
 </style>
