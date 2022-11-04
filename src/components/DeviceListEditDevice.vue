@@ -2,10 +2,10 @@
   <v-dialog v-if="device" v-model="showDialog" max-width="500px">
     <v-card>
       <v-card-title>
-        <span class="headline px-3">{{ formTitle }}</span>
+        <span class="text-h5 px-3">{{ formTitle }}</span>
         <v-spacer />
         <template v-if="device.device_id >= 0">
-          <span class="subtitle-1 px-3">Device ID: {{ device.device_id }}</span>
+          <span class="text-subtitle-1 px-3">Device ID: {{ device.device_id }}</span>
         </template>
       </v-card-title>
 
@@ -55,8 +55,8 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" text @click="noChange"> Cancel </v-btn>
-        <v-btn color="blue darken-1" text @click="changed"> Save </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="noChange"> Cancel </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="changed"> Save </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

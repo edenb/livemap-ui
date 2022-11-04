@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-toolbar dark :color="options.color" dense flat>
-        <v-toolbar-title class="white--text">
+        <v-toolbar-title class="text-white">
           {{ title }}
         </v-toolbar-title>
       </v-toolbar>
@@ -27,8 +27,8 @@
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer />
-        <v-btn color="primary darken-1" text @click="agree"> Yes </v-btn>
-        <v-btn color="grey" text @click="cancel"> Cancel </v-btn>
+        <v-btn color="primary-darken-1" variant="text" @click="agree"> Yes </v-btn>
+        <v-btn color="grey" variant="text" @click="cancel"> Cancel </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

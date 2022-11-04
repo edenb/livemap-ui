@@ -34,7 +34,7 @@
               {{ serverUrl }}
               <v-icon
                 icon="mdi-content-copy"
-                small
+                size="small"
                 class="ml-2"
                 @click="copy(serverUrl, 0)"
               />
@@ -58,7 +58,7 @@
               {{ info.mqtt.url }}
               <v-icon
                 icon="mdi-content-copy"
-                small
+                size="small"
                 class="ml-2"
                 @click="copy(info.mqtt.url, 1)"
               />
@@ -82,7 +82,7 @@
 
       <v-card-actions class="pt-0">
         <v-spacer />
-        <v-btn color="primary darken-1" text @click="cancel"> OK </v-btn>
+        <v-btn color="primary-darken-1" variant="text" @click="cancel"> OK </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

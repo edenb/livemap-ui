@@ -28,7 +28,7 @@
       icon="mdi-information-outline"
       @click="showServerInfo()"
     />
-    <v-menu bottom left origin="top right">
+    <v-menu location="bottom" location="left" origin="top right">
       <template #activator="{ props }">
         <v-chip
           v-if="!$vuetify.display.mobile"

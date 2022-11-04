@@ -2,7 +2,7 @@
   <v-dialog v-if="devices" v-model="showDialog" max-width="500px">
     <v-card>
       <v-card-title>
-        <span class="headline">Share / Unshare</span>
+        <span class="text-h5">Share / Unshare</span>
       </v-card-title>
 
       <v-card-text>
@@ -14,7 +14,7 @@
       </v-card-text>
 
       <v-card-title>
-        <span class="headline">Affected devices</span>
+        <span class="text-h5">Affected devices</span>
       </v-card-title>
 
       <v-card-text>
@@ -27,9 +27,9 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" text @click="noChange"> Cancel </v-btn>
-        <v-btn color="blue darken-1" text @click="addUser"> Share </v-btn>
-        <v-btn color="blue darken-1" text @click="removeUser"> Unshare </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="noChange"> Cancel </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="addUser"> Share </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="removeUser"> Unshare </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

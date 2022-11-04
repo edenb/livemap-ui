@@ -41,8 +41,8 @@
             </v-card-text>
             <v-card-actions class="px-4">
               <template v-if="errorResponseText !== ''">
-                <v-icon icon="mdi-alert" medium color="error" />
-                <div class="error--text px-2">
+                <v-icon icon="mdi-alert" size="medium" color="error" />
+                <div class="text-error px-2">
                   {{ errorResponseText }}
                 </div>
               </template>

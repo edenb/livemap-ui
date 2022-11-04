@@ -25,14 +25,14 @@
             hide-details
           />
           <v-spacer />
-          <v-btn color="white" fab dark small icon @click="newItem()">
+          <v-btn color="white" fab dark size="small" icon @click="newItem()">
             <v-icon dark> mdi-plus </v-icon>
           </v-btn>
           <v-btn
             color="white"
             fab
             dark
-            small
+            size="small"
             icon
             :disabled="selectedOwned(selected).length !== 1"
             @click="editItem(selectedOwned(selected)[0])"
@@ -43,7 +43,7 @@
             color="white"
             fab
             dark
-            small
+            size="small"
             icon
             :disabled="selectedOwned(selected).length == 0"
             @click="shareItems(selectedOwned(selected))"
@@ -54,7 +54,7 @@
             color="white"
             fab
             dark
-            small
+            size="small"
             icon
             :disabled="selectedOwned(selected).length == 0"
             @click="deleteItems(selectedOwned(selected))"
@@ -66,7 +66,7 @@
       <template #[`item.actions`]="{ item }">
         <v-icon
           v-if="selectedOwned([item]).length == 1"
-          small
+          size="small"
           class="mr-2"
           @click="editItem(item)"
         >
@@ -74,7 +74,7 @@
         </v-icon>
         <v-icon
           v-if="selectedOwned([item]).length == 1"
-          small
+          size="small"
           class="mr-2"
           @click="shareItems([item])"
         >
@@ -82,7 +82,7 @@
         </v-icon>
         <v-icon
           v-if="selectedOwned([item]).length == 1"
-          small
+          size="small"
           @click="deleteItems([item])"
         >
           mdi-delete

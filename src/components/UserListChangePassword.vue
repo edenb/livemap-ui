@@ -2,12 +2,12 @@
   <v-dialog v-if="user" v-model="showDialog" max-width="500px">
     <v-card>
       <v-card-title>
-        <span class="headline px-3">Reset Password</span>
+        <span class="text-h5 px-3">Reset Password</span>
       </v-card-title>
 
       <v-card-text>
-        <div class="subtitle-1 px-3">User: {{ user.fullname }}</div>
-        <div class="subtitle-1 px-3">Username: {{ user.username }}</div>
+        <div class="text-subtitle-1 px-3">User: {{ user.fullname }}</div>
+        <div class="text-subtitle-1 px-3">Username: {{ user.username }}</div>
         <v-container>
           <v-row>
             <v-col cols="12">
@@ -36,14 +36,14 @@
 
       <v-card-actions>
         <template v-if="errorResponseText !== ''">
-          <v-icon icon="mdi-alert" medium color="error" />
-          <div class="error--text px-2">
+          <v-icon icon="mdi-alert" size="medium" color="error" />
+          <div class="text-error px-2">
             {{ errorResponseText }}
           </div>
         </template>
         <v-spacer />
-        <v-btn color="blue darken-1" text @click="noChange"> Cancel </v-btn>
-        <v-btn color="blue darken-1" text @click="changed"> Save </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="noChange"> Cancel </v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="changed"> Save </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
