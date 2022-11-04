@@ -10,8 +10,6 @@
             <v-progress-linear
               :active="loading"
               :indeterminate="loading"
-              absolute
-              bottom
               color="primary"
             />
             <v-card-text>

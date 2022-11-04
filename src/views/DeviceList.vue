@@ -25,13 +25,11 @@
             hide-details
           />
           <v-spacer />
-          <v-btn color="white" fab dark size="small" icon @click="newItem()">
+          <v-btn color="white" size="small" icon @click="newItem()">
             <v-icon dark> mdi-plus </v-icon>
           </v-btn>
           <v-btn
             color="white"
-            fab
-            dark
             size="small"
             icon
             :disabled="selectedOwned(selected).length !== 1"
@@ -41,8 +39,6 @@
           </v-btn>
           <v-btn
             color="white"
-            fab
-            dark
             size="small"
             icon
             :disabled="selectedOwned(selected).length == 0"
@@ -52,8 +48,6 @@
           </v-btn>
           <v-btn
             color="white"
-            fab
-            dark
             size="small"
             icon
             :disabled="selectedOwned(selected).length == 0"

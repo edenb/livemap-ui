@@ -25,13 +25,11 @@
             hide-details
           />
           <v-spacer />
-          <v-btn color="white" fab dark size="small" icon @click="newItem()">
+          <v-btn color="white" size="small" icon @click="newItem()">
             <v-icon dark> mdi-plus </v-icon>
           </v-btn>
           <v-btn
             color="white"
-            fab
-            dark
             size="small"
             icon
             :disabled="selected.length !== 1"
@@ -41,8 +39,6 @@
           </v-btn>
           <v-btn
             color="white"
-            fab
-            dark
             size="small"
             icon
             :disabled="selected.length !== 1"
@@ -52,8 +48,6 @@
           </v-btn>
           <v-btn
             color="white"
-            fab
-            dark
             size="small"
             icon
             :disabled="
@@ -68,7 +62,9 @@
         </v-toolbar>
       </template>
       <template #[`item.actions`]="{ item }">
-        <v-icon size="small" class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+        <v-icon size="small" class="mr-2" @click="editItem(item)">
+          mdi-pencil
+        </v-icon>
         <v-icon size="small" class="mr-2" @click="editPasswordItem(item)">
           mdi-lock-reset
         </v-icon>
