@@ -20,7 +20,6 @@
       </v-tooltip>
       <span class="hidden-xs-only pl-3">Livemap UI</span>
     </v-toolbar-title>
-    <v-spacer />
 
     <serverInfo ref="serverInfo" />
     <v-btn
