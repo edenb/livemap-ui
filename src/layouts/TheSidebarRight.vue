@@ -10,6 +10,7 @@
       <v-list-item
         v-for="(device, i) in lastPositionsOrdered"
         :key="i"
+        link
         @click="openDevicePopup(device.raw.device_id)"
       >
         <template #prepend>
