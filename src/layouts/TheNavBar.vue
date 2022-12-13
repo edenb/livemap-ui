@@ -5,7 +5,7 @@
     :density="$vuetify.display.mobile ? 'compact' : 'default'"
   >
     <v-app-bar-nav-icon variant="text" @click.stop="toggleSidebarLeft" />
-    <v-toolbar-title>
+    <v-app-bar-title>
       <v-tooltip location="bottom">
         <template #activator="{ props }">
           <v-icon
@@ -18,8 +18,8 @@
         </template>
         <span>{{ connectionIcon.tooltip }}</span>
       </v-tooltip>
-      <span class="hidden-xs-only pl-3">Livemap UI</span>
-    </v-toolbar-title>
+      <span class="hidden-xs-only pl-3">Livemap</span>
+    </v-app-bar-title>
 
     <serverInfo ref="serverInfo" />
     <v-btn
