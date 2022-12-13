@@ -4,7 +4,7 @@
     color="primary"
     :density="$vuetify.display.mobile ? 'compact' : 'default'"
   >
-    <v-app-bar-nav-icon @click.stop="toggleSidebarLeft" />
+    <v-app-bar-nav-icon variant="text" @click.stop="toggleSidebarLeft" />
     <v-toolbar-title>
       <v-tooltip location="bottom">
         <template #activator="{ props }">
@@ -65,7 +65,7 @@
       </v-card>
     </v-menu>
 
-    <v-app-bar-nav-icon @click.stop="toggleSidebarRight" />
+    <v-app-bar-nav-icon variant="text" @click.stop="toggleSidebarRight" />
   </v-app-bar>
 </template>
 
