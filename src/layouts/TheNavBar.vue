@@ -4,7 +4,10 @@
     color="primary"
     :density="$vuetify.display.mobile ? 'compact' : 'default'"
   >
-    <v-app-bar-nav-icon variant="text" @click.stop="toggleSidebarLeft" />
+    <template #prepend>
+      <v-app-bar-nav-icon @click.stop="toggleSidebarLeft"></v-app-bar-nav-icon>
+    </template>
+
     <v-app-bar-title>
       <v-tooltip location="bottom">
         <template #activator="{ props }">
@@ -21,51 +24,57 @@
       <span class="hidden-xs-only pl-3">Livemap</span>
     </v-app-bar-title>
 
-    <serverInfo ref="serverInfo" />
-    <v-btn
-      variant="text"
-      icon="mdi-information-outline"
-      @click="showServerInfo()"
-    />
-    <v-menu>
-      <template #activator="{ props }">
-        <v-chip
-          v-if="!$vuetify.display.mobile"
-          prepend-icon="mdi-account-circle"
-          v-bind="props"
-        >
-          {{ $store.state.user.fullname }}
-        </v-chip>
-        <v-btn v-else variant="text" icon="mdi-account-circle" v-bind="props" />
-      </template>
-      <v-card>
-        <v-toolbar color="secondary" density="compact">
-          <v-toolbar-title>{{ $store.state.user.fullname }}</v-toolbar-title>
-        </v-toolbar>
-        <v-list density="compact">
-          <v-list-item>
-            <template #prepend>
-              <v-icon icon="mdi-account" />
-            </template>
-            <v-list-item-title>
-              {{ $store.state.user.username }}
-            </v-list-item-title>
-            <v-list-item-subtitle> Username </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item>
-            <template #prepend>
-              <v-icon icon="mdi-account-key" />
-            </template>
-            <v-list-item-title>
-              {{ $store.state.user.role }}
-            </v-list-item-title>
-            <v-list-item-subtitle> Permission level </v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-menu>
-
-    <v-app-bar-nav-icon variant="text" @click.stop="toggleSidebarRight" />
+    <template #append>
+      <serverInfo ref="serverInfo" />
+      <v-btn
+        variant="text"
+        icon="mdi-information-outline"
+        @click="showServerInfo()"
+      />
+      <v-menu>
+        <template #activator="{ props }">
+          <v-chip
+            v-if="!$vuetify.display.mobile"
+            prepend-icon="mdi-account-circle"
+            v-bind="props"
+          >
+            {{ $store.state.user.fullname }}
+          </v-chip>
+          <v-btn
+            v-else
+            variant="text"
+            icon="mdi-account-circle"
+            v-bind="props"
+          />
+        </template>
+        <v-card>
+          <v-toolbar color="secondary" density="compact">
+            <v-toolbar-title>{{ $store.state.user.fullname }}</v-toolbar-title>
+          </v-toolbar>
+          <v-list density="compact">
+            <v-list-item>
+              <template #prepend>
+                <v-icon icon="mdi-account" />
+              </template>
+              <v-list-item-title>
+                {{ $store.state.user.username }}
+              </v-list-item-title>
+              <v-list-item-subtitle> Username </v-list-item-subtitle>
+            </v-list-item>
+            <v-list-item>
+              <template #prepend>
+                <v-icon icon="mdi-account-key" />
+              </template>
+              <v-list-item-title>
+                {{ $store.state.user.role }}
+              </v-list-item-title>
+              <v-list-item-subtitle> Permission level </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
+      <v-app-bar-nav-icon @click.stop="toggleSidebarRight" />
+    </template>
   </v-app-bar>
 </template>
 
