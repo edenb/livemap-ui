@@ -99,12 +99,13 @@ export default {
       ],
       search: "",
       newUser: {
+        api_key: "",
+        email: "",
+        fullname: "",
+        password: "",
+        role: "",
         user_id: -1,
         username: "",
-        fullname: "",
-        email: "",
-        role: "manager",
-        password: "",
       },
     };
   },

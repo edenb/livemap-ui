@@ -1,81 +1,180 @@
 <template>
   <v-dialog v-if="user" v-model="showDialog" max-width="800px">
-    <v-card>
-      <v-card-item>
-        <v-card-title>{{ formTitle }}</v-card-title>
-        <v-card-subtitle v-if="user.user_id >= 0">
-          User ID: {{ user.user_id }}
-        </v-card-subtitle>
-      </v-card-item>
-
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="user.username" label="Username" />
-          </v-col>
-          <v-col v-if="user.user_id < 0" cols="12" sm="6">
-            <v-text-field
-              v-model="user.password"
-              :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              :type="showPassword ? 'text' : 'password'"
-              label="Password"
-              class="input-group--focused"
-              @click:append-inner="showPassword = !showPassword"
-            />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="user.fullname" label="Full Name" />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="user.email" label="E-mail" />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-select v-model="user.role" :items="roles" label="Role" />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="user.api_key"
-              :append-inner-icon="showApiKey ? 'mdi-eye' : 'mdi-eye-off'"
-              :type="showApiKey ? 'text' : 'password'"
-              readonly
-              label="API key"
-              class="input-group--focused"
-              @click:append-inner="showApiKey = !showApiKey"
-            />
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-card-actions>
-        <template v-if="errorResponseText !== ''">
-          <v-icon icon="mdi-alert" size="medium" color="error" />
-          <div class="text-error px-2">
-            {{ errorResponseText }}
-          </div>
+    <v-form ref="form" v-model="inputValid" lazy-validation>
+      <v-card class="pa-2">
+        <template #title>
+          {{ formTitle }}
         </template>
-        <v-spacer />
-        <v-btn color="blue-darken-1" variant="text" @click="noChange">
-          Cancel
-        </v-btn>
-        <v-btn color="blue-darken-1" variant="text" @click="changed">
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+        <template v-if="user.user_id >= 0" #subtitle>
+          User ID: {{ user.user_id }}
+        </template>
+        <template #text>
+          <FormRenderer v-model="formData" :form-schema="formSchemaUser" />
+          <FormRenderer
+            v-if="user.user_id < 0"
+            v-model="formData"
+            :form-schema="formSchemaPassword"
+          />
+        </template>
+        <template #actions>
+          <v-card-item>
+            <template v-if="errorResponseText !== ''">
+              <v-icon
+                class="px-2"
+                icon="mdi-alert"
+                size="medium"
+                color="error"
+              />
+              <span class="text-error px-2">
+                {{ errorResponseText }}
+              </span>
+            </template>
+          </v-card-item>
+          <v-spacer />
+          <v-btn color="blue-darken-1" variant="text" @click="noChange">
+            Cancel
+          </v-btn>
+          <v-btn color="blue-darken-1" variant="text" @click="changed">
+            Save
+          </v-btn>
+        </template>
+      </v-card>
+    </v-form>
   </v-dialog>
 </template>
 
 <script>
 import { ApiMixin } from "@/mixins/ApiMixin.js";
+import FormRenderer from "@/components/FormRenderer.vue";
+
+const rules = {
+  required: (v) => !!v || "Field is required",
+  min(minLength) {
+    return (v) => v.length >= minLength || `At least ${minLength} characters`;
+  },
+  zeroOrMin(minLength) {
+    return (v) =>
+      v.length >= minLength ||
+      v.length == 0 ||
+      `Leave empty or at least ${minLength} characters`;
+  },
+  emptyOrEmail: (v) =>
+    /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/.test(
+      v
+    ) ||
+    v.length == 0 ||
+    "E-mail must be valid",
+};
+
+const formSchemaUser = [
+  {
+    label: "Username",
+    type: "FormField",
+    state: "username",
+    colsSm: 6,
+    hint: "At least 4 characters",
+    rules: [rules.required, rules.min(4)],
+    isHidden: false,
+    isPassword: false,
+    isReadonly: false,
+    hasCounter: false,
+    hasHiddenControl: false,
+  },
+  {
+    label: "Role",
+    type: "FormSelect",
+    state: "role",
+    colsSm: 6,
+    hint: "Select role",
+    items: ["admin", "manager", "viewer"],
+    rules: [rules.required],
+    isReadonly: false,
+    hasCounter: false,
+  },
+  {
+    label: "Full Name",
+    type: "FormField",
+    state: "fullname",
+    colsSm: 12,
+    hint: "At least 4 characters",
+    rules: [rules.required, rules.min(4)],
+    isHidden: false,
+    isPassword: false,
+    isReadonly: false,
+    hasCounter: false,
+    hasHiddenControl: false,
+  },
+  {
+    label: "E-mail",
+    type: "FormField",
+    state: "email",
+    colsSm: 12,
+    hint: "Optional mail address",
+    rules: [rules.emptyOrEmail],
+    isHidden: false,
+    isPassword: false,
+    isReadonly: false,
+    hasCounter: false,
+    hasHiddenControl: false,
+  },
+  {
+    label: "API key",
+    type: "FormField",
+    state: "api_key",
+    colsSm: 12,
+    hint: "Leave empty for auto-generated key",
+    rules: [rules.zeroOrMin(8)],
+    isHidden: true,
+    isPassword: true,
+    isReadonly: false,
+    hasCounter: true,
+    hasHiddenControl: true,
+  },
+];
+
+const formSchemaPassword = [
+  {
+    label: "Password",
+    type: "FormField",
+    state: "password",
+    colsSm: 6,
+    hint: "At least 8 characters",
+    rules: [rules.required, rules.min(8)],
+    isHidden: true,
+    isPassword: true,
+    isReadonly: false,
+    hasCounter: true,
+    hasHiddenControl: true,
+  },
+  {
+    label: "Confirm password",
+    type: "FormField",
+    state: "password2",
+    colsSm: 6,
+    hint: "At least 8 characters",
+    rules: [rules.required, rules.min(8)],
+    isHidden: true,
+    isPassword: true,
+    isReadonly: false,
+    hasCounter: true,
+    hasHiddenControl: true,
+  },
+];
+
 export default {
   name: "EditUser",
+  components: {
+    FormRenderer,
+  },
   mixins: [ApiMixin],
+  emits: ["input"],
   data() {
     return {
+      formData: {},
+      formSchemaUser: formSchemaUser,
+      formSchemaPassword: formSchemaPassword,
+      inputValid: false,
       showDialog: false,
-      showApiKey: false,
-      showPassword: false,
-      roles: ["admin", "manager", "viewer"],
       resolve: null,
       reject: null,
       user: {},
@@ -87,33 +186,56 @@ export default {
     },
   },
   methods: {
+    copyObject(from, to, keys) {
+      for (let key of keys) {
+        to[key] = from[key];
+      }
+    },
     open(orgUser) {
       this.user = orgUser;
+      this.formData = orgUser;
       this.errorResponseText = "";
-      this.showApiKey = false;
-      this.showPassword = false;
       this.showDialog = true;
       return new Promise((resolve, reject) => {
         this.resolve = resolve;
         this.reject = reject;
       });
     },
-    changed() {
-      // Existing users already have an ID
-      if (this.user.user_id >= 0) {
-        this.apiRequest("put", `users/${this.user.user_id}`, this.user)
-          .then(() => {
-            this.resolve(true);
-            this.showDialog = false;
-          })
-          .catch(() => {});
-      } else {
-        this.apiRequest("post", `users`, this.user)
-          .then(() => {
-            this.resolve(true);
-            this.showDialog = false;
-          })
-          .catch(() => {});
+    async changed() {
+      this.errorResponseText = "";
+      let formValid = true;
+      await this.$refs.form.validate();
+      if (this.formData.password !== this.formData.password2) {
+        this.errorResponseText = "Passwords should match";
+        formValid = false;
+      }
+
+      if (this.inputValid && formValid) {
+        // Copy form data to user object (only form data states that exist in the user object)
+        this.copyObject(this.formData, this.user, [
+          "api_key",
+          "email",
+          "fullname",
+          "role",
+          "user_id",
+          "username",
+        ]);
+        // Existing users already have an ID
+        if (this.user.user_id >= 0) {
+          this.apiRequest("put", `users/${this.user.user_id}`, this.user)
+            .then(() => {
+              this.resolve(true);
+              this.showDialog = false;
+            })
+            .catch(() => {});
+        } else {
+          this.apiRequest("post", `users`, this.user)
+            .then(() => {
+              this.resolve(true);
+              this.showDialog = false;
+            })
+            .catch(() => {});
+        }
       }
     },
     noChange() {
