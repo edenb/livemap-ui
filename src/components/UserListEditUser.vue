@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-if="user" v-model="showDialog" max-width="800px">
     <v-form ref="form" v-model="inputValid" lazy-validation>
-      <v-card class="pa-2">
+      <v-card class="pa-4">
         <template #title>
-          {{ formTitle }}
+          <span class="text-h5">{{ formTitle }}</span>
         </template>
         <template v-if="user.user_id >= 0" #subtitle>
           User ID: {{ user.user_id }}

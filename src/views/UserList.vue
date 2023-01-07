@@ -1,17 +1,19 @@
+<!-- eslint-disable vuetify/no-deprecated-components -->
 <template>
   <v-container fluid pa-3>
-    <v-table
+    <v-data-table
       v-model="selected"
+      density="compact"
       :headers="headers"
+      item-value="user_id"
       :items="allUsers"
       :search="search"
-      item-key="user_id"
-      :sort-by="['fullname']"
+      :sort-by="[{ key: 'fullname', order: 'asc' }]"
       show-select
       class="elevation-1"
     >
       <template #top>
-        <v-toolbar flat dense color="secondary" dark>
+        <v-toolbar density="compact" color="secondary">
           <ConfirmDialog ref="confirm" />
           <UserListEditUser ref="editUser" />
           <UserListChangePassword ref="editPassword" />
@@ -20,57 +22,58 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            density="compact"
+            hide-details
             label="Search"
             single-line
-            hide-details
           />
           <v-spacer />
-          <v-btn color="white" size="small" icon @click="newItem()">
-            <v-icon dark> mdi-plus </v-icon>
-          </v-btn>
+          <v-btn icon="mdi-plus" @click="newItem()" />
           <v-btn
-            color="white"
-            size="small"
-            icon
             :disabled="selected.length !== 1"
-            @click="editItem(selected[0])"
-          >
-            <v-icon dark> mdi-pencil </v-icon>
-          </v-btn>
+            icon="mdi-pencil"
+            @click="editItem(allUsers.find((e) => e.user_id === selected[0]))"
+          />
           <v-btn
-            color="white"
-            size="small"
-            icon
             :disabled="selected.length !== 1"
-            @click="editPasswordItem(selected[0])"
-          >
-            <v-icon dark> mdi-lock-reset </v-icon>
-          </v-btn>
+            icon="mdi-lock-reset"
+            @click="
+              editPasswordItem(allUsers.find((e) => e.user_id === selected[0]))
+            "
+          />
           <v-btn
-            color="white"
-            size="small"
-            icon
             :disabled="
               selected.length !== 1 ||
-              (selected.length == 1 &&
-                selected[0].user_id == $store.state.user.user_id)
+              (selected.length === 1 &&
+                selected[0] === $store.state.user.user_id)
             "
-            @click="deleteItem(selected[0])"
-          >
-            <v-icon dark> mdi-delete </v-icon>
-          </v-btn>
+            icon="mdi-delete"
+            @click="deleteItem(allUsers.find((e) => e.user_id === selected[0]))"
+          />
         </v-toolbar>
       </template>
-      <template #[`item.actions`]="{ item }">
-        <v-icon size="small" class="mr-2" @click="editItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon size="small" class="mr-2" @click="editPasswordItem(item)">
-          mdi-lock-reset
-        </v-icon>
-        <v-icon size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
+      <template #item.actions="{ item }">
+        <v-btn
+          icon="mdi-pencil"
+          size="small"
+          variant="plain"
+          @click="editItem(item.raw)"
+        />
+        <v-btn
+          icon="mdi-lock-reset"
+          size="small"
+          variant="plain"
+          @click="editPasswordItem(item.raw)"
+        />
+        <v-btn
+          :disabled="item.raw.user_id === $store.state.user.user_id"
+          icon="mdi-delete"
+          size="small"
+          variant="plain"
+          @click="deleteItem(item.raw)"
+        />
       </template>
-    </v-table>
+    </v-data-table>
   </v-container>
 </template>
 
@@ -92,24 +95,24 @@ export default {
       allUsers: [],
       selected: [],
       headers: [
-        { text: "Full Name", value: "fullname" },
-        { text: "Username", value: "username" },
-        { text: "Role", value: "role" },
-        { text: "Actions", value: "actions", sortable: false },
+        { title: "Full Name", key: "fullname" },
+        { title: "Username", key: "username" },
+        { title: "Role", key: "role" },
+        { title: "Actions", key: "actions", sortable: false },
       ],
       search: "",
-      newUser: {
-        api_key: "",
-        email: "",
-        fullname: "",
-        password: "",
-        role: "",
-        user_id: -1,
-        username: "",
-      },
     };
   },
   created() {
+    this.newUser = {
+      api_key: "",
+      email: "",
+      fullname: "",
+      password: "",
+      role: "",
+      user_id: -1,
+      username: "",
+    };
     this.loadTable();
   },
   methods: {
@@ -117,20 +120,10 @@ export default {
       this.apiRequest("get", `users`)
         .then((response) => {
           this.allUsers = response.data;
-          this.selected = this.updateSelected(this.allUsers, this.selected);
         })
         .catch(() => {
           // Ignore failed (re)loads
         });
-    },
-    updateSelected(users, selected) {
-      let newSelected = [];
-      for (let user of selected) {
-        if (users.find((el) => el.user_id === user.user_id)) {
-          newSelected.push(user);
-        }
-      }
-      return newSelected;
     },
     editItem(item) {
       this.showDialogUser(item);

@@ -5,6 +5,7 @@ import "vuetify/styles";
 // Vuetify
 import { createVuetify } from "vuetify";
 import { aliases, mdi } from "vuetify/iconsets/mdi";
+import { VDataTable } from "vuetify/labs/VDataTable";
 
 // Colors derived from vuetify/lib/util/colors
 // primary: colors.blueGrey.base,              // #607d8b
@@ -31,6 +32,9 @@ const livemapTheme = {
 };
 
 export default createVuetify({
+  components: {
+    VDataTable,
+  },
   theme: {
     defaultTheme: "livemapTheme",
     themes: {

@@ -76,7 +76,7 @@ export default {
     options: {
       color: "primary",
       width: 290,
-      zIndex: 200,
+      zIndex: 1200,
     },
   }),
   methods: {
