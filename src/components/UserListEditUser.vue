@@ -9,11 +9,11 @@
           User ID: {{ user.user_id }}
         </template>
         <template #text>
-          <FormRenderer v-model="formData" :form-schema="formSchemaUser" />
+          <FormRenderer v-model="formData" :form-schema="schemaUser" />
           <FormRenderer
             v-if="user.user_id < 0"
             v-model="formData"
-            :form-schema="formSchemaPassword"
+            :form-schema="schemaPassword"
           />
         </template>
         <template #actions>
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { computed, ref } from "vue";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 
@@ -168,22 +169,29 @@ export default {
   },
   mixins: [ApiMixin],
   emits: ["input"],
-  data() {
+  setup() {
+    const formData = ref({});
+    const inputValid = ref(false);
+    const schemaPassword = formSchemaPassword;
+    const schemaUser = formSchemaUser;
+    const showDialog = ref(false);
+    const resolve = ref(null);
+    const reject = ref(null);
+    const user = ref({});
+    const formTitle = computed(() => {
+      return user.value.user_id < 0 ? "New User" : "Edit User";
+    });
     return {
-      formData: {},
-      formSchemaUser: formSchemaUser,
-      formSchemaPassword: formSchemaPassword,
-      inputValid: false,
-      showDialog: false,
-      resolve: null,
-      reject: null,
-      user: {},
+      formData,
+      inputValid,
+      schemaPassword,
+      schemaUser,
+      showDialog,
+      reject,
+      resolve,
+      user,
+      formTitle,
     };
-  },
-  computed: {
-    formTitle: function () {
-      return this.user.user_id < 0 ? "New User" : "Edit User";
-    },
   },
   methods: {
     copyObject(from, to, keys) {
