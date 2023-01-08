@@ -93,17 +93,17 @@ export default {
   data() {
     return {
       allUsers: [],
-      selected: [],
-      headers: [
-        { title: "Full Name", key: "fullname" },
-        { title: "Username", key: "username" },
-        { title: "Role", key: "role" },
-        { title: "Actions", key: "actions", sortable: false },
-      ],
       search: "",
+      selected: [],
     };
   },
   created() {
+    this.headers = [
+      { title: "Full Name", key: "fullname" },
+      { title: "Username", key: "username" },
+      { title: "Role", key: "role" },
+      { title: "Actions", key: "actions", sortable: false },
+    ];
     this.newUser = {
       api_key: "",
       email: "",
