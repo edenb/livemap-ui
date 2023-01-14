@@ -1,17 +1,19 @@
+<!-- eslint-disable vuetify/no-deprecated-components -->
 <template>
   <v-container fluid pa-3>
-    <v-table
+    <v-data-table
       v-model="selected"
+      density="compact"
       :headers="headers"
+      item-value="device_id"
       :items="allDevices"
       :search="search"
-      item-key="device_id"
-      :sort-by="['alias']"
+      :sort-by="[{ key: 'alias', order: 'asc' }]"
       show-select
       class="elevation-1"
     >
       <template #top>
-        <v-toolbar flat dense color="secondary" dark>
+        <v-toolbar density="compact" color="secondary">
           <ConfirmDialog ref="confirm" />
           <DeviceListEditDevice ref="editDevice" />
           <DeviceListEditSharedUser ref="editSharedUser" />
@@ -20,83 +22,73 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            density="compact"
+            hide-details
             label="Search"
             single-line
-            hide-details
           />
           <v-spacer />
-          <v-btn color="white" size="small" icon @click="newItem()">
-            <v-icon dark> mdi-plus </v-icon>
-          </v-btn>
+          <v-btn icon="mdi-plus" @click="newItem()" />
           <v-btn
-            color="white"
-            size="small"
-            icon
             :disabled="selectedOwned(selected).length !== 1"
+            icon="mdi-pencil"
             @click="editItem(selectedOwned(selected)[0])"
-          >
-            <v-icon dark> mdi-pencil </v-icon>
-          </v-btn>
+          />
           <v-btn
-            color="white"
-            size="small"
-            icon
             :disabled="selectedOwned(selected).length == 0"
+            icon="mdi-share-all"
             @click="shareItems(selectedOwned(selected))"
-          >
-            <v-icon dark> mdi-share-all </v-icon>
-          </v-btn>
+          />
           <v-btn
-            color="white"
-            size="small"
-            icon
             :disabled="selectedOwned(selected).length == 0"
+            icon="mdi-delete"
             @click="deleteItems(selectedOwned(selected))"
-          >
-            <v-icon dark> mdi-delete </v-icon>
-          </v-btn>
+          />
         </v-toolbar>
       </template>
-      <template #[`item.actions`]="{ item }">
-        <v-icon
-          v-if="selectedOwned([item]).length == 1"
+      <template #item.actions="{ item }">
+        <v-btn
+          v-if="item.raw.api_key === $store.state.user.api_key"
+          icon="mdi-pencil"
           size="small"
-          class="mr-2"
-          @click="editItem(item)"
-        >
-          mdi-pencil
-        </v-icon>
-        <v-icon
-          v-if="selectedOwned([item]).length == 1"
+          variant="plain"
+          @click="editItem(item.raw)"
+        />
+        <v-btn
+          v-if="item.raw.api_key === $store.state.user.api_key"
+          icon="mdi-share-all"
           size="small"
-          class="mr-2"
-          @click="shareItems([item])"
-        >
-          mdi-share-all
-        </v-icon>
-        <v-icon
-          v-if="selectedOwned([item]).length == 1"
+          variant="plain"
+          @click="shareItems([item.raw])"
+        />
+        <v-btn
+          v-if="item.raw.api_key === $store.state.user.api_key"
+          icon="mdi-delete"
           size="small"
-          @click="deleteItems([item])"
-        >
-          mdi-delete
-        </v-icon>
+          variant="plain"
+          @click="deleteItems([item.raw])"
+        />
       </template>
-      <template #[`item.shared`]="{ item }">
-        <v-chip-group v-if="item.shared" multiple max="0" column>
+      <template #item.shared="{ item }">
+        <div
+          v-if="
+            item.raw.shared &&
+            item.raw.shared[0] != null &&
+            item.raw.shared.length > 0
+          "
+        >
           <v-chip
-            v-for="sharedUser in item.shared"
-            v-show="typeof sharedUser === 'string'"
+            v-for="sharedUser in item.raw.shared"
             :key="sharedUser"
-            dark
+            class="ma-1"
             :color="getColor(sharedUser)"
+            :model-value="true"
           >
-            <!-- Removed from v-chip :small="$vuetify.breakpoint.mobile" -->
             {{ sharedUser }}
           </v-chip>
-        </v-chip-group>
+        </div>
       </template>
-    </v-table>
+    </v-data-table>
   </v-container>
 </template>
 
@@ -116,26 +108,26 @@ export default {
   data() {
     return {
       allDevices: [],
-      selected: [],
-      headers: [
-        { text: "Name", value: "alias" },
-        { text: "Owner", value: "owner" },
-        { text: "Shared With", value: "shared" },
-        { text: "Actions", value: "actions", sortable: false },
-      ],
       search: "",
-      newDevice: {
-        device_id: -1,
-        alias: "",
-        identifier: "",
-        api_key: this.$store.state.user.api_key,
-        fixed_loc_lat: null,
-        fixed_loc_lon: null,
-      },
+      selected: [],
       usernameColors: [],
     };
   },
   created() {
+    this.headers = [
+      { title: "Name", key: "alias" },
+      { title: "Owner", key: "owner" },
+      { title: "Shared With", key: "shared" },
+      { title: "Actions", key: "actions", sortable: false },
+    ];
+    this.newDevice = {
+      device_id: -1,
+      alias: "",
+      identifier: "",
+      api_key: this.$store.state.user.api_key,
+      fixed_loc_lat: "",
+      fixed_loc_lon: "",
+    };
     this.loadTable();
   },
   methods: {
@@ -143,9 +135,9 @@ export default {
       this.apiRequest("get", `users/${this.$store.state.user.user_id}/devices`)
         .then((response) => {
           this.allDevices = response.data;
-          this.allDevices.forEach((el) => {
-            if (el.shared) {
-              el.shared.sort();
+          this.allDevices.forEach((e) => {
+            if (e.shared) {
+              e.shared.sort();
             }
           });
         })
@@ -224,9 +216,13 @@ export default {
       }
       return colors[i % colors.length];
     },
-    selectedOwned(devices) {
-      return devices.filter((el) => {
-        return el.api_key && el.api_key === this.$store.state.user.api_key;
+    selectedOwned(ids) {
+      return this.allDevices.filter((e) => {
+        return (
+          ids.includes(e.device_id) &&
+          e.api_key &&
+          e.api_key === this.$store.state.user.api_key
+        );
       });
     },
   },
