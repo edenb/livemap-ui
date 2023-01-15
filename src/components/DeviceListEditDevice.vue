@@ -227,18 +227,20 @@ export default {
           )
             .then(() => {
               this.resolve(true);
-            })
-            .catch((err) => {
-              // Only throw an error on server errors
-              if (err.response.status >= 500) {
-                this.reject(true);
-              } else {
-                this.resolve(false);
-              }
-            })
-            .finally(() => {
               this.showDialog = false;
-            });
+            })
+            .catch(() => {});
+          // .catch((err) => {
+          //   // Only throw an error on server errors
+          //   if (err.response.status >= 500) {
+          //     this.reject(true);
+          //   } else {
+          //     this.resolve(false);
+          //   }
+          // })
+          // .finally(() => {
+          //   this.showDialog = false;
+          // });
         } else {
           let addedDevice = {};
           this.copyObject(this.formData, addedDevice, [
@@ -254,18 +256,20 @@ export default {
           )
             .then(() => {
               this.resolve(true);
-            })
-            .catch((err) => {
-              // Only throw an error on server errors
-              if (err.response.status >= 500) {
-                this.reject(true);
-              } else {
-                this.resolve(false);
-              }
-            })
-            .finally(() => {
               this.showDialog = false;
-            });
+            })
+            .catch(() => {});
+          // .catch((err) => {
+          //   // Only throw an error on server errors
+          //   if (err.response.status >= 500) {
+          //     this.reject(true);
+          //   } else {
+          //     this.resolve(false);
+          //   }
+          // })
+          // .finally(() => {
+          //   this.showDialog = false;
+          // });
         }
       }
     },
