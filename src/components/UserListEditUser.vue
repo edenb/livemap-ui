@@ -201,7 +201,7 @@ export default {
     },
     open(orgUser) {
       this.user = orgUser;
-      this.formData = orgUser;
+      this.formData = { ...orgUser };
       this.errorResponseText = "";
       this.showDialog = true;
       return new Promise((resolve, reject) => {
@@ -211,33 +211,43 @@ export default {
     },
     async changed() {
       this.errorResponseText = "";
-      let formValid = true;
       await this.$refs.form.validate();
+
+      let formValid = true;
       if (this.formData.password !== this.formData.password2) {
         this.errorResponseText = "Passwords should match";
         formValid = false;
       }
 
       if (this.inputValid && formValid) {
-        // Copy form data to user object (only form data states that exist in the user object)
-        this.copyObject(this.formData, this.user, [
-          "api_key",
-          "email",
-          "fullname",
-          "role",
-          "user_id",
-          "username",
-        ]);
         // Existing users already have an ID
-        if (this.user.user_id >= 0) {
-          this.apiRequest("put", `users/${this.user.user_id}`, this.user)
+        if (this.formData.user_id >= 0) {
+          let modifiedUser = {};
+          this.copyObject(this.formData, modifiedUser, [
+            "api_key",
+            "email",
+            "fullname",
+            "role",
+            "user_id",
+            "username",
+          ]);
+          this.apiRequest("put", `users/${modifiedUser.user_id}`, modifiedUser)
             .then(() => {
               this.resolve(true);
               this.showDialog = false;
             })
             .catch(() => {});
         } else {
-          this.apiRequest("post", `users`, this.user)
+          let AddedUser = {};
+          this.copyObject(this.formData, AddedUser, [
+            "api_key",
+            "email",
+            "fullname",
+            "password",
+            "role",
+            "username",
+          ]);
+          this.apiRequest("post", `users`, AddedUser)
             .then(() => {
               this.resolve(true);
               this.showDialog = false;

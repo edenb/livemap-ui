@@ -202,21 +202,28 @@ export default {
       this.errorResponseText = "";
       await this.$refs.form.validate();
 
+      // For inputs that require numbers convert form strings
+      this.formData.fixed_loc_lat = this.convertToNumber(
+        this.formData.fixed_loc_lat
+      );
+      this.formData.fixed_loc_lon = this.convertToNumber(
+        this.formData.fixed_loc_lon
+      );
+
       if (this.inputValid) {
-        this.copyObject(this.formData, this.device, [
-          "alias",
-          "api_key",
-          "device_id",
-          "fixed_loc_lat",
-          "fixed_loc_lon",
-          "identifier",
-        ]);
         // Existing devices already have an ID
-        if (this.device.device_id >= 0) {
+        if (this.formData.device_id >= 0) {
+          let modifiedDevice = {};
+          this.copyObject(this.formData, modifiedDevice, [
+            "alias",
+            "device_id",
+            "fixed_loc_lat",
+            "fixed_loc_lon",
+          ]);
           this.apiRequest(
             "put",
-            `users/${this.$store.state.user.user_id}/devices/${this.device.device_id}`,
-            this.device
+            `users/${this.$store.state.user.user_id}/devices/${modifiedDevice.device_id}`,
+            modifiedDevice
           )
             .then(() => {
               this.resolve(true);
@@ -233,10 +240,17 @@ export default {
               this.showDialog = false;
             });
         } else {
+          let addedDevice = {};
+          this.copyObject(this.formData, addedDevice, [
+            "alias",
+            "fixed_loc_lat",
+            "fixed_loc_lon",
+            "identifier",
+          ]);
           this.apiRequest(
             "post",
             `users/${this.$store.state.user.user_id}/devices`,
-            this.device
+            addedDevice
           )
             .then(() => {
               this.resolve(true);
