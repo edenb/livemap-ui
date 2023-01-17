@@ -1,118 +1,163 @@
 <template>
   <v-dialog v-if="devices" v-model="showDialog" max-width="500px">
-    <v-card>
-      <v-card-title>
-        <span class="text-h5">Share / Unshare</span>
-      </v-card-title>
-
-      <v-card-text>
-        <v-row dense>
-          <v-col cols="12" sm="6" md="4">
-            <v-text-field v-model="username" label="Username" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-card-title>
-        <span class="text-h5">Affected devices</span>
-      </v-card-title>
-
-      <v-card-text>
-        <v-chip-group column>
-          <v-chip v-for="device in devices" :key="device">
+    <v-form ref="form" v-model="inputValid" lazy-validation>
+      <v-card class="pa-4">
+        <template #title>
+          <span class="text-h5">Share / Unshare</span>
+        </template>
+        <template #text>
+          <FormRenderer v-model="formData" :form-schema="schemaUsername" />
+        </template>
+        <v-card-text>
+          <div class="text-h5">Affected devices</div>
+          <v-chip
+            v-for="device in devices"
+            :key="device"
+            class="ma-1"
+            :model-value="true"
+          >
             {{ device.alias }}
           </v-chip>
-        </v-chip-group>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn color="blue-darken-1" variant="text" @click="noChange">
-          Cancel
-        </v-btn>
-        <v-btn color="blue-darken-1" variant="text" @click="addUser">
-          Share
-        </v-btn>
-        <v-btn color="blue-darken-1" variant="text" @click="removeUser">
-          Unshare
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+        </v-card-text>
+        <template #actions>
+          <v-card-item>
+            <template v-if="errorResponseText !== ''">
+              <v-icon
+                class="px-2"
+                icon="mdi-alert"
+                size="medium"
+                color="error"
+              />
+              <span class="text-error px-2">
+                {{ errorResponseText }}
+              </span>
+            </template>
+          </v-card-item>
+          <v-spacer />
+          <v-btn color="blue-darken-1" variant="text" @click="noChange">
+            Cancel
+          </v-btn>
+          <v-btn color="blue-darken-1" variant="text" @click="addUser">
+            Share
+          </v-btn>
+          <v-btn color="blue-darken-1" variant="text" @click="removeUser">
+            Unshare
+          </v-btn>
+        </template>
+      </v-card>
+    </v-form>
   </v-dialog>
 </template>
 
 <script>
+import { ref } from "vue";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
+import FormRenderer from "@/components/FormRenderer.vue";
+
+const formSchemaUsername = [
+  {
+    label: "Username",
+    type: "FormField",
+    state: "username",
+    colsSm: 12,
+    hint: "User to share or unshare the affected devices with",
+    rules: [],
+    isHidden: false,
+    isPassword: false,
+    isReadonly: false,
+    hasCounter: false,
+    hasHiddenControl: false,
+  },
+];
+
 export default {
   name: "EditSharedUser",
+  components: {
+    FormRenderer,
+  },
   mixins: [ApiMixin],
-  data() {
+  setup() {
+    const devices = ref([]);
+    const formData = ref({});
+    const inputValid = ref(false);
+    const schemaUsername = formSchemaUsername;
+    const showDialog = ref(false);
+    const resolve = ref(null);
+    const reject = ref(null);
+    const username = ref("");
     return {
-      showDialog: false,
-      resolve: null,
-      reject: null,
-      devices: [],
-      username: "",
+      devices,
+      formData,
+      inputValid,
+      schemaUsername,
+      showDialog,
+      reject,
+      resolve,
+      username,
     };
   },
   methods: {
+    copyObject(from, to, keys) {
+      for (let key of keys) {
+        to[key] = from[key];
+      }
+    },
     open(devices) {
       this.devices = devices;
+      this.errorResponseText = "";
       this.showDialog = true;
       return new Promise((resolve, reject) => {
         this.resolve = resolve;
         this.reject = reject;
       });
     },
-    addUser() {
-      let deviceIdList = [];
-      for (let item of this.devices) {
-        deviceIdList.push(item.device_id);
+    async addUser() {
+      this.errorResponseText = "";
+      await this.$refs.form.validate();
+
+      if (this.inputValid) {
+        let sharedUser = {};
+        this.copyObject(this.formData, sharedUser, ["username"]);
+
+        let deviceIdList = [];
+        for (let item of this.devices) {
+          deviceIdList.push(item.device_id);
+        }
+        this.apiRequest(
+          "post",
+          `users/${this.$store.state.user.user_id}/devices/${deviceIdList}/shareduser`,
+          sharedUser
+        )
+          .then(() => {
+            this.resolve(true);
+            this.showDialog = false;
+          })
+          .catch(() => {});
       }
-      this.apiRequest(
-        "post",
-        `users/${this.$store.state.user.user_id}/devices/${deviceIdList}/shareduser`,
-        { username: this.username }
-      )
-        .then(() => {
-          this.resolve(true);
-        })
-        .catch((err) => {
-          // Only throw an error on server errors
-          if (err.response.status >= 500) {
-            this.reject(true);
-          } else {
-            this.resolve(false);
-          }
-        })
-        .finally(() => {
-          this.showDialog = false;
-        });
     },
-    removeUser() {
-      let deviceIdList = [];
-      for (let item of this.devices) {
-        deviceIdList.push(item.device_id);
+    async removeUser() {
+      this.errorResponseText = "";
+      await this.$refs.form.validate();
+
+      if (this.inputValid) {
+        let unsharedUser = {};
+        this.copyObject(this.formData, unsharedUser, ["username"]);
+
+        let deviceIdList = [];
+        for (let item of this.devices) {
+          deviceIdList.push(item.device_id);
+        }
+        this.apiRequest(
+          "delete",
+          `users/${this.$store.state.user.user_id}/devices/${deviceIdList}/shareduser`,
+          unsharedUser
+        )
+          .then(() => {
+            this.resolve(true);
+            this.showDialog = false;
+          })
+          .catch(() => {});
       }
-      this.apiRequest(
-        "delete",
-        `users/${this.$store.state.user.user_id}/devices/${deviceIdList}/shareduser`,
-        { username: this.username }
-      )
-        .then(() => {
-          this.resolve(true);
-        })
-        .catch((err) => {
-          // Only throw an error on server errors
-          if (err.response.status >= 500) {
-            this.reject(true);
-          } else {
-            this.resolve(false);
-          }
-        })
-        .finally(() => {
-          this.showDialog = false;
-        });
     },
     noChange() {
       this.resolve(false);
