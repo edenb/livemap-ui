@@ -199,9 +199,9 @@ export default {
         to[key] = from[key];
       }
     },
-    open(orgUser) {
-      this.user = orgUser;
-      this.formData = { ...orgUser };
+    open(user) {
+      this.user = user;
+      this.formData = { ...user };
       this.errorResponseText = "";
       this.showDialog = true;
       return new Promise((resolve, reject) => {

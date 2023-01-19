@@ -180,9 +180,9 @@ export default {
     };
   },
   methods: {
-    open(orgDevice) {
-      this.device = orgDevice;
-      this.formData = { ...orgDevice };
+    open(device) {
+      this.device = device;
+      this.formData = { ...device };
       // Form accepts only strings
       this.formData.fixed_loc_lat = this.convertToString(
         this.formData.fixed_loc_lat
@@ -202,14 +202,6 @@ export default {
       this.errorResponseText = "";
       await this.$refs.form.validate();
 
-      // For inputs that require numbers convert form strings
-      this.formData.fixed_loc_lat = this.convertToNumber(
-        this.formData.fixed_loc_lat
-      );
-      this.formData.fixed_loc_lon = this.convertToNumber(
-        this.formData.fixed_loc_lon
-      );
-
       if (this.inputValid) {
         // Existing devices already have an ID
         if (this.formData.device_id >= 0) {
@@ -220,6 +212,13 @@ export default {
             "fixed_loc_lat",
             "fixed_loc_lon",
           ]);
+          // For inputs that require numbers convert form strings
+          modifiedDevice.fixed_loc_lat = this.convertToNumber(
+            modifiedDevice.fixed_loc_lat
+          );
+          modifiedDevice.fixed_loc_lon = this.convertToNumber(
+            modifiedDevice.fixed_loc_lon
+          );
           this.apiRequest(
             "put",
             `users/${this.$store.state.user.user_id}/devices/${modifiedDevice.device_id}`,
@@ -230,17 +229,6 @@ export default {
               this.showDialog = false;
             })
             .catch(() => {});
-          // .catch((err) => {
-          //   // Only throw an error on server errors
-          //   if (err.response.status >= 500) {
-          //     this.reject(true);
-          //   } else {
-          //     this.resolve(false);
-          //   }
-          // })
-          // .finally(() => {
-          //   this.showDialog = false;
-          // });
         } else {
           let addedDevice = {};
           this.copyObject(this.formData, addedDevice, [
@@ -249,6 +237,13 @@ export default {
             "fixed_loc_lon",
             "identifier",
           ]);
+          // For inputs that require numbers convert form strings
+          addedDevice.fixed_loc_lat = this.convertToNumber(
+            addedDevice.fixed_loc_lat
+          );
+          addedDevice.fixed_loc_lon = this.convertToNumber(
+            addedDevice.fixed_loc_lon
+          );
           this.apiRequest(
             "post",
             `users/${this.$store.state.user.user_id}/devices`,
@@ -259,17 +254,6 @@ export default {
               this.showDialog = false;
             })
             .catch(() => {});
-          // .catch((err) => {
-          //   // Only throw an error on server errors
-          //   if (err.response.status >= 500) {
-          //     this.reject(true);
-          //   } else {
-          //     this.resolve(false);
-          //   }
-          // })
-          // .finally(() => {
-          //   this.showDialog = false;
-          // });
         }
       }
     },
