@@ -2,13 +2,13 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import vuetify from "./plugins/vuetify";
-//import { loadFonts } from './plugins/webfontloader'
+import { loadFonts } from "./plugins/webfontloader";
 import store from "@/store.js";
 import Configuration from "@/configuration.js";
 import mitt from "mitt";
 import socketio from "@/plugins/socketio.js";
 
-//loadFonts()
+loadFonts();
 
 const app = createApp(App);
 
