@@ -55,7 +55,7 @@ const formSchemaPassword = [
   {
     label: "Password*",
     type: "FormField",
-    state: "password",
+    state: "newpwd",
     colsSm: 12,
     hint: "*required. At least 8 characters",
     rules: [rules.required, rules.min(8)],
@@ -68,7 +68,7 @@ const formSchemaPassword = [
   {
     label: "Confirm password*",
     type: "FormField",
-    state: "password2",
+    state: "confirmpwd",
     colsSm: 12,
     hint: "*required. At least 8 characters",
     rules: [rules.required, rules.min(8)],
@@ -125,14 +125,17 @@ export default {
       await this.$refs.form.validate();
 
       let formValid = true;
-      if (this.formData.password !== this.formData.password2) {
+      if (this.formData.newpwd !== this.formData.confirmpwd) {
         this.errorResponseText = "Passwords should match";
         formValid = false;
       }
 
       if (this.inputValid && formValid) {
         let modifiedPassword = {};
-        this.copyObject(this.formData, modifiedPassword, ["password"]);
+        this.copyObject(this.formData, modifiedPassword, [
+          "newpwd",
+          "confirmpwd",
+        ]);
         this.apiRequest(
           "post",
           `users/${this.user.user_id}/password/reset`,
