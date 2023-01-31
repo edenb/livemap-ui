@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="user" v-model="showDialog" max-width="500px">
-    <v-form ref="form" v-model="inputValid" lazy-validation>
+    <v-form ref="form" v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">Reset Password</span>
