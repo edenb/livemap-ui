@@ -84,7 +84,17 @@ export default {
   },
   methods: {
     initMap() {
-      this.map = L.map("worldmap").setView([32, -110], 8);
+      this.map = L.map("worldmap");
+      const center = this.$store.state.mapCenter;
+      const zoom = this.$store.state.mapZoom;
+      if (center !== null && zoom !== null) {
+        this.map.setView(center, zoom);
+      } else {
+        this.map.fitBounds([
+          [-60, -50],
+          [70, 50],
+        ]);
+      }
 
       let baseMaps = {};
       this.tileProviders.forEach((tileProvider) => {
@@ -100,6 +110,12 @@ export default {
       this.layerControl = L.control
         .layers(baseMaps, {}, { collapsed: false })
         .addTo(this.map);
+      this.map.on("moveend", (e) => {
+        this.$store.dispatch("setMapCenter", e.target.getCenter());
+      });
+      this.map.on("zoomend", (e) => {
+        this.$store.dispatch("setMapZoom", e.target.getZoom());
+      });
     },
     loadDeviceLayer() {
       this.apiRequest("get", "/positions").then((response) => {
@@ -126,7 +142,12 @@ export default {
             opacity,
           });
         }
-        this.fitMarkers();
+        if (
+          this.$store.state.mapCenter === null ||
+          this.$store.state.mapZoom === null
+        ) {
+          this.fitMarkers();
+        }
         this.layerControl.addOverlay(this.deviceLayer, "Device");
       });
     },
@@ -187,14 +208,18 @@ export default {
       }
     },
     fitMarkers() {
-      const bounds = this.deviceLayer.getBounds().pad(0.2);
-      const paddingRight =
-        this.map.getSize().x - this.map.getContainer().clientWidth;
-      const paddingBottom =
-        this.map.getSize().y - this.map.getContainer().clientHeight;
-      this.map.flyToBounds(bounds, {
-        paddingBottomRight: [paddingRight, paddingBottom],
-      });
+      // Only change center and zoom if layer has markers
+      if (this.deviceLayer.getLayers().length !== 0) {
+        const bounds = this.deviceLayer.getBounds().pad(0.2);
+        const paddingRight =
+          this.map.getSize().x - this.map.getContainer().clientWidth;
+        const paddingBottom =
+          this.map.getSize().y - this.map.getContainer().clientHeight;
+        this.map.flyToBounds(bounds, {
+          paddingBottomRight: [paddingRight, paddingBottom],
+          maxZoom: 12,
+        });
+      }
     },
     getGeoJsonOptions(geojson) {
       return {
