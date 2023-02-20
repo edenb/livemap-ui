@@ -1,10 +1,15 @@
 #!/bin/sh
-for file in /usr/share/nginx/html/js/app.*.js;
+
+ROOT_DIR=/usr/share/nginx/html
+
+echo "Replacing env constants in JS"
+for file in $ROOT_DIR/assets/*.js*;
 do
-  if [ ! -f $file.tmpl.js ]; then
-    cp $file $file.tmpl.js
-  fi
-  envsubst '$VUE_APP_SERVER_URL,$VUE_APP_API_PATH' < $file.tmpl.js > $file
+
+  sed -i 's|$VITE_SERVER_URL|'${VITE_SERVER_URL}'|g' $file
+  sed -i 's|$VITE_API_PATH|'${VITE_API_PATH}'|g' $file
+
 done
+
 echo "Starting Nginx"
 nginx -g 'daemon off;'

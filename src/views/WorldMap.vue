@@ -5,13 +5,11 @@
     :options="{ tap: false }"
     :zoom="zoom"
     :center="center"
+    @ready="onMapReady"
     @update:zoom="zoomUpdate"
     @update:center="centerUpdate"
   >
-    <l-control-layers
-      position="topright"
-      :collapsed="false"
-    />
+    <l-control-layers position="topright" :collapsed="false" />
     <l-tile-layer
       v-for="tileProvider in tileProviders"
       :key="tileProvider.name"
@@ -21,11 +19,7 @@
       :attribution="tileProvider.attribution"
       layer-type="base"
     />
-    <l-feature-group
-      ref="deviceLayer"
-      layer-type="overlay"
-      name="Devices"
-    >
+    <l-feature-group ref="deviceLayer" layer-type="overlay" name="Devices">
       <l-marker
         v-for="lastPosition in $store.state.lastPositions"
         :key="lastPosition.raw.device_id"
@@ -51,12 +45,20 @@
 </template>
 
 <script>
-import {ApiMixin} from '@/mixins/ApiMixin';
-import {SocketMixin} from '@/mixins/SocketMixin';
+import { ApiMixin } from "@/mixins/ApiMixin.js";
+import { SocketMixin } from "@/mixins/SocketMixin.js";
 import * as L from "leaflet";
-import 'leaflet/dist/leaflet.css'; // Leaflet stylesheet in script section (see vue2leaflet FAQ)
-import {LMap, LTileLayer, LControlLayers, LFeatureGroup, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
-import {ExtraMarkers} from 'leaflet-extra-markers';
+import "leaflet/dist/leaflet.css";
+import {
+  LMap,
+  LTileLayer,
+  LControlLayers,
+  LFeatureGroup,
+  LMarker,
+  LPopup,
+  LGeoJson,
+} from "@vue-leaflet/vue-leaflet";
+import { ExtraMarkers } from "leaflet-extra-markers";
 export default {
   components: {
     LMap,
@@ -65,10 +67,10 @@ export default {
     LFeatureGroup,
     LMarker,
     LPopup,
-    LGeoJson
+    LGeoJson,
   },
   mixins: [ApiMixin, SocketMixin],
-  data () {
+  data() {
     return {
       map: null,
       deviceLayer: null,
@@ -76,51 +78,90 @@ export default {
       center: this.$store.state.mapCenter || { lng: -40, lat: 40 },
       tileProviders: [
         {
-          name: 'OpenStreetMap',
+          name: "OpenStreetMap",
           visible: true,
           attribution:
             '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-          url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         },
         {
-          name: 'OpenTopoMap',
+          name: "OpenTopoMap",
           visible: false,
-          url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+          url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
           attribution:
             'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
         },
       ],
-      staticLayers: []
-    }
+      staticLayers: [],
+    };
   },
   mounted() {
-    this.$nextTick(() => {
-      this.deviceLayer = this.$refs.deviceLayer.mapObject;
-      this.map = this.$refs.worldmap.mapObject;
-    });
-    this.$root.$on('open-device-popup', (device_id) => {
-      this.openPopup(device_id);
-    });
+    //this.$nextTick(() => {
+    //console.log('test')
+    //this.map = this.$refs.map.leafletObject;
+
+    //console.log(this.map)
+    //this.map.eachLayer(function(layer){
+    //console.log(layer)
+    //});
+
+    //this.deviceLayer = this.$refs.worldmap.deviceLayer;
+
+    //});
+    //this.$bus.$on('open-device-popup', (device_id) => {
+    //  this.openPopup(device_id);
+    //});
+    //  },
+    //  created() {
+    this.$socket.client.emit("token", this.$store.state.token);
   },
-  created() {
-    this.$socket.client.emit('token', this.$store.state.token);
-    this.apiRequest('get', '/positions')
-      .then((response) => {
-        this.$store.dispatch('clearLastPositions');
+  methods: {
+    onMapReady() {
+      console.log("Ready");
+      this.map = this.$refs.worldmap.leafletObject;
+      console.log(this.map.getCenter());
+      this.map.eachLayer(function (layer) {
+        console.log("*");
+        console.log(layer);
+      });
+      this.deviceLayer = this.$refs.deviceLayer.leafletObject;
+      //this.loadDeviceLayer();
+      this.loadStaticLayers();
+    },
+    zoomUpdate(zoom) {
+      this.$store.dispatch("setMapZoom", zoom);
+    },
+    centerUpdate(center) {
+      this.$store.dispatch("setMapCenter", center);
+    },
+    loadDeviceLayer() {
+      this.apiRequest("get", "/positions").then((response) => {
+        console.log("Positions loaded");
+        this.$store.dispatch("clearLastPositions");
         for (let position of response.data) {
-          this.$store.dispatch('addLastPositions', {marker: createMarker(position)});
-        }
-        if (this.$store.state.mapZoom === null || this.$store.state.mapCenter === null) {
-          this.$nextTick(() => {
-            const bounds = this.deviceLayer.getBounds().pad(0.2);
-            const paddingRight = this.map.getSize().x - this.map.getContainer().clientWidth;
-            const paddingBottom = this.map.getSize().y - this.map.getContainer().clientHeight;
-            this.map.flyToBounds((bounds), {paddingBottomRight: [paddingRight, paddingBottom]});
+          this.$store.dispatch("addLastPositions", {
+            marker: createMarker(position),
           });
         }
-      })
-    this.apiRequest('get', '/staticlayers')
-      .then((response) => {
+        if (
+          this.$store.state.mapZoom === null ||
+          this.$store.state.mapCenter === null
+        ) {
+          //this.$nextTick(() => {
+          const bounds = this.deviceLayer.getBounds().pad(0.2);
+          const paddingRight =
+            this.map.getSize().x - this.map.getContainer().clientWidth;
+          const paddingBottom =
+            this.map.getSize().y - this.map.getContainer().clientHeight;
+          this.map.flyToBounds(bounds, {
+            paddingBottomRight: [paddingRight, paddingBottom],
+          });
+          //});
+        }
+      });
+    },
+    loadStaticLayers() {
+      this.apiRequest("get", "/staticlayers").then((response) => {
         this.staticLayers = [];
         for (let geojson of response.data) {
           let staticLayer = {};
@@ -128,17 +169,10 @@ export default {
           staticLayer.options = this.getGeoJsonOptions(geojson);
           this.staticLayers.push(staticLayer);
         }
-      })
-  },
-  methods: {
-    zoomUpdate(zoom) {
-      this.$store.dispatch('setMapZoom', zoom);
-    },
-    centerUpdate(center) {
-      this.$store.dispatch('setMapCenter', center);
+      });
     },
     getStaticLayerName(geojson, index) {
-      let name = `Overlay ${index}`
+      let name = `Overlay ${index}`;
       if (geojson.properties && geojson.properties.name) {
         name = geojson.properties.name;
       }
@@ -148,23 +182,52 @@ export default {
       return {
         pointToLayer: (feature, latlng) => {
           return L.marker(latlng, {
-            opacity: (geojson.properties && geojson.properties.marker && geojson.properties.marker.opacity) || 0.8,
+            opacity:
+              (geojson.properties &&
+                geojson.properties.marker &&
+                geojson.properties.marker.opacity) ||
+              0.8,
             icon: ExtraMarkers.icon({
-              icon: `mdi-${(geojson.properties && geojson.properties.marker && geojson.properties.marker.icon) || 'star'}`,
-              prefix: 'mdi',
-              markerColor: (geojson.properties && geojson.properties.marker && geojson.properties.marker.markercolor) || 'green',
-              iconColor: (geojson.properties && geojson.properties.marker && geojson.properties.marker.iconcolor) || 'white',
-              shape: 'circle'
-            })
+              icon: `mdi-${
+                (geojson.properties &&
+                  geojson.properties.marker &&
+                  geojson.properties.marker.icon) ||
+                "star"
+              }`,
+              prefix: "mdi",
+              markerColor:
+                (geojson.properties &&
+                  geojson.properties.marker &&
+                  geojson.properties.marker.markercolor) ||
+                "green",
+              iconColor:
+                (geojson.properties &&
+                  geojson.properties.marker &&
+                  geojson.properties.marker.iconcolor) ||
+                "white",
+              shape: "circle",
+            }),
           });
         },
         style: (feature) => {
           // Only apply style to (multi)lines and polygons
-          if (feature.geometry.type !== 'Point') {
+          if (feature.geometry.type !== "Point") {
             return {
-              color: (geojson.properties && geojson.properties.line && geojson.properties.line.color) || 'red',
-              weight: (geojson.properties && geojson.properties.line && geojson.properties.line.weight) || 5,
-              opacity: (geojson.properties && geojson.properties.line && geojson.properties.line.opacity) || 0.65
+              color:
+                (geojson.properties &&
+                  geojson.properties.line &&
+                  geojson.properties.line.color) ||
+                "red",
+              weight:
+                (geojson.properties &&
+                  geojson.properties.line &&
+                  geojson.properties.line.weight) ||
+                5,
+              opacity:
+                (geojson.properties &&
+                  geojson.properties.line &&
+                  geojson.properties.line.opacity) ||
+                0.65,
             };
           } else {
             return {};
@@ -175,17 +238,17 @@ export default {
             if (feature.properties.popup) {
               layer.bindPopup(feature.properties.popup);
             } else {
-              let popupText = '';
+              let popupText = "";
               let popupKeys = Object.keys(feature.properties);
               let popupValues = Object.values(feature.properties);
               for (let i = 0; i < popupKeys.length; i += 1) {
-                popupText += popupKeys[i] + ': ' + popupValues[i] + '<br>';
+                popupText += popupKeys[i] + ": " + popupValues[i] + "<br>";
               }
               layer.bindPopup(popupText);
             }
           }
-        }
-      }
+        },
+      };
     },
     openPopup(device_id) {
       if (this.deviceLayer !== null) {
@@ -193,30 +256,34 @@ export default {
           if (layer.options.device_id === device_id) {
             layer.openPopup();
             if (this.map !== null) {
-              this.map.panTo(layer.getLatLng())
+              this.map.panTo(layer.getLatLng());
             }
           }
-        })
+        });
       }
-    }
+    },
   },
   sockets: {
     positionUpdate(socketPayloadStr) {
       try {
         const newMarker = createMarker(JSON.parse(socketPayloadStr).data);
-        const cbFindDuplicates = (e, i, a) => e.raw.device_id === a[a.length-1].raw.device_id;
-        this.$store.dispatch('addLastPositions', {marker: newMarker, cb: cbFindDuplicates});
-      } catch(err) {
+        const cbFindDuplicates = (e, i, a) =>
+          e.raw.device_id === a[a.length - 1].raw.device_id;
+        this.$store.dispatch("addLastPositions", {
+          marker: newMarker,
+          cb: cbFindDuplicates,
+        });
+      } catch (err) {
         console.log(err);
       }
-    }
-  }
-}
+    },
+  },
+};
 
 function createMarker(payload) {
   let newMarker = {};
   newMarker.raw = payload;
-  newMarker.latLng = {lat: payload.loc_lat, lon: payload.loc_lon};
+  newMarker.latLng = { lat: payload.loc_lat, lon: payload.loc_lon };
   newMarker.popup = getPopupText(payload);
   newMarker.icon = ExtraMarkers.icon(getMarkerIcon(payload));
   newMarker.options = getMarkerOptions(payload);
@@ -224,30 +291,31 @@ function createMarker(payload) {
 }
 
 const loc_type_str = {
-  'rec': 'Recorded',
-  'left': 'Last known'
+  rec: "Recorded",
+  left: "Last known",
 };
 
 function getPopupText(dev) {
-  let htmlText = '', PopupType;
+  let htmlText = "",
+    PopupType;
 
   const PopupTime = new Date(dev.loc_timestamp);
   // If loc_type is defined use predefined label
   if (dev.loc_type) {
     PopupType = loc_type_str[dev.loc_type];
-    htmlText += '<b>' + dev.alias + '</b>';
-    if (typeof PopupType !== 'undefined') {
-      htmlText += ' (' + PopupType + ')';
+    htmlText += "<b>" + dev.alias + "</b>";
+    if (typeof PopupType !== "undefined") {
+      htmlText += " (" + PopupType + ")";
     }
-    htmlText += '<br>';
-    htmlText += PopupTime.toLocaleString() + '<br>';
+    htmlText += "<br>";
+    htmlText += PopupTime.toLocaleString() + "<br>";
   } else {
     if (dev.loc_attr) {
       if (dev.loc_attr.labelshowalias) {
-        htmlText += '<b>' + dev.alias + '</b><br>';
+        htmlText += "<b>" + dev.alias + "</b><br>";
       }
       if (dev.loc_attr.labelshowtime) {
-        htmlText += PopupTime.toLocaleString() + '<br>';
+        htmlText += PopupTime.toLocaleString() + "<br>";
       }
       if (dev.loc_attr.labelcustomhtml) {
         htmlText += dev.loc_attr.labelcustomhtml;
@@ -255,9 +323,9 @@ function getPopupText(dev) {
     }
   }
 
-  if (htmlText === '') {
+  if (htmlText === "") {
     // Show at least the alias
-    htmlText = '<b>' + dev.alias + '</b>';
+    htmlText = "<b>" + dev.alias + "</b>";
   }
 
   return htmlText;
@@ -265,21 +333,21 @@ function getPopupText(dev) {
 
 function getMarkerIcon(dev) {
   // Default marker icon
-  let cIcon = 'home';
-  let cPrefix = 'mdi'; // Ignore prefix provided by the device
-  let cMarkerColor = 'cyan';
-  let cIconColor = 'white';
-  let cShape = 'circle';
+  let cIcon = "home";
+  let cPrefix = "mdi"; // Ignore prefix provided by the device
+  let cMarkerColor = "cyan";
+  let cIconColor = "white";
+  let cShape = "circle";
 
   // If loc_type is defined use predefined marker/icon sets
   if (dev.loc_type) {
-    if (dev.loc_type === 'rec') {
-      cIcon = 'circle';
-      cMarkerColor = 'blue';
+    if (dev.loc_type === "rec") {
+      cIcon = "circle";
+      cMarkerColor = "blue";
     }
-    if ((dev.loc_type === 'now') || (dev.loc_type === 'left')) {
-      cIcon = 'circle';
-      cMarkerColor = 'green';
+    if (dev.loc_type === "now" || dev.loc_type === "left") {
+      cIcon = "circle";
+      cMarkerColor = "green";
     }
   } else {
     if (dev.loc_attr) {
@@ -294,12 +362,14 @@ function getMarkerIcon(dev) {
       }
     }
   }
-  let customIcon = { icon: `${cPrefix}-${cIcon}`,
-                     prefix: cPrefix,
-                     markerColor: cMarkerColor,
-                     iconColor: cIconColor,
-                     shape: cShape};
-  return customIcon
+  let customIcon = {
+    icon: `${cPrefix}-${cIcon}`,
+    prefix: cPrefix,
+    markerColor: cMarkerColor,
+    iconColor: cIconColor,
+    shape: cShape,
+  };
+  return customIcon;
 }
 
 function getMarkerOptions(dev) {
@@ -307,17 +377,17 @@ function getMarkerOptions(dev) {
   let cOpacity = 1.0;
 
   // Define icon opacity
-  if (dev.loc_type && dev.loc_type === 'left') {
+  if (dev.loc_type && dev.loc_type === "left") {
     cOpacity = 0.5;
   } else {
     if (dev.loc_attr && dev.loc_attr.mopacity) {
       cOpacity = dev.loc_attr.mopacity;
     }
   }
-  return {opacity: cOpacity, device_id: dev.device_id};
+  return { opacity: cOpacity, device_id: dev.device_id };
 }
 </script>
 
 <style>
-@import '../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
+@import "../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 </style>

@@ -1,27 +1,51 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
-import colors from 'vuetify/lib/util/colors';
+// Styles
+import "@mdi/font/css/materialdesignicons.css";
+import "vuetify/styles";
 
-Vue.use(Vuetify);
+// Vuetify
+import { createVuetify } from "vuetify";
+import { aliases, mdi } from "vuetify/iconsets/mdi";
+import { VDataTable } from "vuetify/labs/VDataTable";
 
-export default new Vuetify({
+// Colors derived from vuetify/lib/util/colors
+// primary: colors.blueGrey.base,              // #607d8b
+// secondary: colors.blueGrey.lighten2,        // #90a4ae
+// accent: colors.blueGrey.lighten4,           // #cfd8dc
+// error: colors.red.base,                     // #f44336
+// info: colors.blue.base,                     // #2196f3
+// success: colors.green.base,                 // #4caf50
+// warning: colors.orange.base                 // #ff9800
+
+const livemapTheme = {
+  dark: false,
+  colors: {
+    background: "#FFFFFF",
+    surface: "#FFFFFF",
+    primary: "#607d8b",
+    secondary: "#90a4ae",
+    accent: "#cfd8dc",
+    error: "#f44336",
+    info: "#2196f3",
+    success: "#4caf50",
+    warning: "#ff9800",
+  },
+};
+
+export default createVuetify({
+  components: {
+    VDataTable,
+  },
   theme: {
-      options: {
-        customProperties: true,
-      },
+    defaultTheme: "livemapTheme",
     themes: {
-      light: {
-        primary: colors.blueGrey,
-        secondary: colors.blueGrey.lighten2,
-        accent: colors.blueGrey.lighten4,
-        error: colors.red,
-        info: colors.blue,
-        success: colors.green,
-        warning: colors.orange
-      },
+      livemapTheme,
     },
   },
   icons: {
-    iconfont: 'md',
+    defaultSet: "mdi",
+    aliases,
+    sets: {
+      mdi,
+    },
   },
 });
