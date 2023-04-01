@@ -28,20 +28,23 @@
             single-line
           />
           <v-spacer />
-          <v-btn icon="mdi-plus" @click="newItem()" />
+          <v-btn icon="mdi-plus" title="Add device" @click="newItem()" />
           <v-btn
             :disabled="selectedOwned(selected).length !== 1"
             icon="mdi-pencil"
+            title="Edit selected device"
             @click="editItem(selectedOwned(selected)[0])"
           />
           <v-btn
             :disabled="selectedOwned(selected).length == 0"
             icon="mdi-share-all"
+            title="Share/unshare selected devices"
             @click="shareItems(selectedOwned(selected))"
           />
           <v-btn
             :disabled="selectedOwned(selected).length == 0"
             icon="mdi-delete"
+            title="Remove selected devices"
             @click="deleteItems(selectedOwned(selected))"
           />
         </v-toolbar>
@@ -51,6 +54,7 @@
           v-if="item.raw.api_key === $store.state.user.api_key"
           icon="mdi-pencil"
           size="small"
+          title="Edit device"
           variant="plain"
           @click="editItem(item.raw)"
         />
@@ -58,6 +62,7 @@
           v-if="item.raw.api_key === $store.state.user.api_key"
           icon="mdi-share-all"
           size="small"
+          title="Share/unshare device"
           variant="plain"
           @click="shareItems([item.raw])"
         />
@@ -65,6 +70,7 @@
           v-if="item.raw.api_key === $store.state.user.api_key"
           icon="mdi-delete"
           size="small"
+          title="Remove device"
           variant="plain"
           @click="deleteItems([item.raw])"
         />

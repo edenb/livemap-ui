@@ -28,15 +28,17 @@
             single-line
           />
           <v-spacer />
-          <v-btn icon="mdi-plus" @click="newItem()" />
+          <v-btn icon="mdi-plus" title="Add user" @click="newItem()" />
           <v-btn
             :disabled="selected.length !== 1"
             icon="mdi-pencil"
+            title="Edit selected user"
             @click="editItem(allUsers.find((e) => e.user_id === selected[0]))"
           />
           <v-btn
             :disabled="selected.length !== 1"
             icon="mdi-lock-reset"
+            title="Reset password of selected user"
             @click="
               editPasswordItem(allUsers.find((e) => e.user_id === selected[0]))
             "
@@ -48,6 +50,7 @@
                 selected[0] === $store.state.user.user_id)
             "
             icon="mdi-delete"
+            title="Remove selected user"
             @click="deleteItem(allUsers.find((e) => e.user_id === selected[0]))"
           />
         </v-toolbar>
@@ -56,12 +59,14 @@
         <v-btn
           icon="mdi-pencil"
           size="small"
+          title="Edit user"
           variant="plain"
           @click="editItem(item.raw)"
         />
         <v-btn
           icon="mdi-lock-reset"
           size="small"
+          title="Reset password"
           variant="plain"
           @click="editPasswordItem(item.raw)"
         />
@@ -69,6 +74,7 @@
           :disabled="item.raw.user_id === $store.state.user.user_id"
           icon="mdi-delete"
           size="small"
+          title="Remove user"
           variant="plain"
           @click="deleteItem(item.raw)"
         />
