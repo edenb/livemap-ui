@@ -55,7 +55,7 @@
           />
         </v-toolbar>
       </template>
-      <template #item.actions="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-btn
           icon="mdi-pencil"
           size="small"

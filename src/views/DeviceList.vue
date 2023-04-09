@@ -49,7 +49,7 @@
           />
         </v-toolbar>
       </template>
-      <template #item.actions="{ item }">
+      <template #[`item.actions`]="{ item }">
         <v-btn
           v-if="item.raw.api_key === $store.state.user.api_key"
           icon="mdi-pencil"
@@ -75,7 +75,7 @@
           @click="deleteItems([item.raw])"
         />
       </template>
-      <template #item.shared="{ item }">
+      <template #[`item.shared`]="{ item }">
         <div
           v-if="
             item.raw.shared &&
