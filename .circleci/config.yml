@@ -1,10 +1,10 @@
 version: 2.1
 orbs:
-  docker: circleci/docker@2.0.3
+  docker: circleci/docker@2.2.0
 jobs:
   lint:
     docker:
-      - image: cimg/node:12.22
+      - image: cimg/node:18.12
     steps:
       - checkout
       - run:

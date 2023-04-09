@@ -1,33 +1,30 @@
-import Vue from 'vue'
-import vuetify from '@/plugins/vuetify'
-import App from '@/App.vue'
-import router from '@/router'
-import VueSocketIOExt from 'vue-socket.io-extended'
-import io from 'socket.io-client'
-import store from '@/store.js'
-import Configuration from '@/configuration'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import vuetify from "./plugins/vuetify";
+import { loadFonts } from "./plugins/webfontloader";
+import store from "@/store.js";
+import Configuration from "@/configuration.js";
+import mitt from "mitt";
+import socketio from "@/plugins/socketio.js";
 
-Vue.config.productionTip = false
-Vue.config.performance = true
+loadFonts();
 
-// Create a socket but do not connect
-const socket = io(Configuration.value('envServerUrl') || 'http://localhost:3000', {
-  autoConnect: false
-});
+const app = createApp(App);
 
-Vue.use(VueSocketIOExt, socket, {store});
+const emitter = mitt();
+app.config.globalProperties.emitter = emitter;
 
-new Vue({
-  el: '#app',
-  store,
-  router,
-  components: {
-    App
+const socketioConf = {
+  connection: Configuration.value("envServerUrl") || "http://localhost:3000",
+  options: {
+    autoConnect: false,
   },
-  template: '<App/>',
-  vuetify,
-  icons: {
-    iconfont: 'mdiSvg'
-  },
-})
+};
+
+app
+  .use(router)
+  .use(store)
+  .use(vuetify)
+  .use(socketio, socketioConf)
+  .mount("#app");

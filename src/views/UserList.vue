@@ -1,25 +1,19 @@
+<!-- eslint-disable vuetify/no-deprecated-components -->
 <template>
-  <v-container
-    fluid
-    pa-3
-  >
+  <v-container fluid pa-3>
     <v-data-table
       v-model="selected"
+      density="compact"
       :headers="headers"
+      item-value="user_id"
       :items="allUsers"
       :search="search"
-      item-key="user_id"
-      :sort-by="['fullname']"
+      :sort-by="[{ key: 'fullname', order: 'asc' }]"
       show-select
       class="elevation-1"
     >
       <template #top>
-        <v-toolbar
-          flat
-          dense
-          color="secondary"
-          dark
-        >
+        <v-toolbar density="compact" color="secondary">
           <ConfirmDialog ref="confirm" />
           <UserListEditUser ref="editUser" />
           <UserListChangePassword ref="editPassword" />
@@ -28,188 +22,154 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            density="compact"
+            hide-details
             label="Search"
             single-line
-            hide-details
-          /> 
+          />
           <v-spacer />
+          <v-btn icon="mdi-plus" title="Add user" @click="newItem()" />
           <v-btn
-            color="white"
-            fab
-            dark
-            small
-            icon
-            @click="newItem()"
-          >
-            <v-icon dark>
-              mdi-plus
-            </v-icon>
-          </v-btn>
-          <v-btn
-            color="white"
-            fab
-            dark
-            small
-            icon
             :disabled="selected.length !== 1"
-            @click="editItem(selected[0])"
-          >
-            <v-icon dark>
-              mdi-pencil
-            </v-icon>
-          </v-btn>
+            icon="mdi-pencil"
+            title="Edit selected user"
+            @click="editItem(allUsers.find((e) => e.user_id === selected[0]))"
+          />
           <v-btn
-            color="white"
-            fab
-            dark
-            small
-            icon
             :disabled="selected.length !== 1"
-            @click="editPasswordItem(selected[0])"
-          >
-            <v-icon dark>
-              mdi-lock-reset
-            </v-icon>
-          </v-btn>
+            icon="mdi-lock-reset"
+            title="Reset password of selected user"
+            @click="
+              editPasswordItem(allUsers.find((e) => e.user_id === selected[0]))
+            "
+          />
           <v-btn
-            color="white"
-            fab
-            dark
-            small
-            icon
-            :disabled="selected.length !== 1 || (selected.length == 1 && selected[0].user_id == $store.state.user.user_id)"
-            @click="deleteItem(selected[0])"
-          >
-            <v-icon dark>
-              mdi-delete
-            </v-icon>
-          </v-btn>
+            :disabled="
+              selected.length !== 1 ||
+              (selected.length === 1 &&
+                selected[0] === $store.state.user.user_id)
+            "
+            icon="mdi-delete"
+            title="Remove selected user"
+            @click="deleteItem(allUsers.find((e) => e.user_id === selected[0]))"
+          />
         </v-toolbar>
       </template>
       <template #[`item.actions`]="{ item }">
-        <v-icon
-          small
-          class="mr-2"
-          @click="editItem(item)"
-        >
-          mdi-pencil
-        </v-icon>
-        <v-icon
-          small
-          class="mr-2"
-          @click="editPasswordItem(item)"
-        >
-          mdi-lock-reset
-        </v-icon>
-        <v-icon
-          small
-          @click="deleteItem(item)"
-        >
-          mdi-delete
-        </v-icon>
+        <v-btn
+          icon="mdi-pencil"
+          size="small"
+          title="Edit user"
+          variant="plain"
+          @click="editItem(item.raw)"
+        />
+        <v-btn
+          icon="mdi-lock-reset"
+          size="small"
+          title="Reset password"
+          variant="plain"
+          @click="editPasswordItem(item.raw)"
+        />
+        <v-btn
+          :disabled="item.raw.user_id === $store.state.user.user_id"
+          icon="mdi-delete"
+          size="small"
+          title="Remove user"
+          variant="plain"
+          @click="deleteItem(item.raw)"
+        />
       </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script>
-import {ApiMixin} from '@/mixins/ApiMixin';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import UserListEditUser from '@/components/UserListEditUser.vue';
-import UserListChangePassword from '@/components/UserListChangePassword.vue';
+import { ApiMixin } from "@/mixins/ApiMixin.js";
+import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import UserListEditUser from "@/components/UserListEditUser.vue";
+import UserListChangePassword from "@/components/UserListChangePassword.vue";
 export default {
   name: "UserList",
   components: {
     ConfirmDialog,
     UserListEditUser,
-    UserListChangePassword
+    UserListChangePassword,
   },
   mixins: [ApiMixin],
-  data () {
+  data() {
     return {
       allUsers: [],
+      search: "",
       selected: [],
-      headers: [
-        { text: 'Full Name', value: 'fullname' },
-        { text: 'Username', value: 'username' },
-        { text: 'Role', value: 'role' },
-        { text: 'Actions', value: 'actions', sortable: false }
-      ],
-      search: '',
-      newUser: {
-        user_id: -1,
-        username: '',
-        fullname: '',
-        email: '',
-        role: 'manager',
-        password: ''
-      }
-    }
+    };
   },
   created() {
+    this.headers = [
+      { title: "Full Name", key: "fullname" },
+      { title: "Username", key: "username" },
+      { title: "Role", key: "role" },
+      { title: "Actions", key: "actions", sortable: false },
+    ];
+    this.newUser = {
+      api_key: "",
+      email: "",
+      fullname: "",
+      password: "",
+      role: "",
+      user_id: -1,
+      username: "",
+    };
     this.loadTable();
   },
   methods: {
-    loadTable () {
-      this.apiRequest('get', `users`)
+    loadTable() {
+      this.apiRequest("get", `users`)
         .then((response) => {
-          this.allUsers = response.data
-          this.selected = this.updateSelected(this.allUsers, this.selected)
+          this.allUsers = response.data;
         })
         .catch(() => {
           // Ignore failed (re)loads
-        })
+        });
     },
-    updateSelected (users, selected) {
-      let newSelected = []
-      for (let user of selected) {
-        if (users.find(el => el.user_id === user.user_id)) {
-          newSelected.push(user);
-        }
-      }
-      return newSelected
-    },
-    editItem (item) {
+    editItem(item) {
       this.showDialogUser(item);
     },
-    newItem () {
+    newItem() {
       this.showDialogUser(this.newUser);
     },
-    deleteItem (item) {
+    deleteItem(item) {
       let messageText = [];
-      messageText.push('Are you sure you want to delete the following user?');
-      this.$refs.confirm.open('Delete', messageText, [item.fullname],
-        { color: 'red' })
+      messageText.push("Are you sure you want to delete the following user?");
+      this.$refs.confirm
+        .open("Delete", messageText, [item.fullname], { color: "red" })
         .then((confirm) => {
           if (confirm) {
-            this.apiRequest('delete', `users/${item.user_id}`)
+            this.apiRequest("delete", `users/${item.user_id}`)
               .then(() => {
                 this.loadTable();
               })
               .catch((err) => {
                 // Do not reload the table on internal server error
-                if(err.response.status < 500) {
+                if (err.response.status < 500) {
                   this.loadTable();
                 }
-              })
+              });
           }
-        })
+        });
     },
-    editPasswordItem (item) {
+    editPasswordItem(item) {
       this.showDialogPassword(item);
     },
-    showDialogUser (user) {
-      this.$refs.editUser.open(user)
-        .then(() => {
-          this.loadTable();
-        })
+    showDialogUser(user) {
+      this.$refs.editUser.open(user).then(() => {
+        this.loadTable();
+      });
     },
-    showDialogPassword (user) {
-      this.$refs.editPassword.open(user)
-        .then(() => {
-          this.loadTable();
-        })
-    }
-  }
-}
+    showDialogPassword(user) {
+      this.$refs.editPassword.open(user).then(() => {
+        this.loadTable();
+      });
+    },
+  },
+};
 </script>

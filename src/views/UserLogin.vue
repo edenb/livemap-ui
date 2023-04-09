@@ -1,126 +1,93 @@
 <template>
-  <v-app id="app">
-    <v-main>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-        <v-row
-          class="ma-2"
-          align="center"
-          justify="center"
-        >
-          <v-col
-            cols="12"
-            sm="8"
-            md="4"
-          >
-            <v-card
-              class="elevation-12"
-            >
-              <v-toolbar
-                color="primary"
-                dark
-                flat
-              >
-                <v-toolbar-title>Login</v-toolbar-title>
-              </v-toolbar>
-              <v-progress-linear
-                :active="loading"
-                :indeterminate="loading"
-                absolute
-                bottom
-                color="primary"
-              />
-              <v-card-text>
-                <v-form
-                  ref="form"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    v-model="username"
-                    label="Username"
-                    name="username"
-                    prepend-icon="person"
-                    type="text"
-                    :rules="usernameRules"
-                    required
-                    @keyup.enter="loginUser"
-                  />
-                  <v-text-field
-                    id="password"
-                    v-model="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="lock"
-                    type="password"
-                    :rules="passwordRules"
-                    required
-                    @keyup.enter="loginUser"
-                  />
-                </v-form>
-              </v-card-text>
-              <v-card-actions class="px-4">
-                <template v-if="errorResponseText!==''">
-                  <v-icon
-                    medium
-                    color="error"
-                  >
-                    mdi-alert
-                  </v-icon>
-                  <div class="error--text px-2">
-                    {{ errorResponseText }}
-                  </div>
-                </template>
-                <v-spacer />
-                <v-btn
-                  :disabled="!valid"
-                  color="primary"
-                  @click="loginUser"
-                >
-                  Login
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+  <v-main>
+    <v-container class="fill-height">
+      <v-row class="fill-height" justify="center">
+        <v-col align-self="center" cols="12" sm="8" md="6">
+          <v-card class="elevation-12">
+            <v-toolbar color="primary">
+              <v-toolbar-title>Login</v-toolbar-title>
+            </v-toolbar>
+            <v-progress-linear
+              :active="loading"
+              :indeterminate="loading"
+              color="primary"
+            />
+            <v-card-text>
+              <v-form ref="form" v-model="valid">
+                <v-text-field
+                  v-model="username"
+                  label="Username"
+                  name="username"
+                  prepend-icon="mdi-account"
+                  type="text"
+                  :rules="usernameRules"
+                  required
+                  @keyup.enter="loginUser"
+                />
+                <v-text-field
+                  id="password"
+                  v-model="password"
+                  label="Password"
+                  name="password"
+                  prepend-icon="mdi-lock"
+                  type="password"
+                  :rules="passwordRules"
+                  required
+                  @keyup.enter="loginUser"
+                />
+              </v-form>
+            </v-card-text>
+            <v-card-actions class="px-4">
+              <template v-if="errorResponseText !== ''">
+                <v-icon icon="mdi-alert" size="medium" color="error" />
+                <div class="text-error px-2">
+                  {{ errorResponseText }}
+                </div>
+              </template>
+              <v-spacer />
+              <v-btn :disabled="!valid" color="primary" @click="loginUser">
+                Login
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 
 <script>
-  import {ApiMixin} from '@/mixins/ApiMixin'
-  export default {
-    name: "UserLogin",
-    mixins: [ApiMixin],
-    data: () => ({
-      username: "",
-      usernameRules: [
-        v => !!v || 'Username is required',
-      ],
-      password: "",
-      passwordRules: [
-        v => !!v || 'Password is required',
-      ],
-      valid: false
-    }),
-    methods: {
-      loginUser() {
-        if (this.username && this.password) { 
-          this.apiRequest('post', '/login', {"username": this.username, "password": this.password})
-            .then((response) => {
-              console.log(`User token: ${response.data.access_token}`);
-              return this.$store.dispatch('setUserToken', response.data.access_token);
-            })
-            .then(() => {
-              this.$router.push("/worldmap");
-            })
-            .catch(() => {
-            })
-          }
-        }
-        
-    }
-  }
+import { ApiMixin } from "@/mixins/ApiMixin.js";
+export default {
+  name: "UserLogin",
+  mixins: [ApiMixin],
+  data: () => ({
+    username: "",
+    usernameRules: [(v) => !!v || "Username is required"],
+    password: "",
+    passwordRules: [(v) => !!v || "Password is required"],
+    valid: false,
+  }),
+  methods: {
+    loginUser() {
+      if (this.username && this.password) {
+        this.apiRequest("post", "/login", {
+          username: this.username,
+          password: this.password,
+        })
+          .then((response) => {
+            console.log(`User token: ${response.data.access_token}`);
+            return this.$store.dispatch(
+              "setUserToken",
+              response.data.access_token
+            );
+          })
+          .then(() => {
+            this.$router.push("/worldmap");
+          })
+          .catch(() => {});
+      }
+    },
+  },
+};
 </script>

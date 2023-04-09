@@ -19,6 +19,7 @@ RUN npm run build
 # production stage
 FROM nginx:stable-alpine as production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/0-catch-all-fallback-route.conf
 EXPOSE 80
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
