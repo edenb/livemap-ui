@@ -1,174 +1,177 @@
 <template>
-  <l-map
-    ref="worldmap"
-    style="z-index: 1"
-    :options="{ tap: false }"
-    :zoom="zoom"
-    :center="center"
-    @ready="onMapReady"
-    @update:zoom="zoomUpdate"
-    @update:center="centerUpdate"
-  >
-    <l-control-layers position="topright" :collapsed="false" />
-    <l-tile-layer
-      v-for="tileProvider in tileProviders"
-      :key="tileProvider.name"
-      :name="tileProvider.name"
-      :visible="tileProvider.visible"
-      :url="tileProvider.url"
-      :attribution="tileProvider.attribution"
-      layer-type="base"
-    />
-    <l-feature-group ref="deviceLayer" layer-type="overlay" name="Devices">
-      <l-marker
-        v-for="lastPosition in $store.state.lastPositions"
-        :key="lastPosition.raw.device_id"
-        :lat-lng="lastPosition.latLng"
-        :icon="lastPosition.icon"
-        :options="lastPosition.options"
-      >
-        <l-popup :content="lastPosition.popup" />
-      </l-marker>
-    </l-feature-group>
-    <l-feature-group
-      v-for="(staticLayer, index) in staticLayers"
-      :key="index"
-      layer-type="overlay"
-      :name="getStaticLayerName(staticLayer.geojson, index)"
-    >
-      <l-geo-json
-        :geojson="staticLayer.geojson"
-        :options="staticLayer.options"
-      />
-    </l-feature-group>
-  </l-map>
+  <TheSidebarRight />
+  <div id="worldmap" />
 </template>
 
 <script>
+import { inject } from "vue";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
-import { SocketMixin } from "@/mixins/SocketMixin.js";
-import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import {
-  LMap,
-  LTileLayer,
-  LControlLayers,
-  LFeatureGroup,
-  LMarker,
-  LPopup,
-  LGeoJson,
-} from "@vue-leaflet/vue-leaflet";
+import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
+import L from "leaflet";
 import { ExtraMarkers } from "leaflet-extra-markers";
+import { mapState } from "vuex";
+import TheSidebarRight from "@/layouts/TheSidebarRight.vue";
+import { standardizeColor as sColor } from "@/helpers/colors.js";
+
 export default {
+  name: "WorldMap",
   components: {
-    LMap,
-    LTileLayer,
-    LControlLayers,
-    LFeatureGroup,
-    LMarker,
-    LPopup,
-    LGeoJson,
+    TheSidebarRight,
   },
-  mixins: [ApiMixin, SocketMixin],
-  data() {
+  mixins: [ApiMixin],
+  setup() {
+    const connect = inject("connect");
+    const positionUpdate = inject("positionUpdate");
     return {
-      map: null,
-      deviceLayer: null,
-      zoom: this.$store.state.mapZoom || 3,
-      center: this.$store.state.mapCenter || { lng: -40, lat: 40 },
-      tileProviders: [
-        {
+      connect,
+      positionUpdate,
+    };
+  },
+  computed: mapState(["drawerOpen"]),
+  watch: {
+    drawerOpen: {
+      deep: true,
+      handler() {
+        this.map.invalidateSize({ pan: false });
+      },
+    },
+    positionUpdate(position) {
+      this.updateFromSocket(position);
+    },
+  },
+  created() {
+    // Leaflet objects do not have to be reactive
+    this.map = null;
+    this.deviceLayer = null;
+    this.staticLayers = null;
+    this.layerControl = null;
+    this.tileProviders = [
+      {
+        urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        options: {
           name: "OpenStreetMap",
           visible: true,
           attribution:
             '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-          url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         },
-        {
+      },
+      {
+        urlTemplate: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        options: {
           name: "OpenTopoMap",
           visible: false,
-          url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
           attribution:
             'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
         },
-      ],
-      staticLayers: [],
-    };
+      },
+    ];
   },
   mounted() {
-    //this.$nextTick(() => {
-    //console.log('test')
-    //this.map = this.$refs.map.leafletObject;
-
-    //console.log(this.map)
-    //this.map.eachLayer(function(layer){
-    //console.log(layer)
-    //});
-
-    //this.deviceLayer = this.$refs.worldmap.deviceLayer;
-
-    //});
-    //this.$bus.$on('open-device-popup', (device_id) => {
-    //  this.openPopup(device_id);
-    //});
-    //  },
-    //  created() {
-    this.$socket.client.emit("token", this.$store.state.token);
+    this.initMap();
+    this.loadDeviceLayer();
+    this.loadStaticLayers();
+    this.emitter.on("open-device-popup", (device_id) => {
+      this.openPopup(device_id);
+    });
+    this.connect(this.$store.state.token);
+  },
+  beforeUnmount() {
+    if (this.map) {
+      this.map.remove();
+    }
+    this.emitter.off("open-device-popup");
   },
   methods: {
-    onMapReady() {
-      console.log("Ready");
-      this.map = this.$refs.worldmap.leafletObject;
-      console.log(this.map.getCenter());
-      this.map.eachLayer(function (layer) {
-        console.log("*");
-        console.log(layer);
+    initMap() {
+      this.map = L.map("worldmap");
+      const center = this.$store.state.mapCenter;
+      const zoom = this.$store.state.mapZoom;
+      if (center !== null && zoom !== null) {
+        this.map.setView(center, zoom);
+      } else {
+        this.map.fitBounds([
+          [-60, -50],
+          [70, 50],
+        ]);
+      }
+
+      let baseMaps = {};
+      this.tileProviders.forEach((tileProvider) => {
+        const baseLayer = L.tileLayer(
+          tileProvider.urlTemplate,
+          tileProvider.options
+        );
+        if (tileProvider.options.visible) {
+          baseLayer.addTo(this.map);
+        }
+        baseMaps[tileProvider.options.name] = baseLayer;
       });
-      this.deviceLayer = this.$refs.deviceLayer.leafletObject;
-      //this.loadDeviceLayer();
-      this.loadStaticLayers();
-    },
-    zoomUpdate(zoom) {
-      this.$store.dispatch("setMapZoom", zoom);
-    },
-    centerUpdate(center) {
-      this.$store.dispatch("setMapCenter", center);
+      this.layerControl = L.control
+        .layers(baseMaps, {}, { collapsed: false })
+        .addTo(this.map);
+      this.map.on("moveend", (e) => {
+        this.$store.dispatch("setMapCenter", e.target.getCenter());
+      });
+      this.map.on("zoomend", (e) => {
+        this.$store.dispatch("setMapZoom", e.target.getZoom());
+      });
     },
     loadDeviceLayer() {
       this.apiRequest("get", "/positions").then((response) => {
-        console.log("Positions loaded");
+        this.deviceLayer = L.featureGroup().addTo(this.map);
+        //console.log("Positions loaded")
         this.$store.dispatch("clearLastPositions");
-        for (let position of response.data) {
+        for (let dev of response.data) {
+          const popup = this.getPopupText(dev);
+          const iconAttr = this.getMarkerIconAttr(dev);
+          const opacity = this.getMarkerOpacity(dev);
+          this.updateMarker(
+            dev.device_id,
+            dev.loc_lat,
+            dev.loc_lon,
+            popup,
+            iconAttr,
+            opacity
+          );
           this.$store.dispatch("addLastPositions", {
-            marker: createMarker(position),
+            raw: dev,
+            latLng: { lat: dev.loc_lat, lon: dev.loc_lon },
+            popup,
+            iconAttr,
+            opacity,
           });
         }
         if (
-          this.$store.state.mapZoom === null ||
-          this.$store.state.mapCenter === null
+          this.$store.state.mapCenter === null ||
+          this.$store.state.mapZoom === null
         ) {
-          //this.$nextTick(() => {
-          const bounds = this.deviceLayer.getBounds().pad(0.2);
-          const paddingRight =
-            this.map.getSize().x - this.map.getContainer().clientWidth;
-          const paddingBottom =
-            this.map.getSize().y - this.map.getContainer().clientHeight;
-          this.map.flyToBounds(bounds, {
-            paddingBottomRight: [paddingRight, paddingBottom],
-          });
-          //});
+          this.fitMarkers();
         }
+        this.layerControl.addOverlay(this.deviceLayer, "Device");
       });
     },
     loadStaticLayers() {
       this.apiRequest("get", "/staticlayers").then((response) => {
-        this.staticLayers = [];
+        this.staticLayers = L.featureGroup().addTo(this.map);
+        let layerControlStatic = [];
+        let layerIndex = 1;
         for (let geojson of response.data) {
-          let staticLayer = {};
-          staticLayer.geojson = geojson;
-          staticLayer.options = this.getGeoJsonOptions(geojson);
-          this.staticLayers.push(staticLayer);
+          const staticLayer = this.staticLayers.addLayer(
+            L.geoJSON(geojson, this.getGeoJsonOptions(geojson))
+          );
+          layerControlStatic.push({
+            layer: staticLayer,
+            layerName: this.getStaticLayerName(geojson, layerIndex),
+          });
+          layerIndex++;
         }
+        layerControlStatic.sort((a, b) => {
+          return a.layerName - b.layerName;
+        });
+        layerControlStatic.forEach((element) => {
+          this.layerControl.addOverlay(element.layer, element.layerName);
+        });
       });
     },
     getStaticLayerName(geojson, index) {
@@ -177,6 +180,46 @@ export default {
         name = geojson.properties.name;
       }
       return name;
+    },
+    updateMarker(id, lat, lon, popup, iconAttr, opacity) {
+      //console.log(id, lon, lat, popup);
+      if (this.deviceLayer) {
+        const icon = ExtraMarkers.icon({
+          icon: iconAttr.icon,
+          prefix: iconAttr.prefix,
+          markerColor: iconAttr.markerColor,
+          iconColor: iconAttr.iconColor,
+          svg: true,
+        });
+        const allMarkers = this.deviceLayer.getLayers();
+        let marker = allMarkers.find((e) => e.options.id === id);
+        if (!marker) {
+          marker = L.marker([lat, lon], { id, icon, opacity });
+          marker.bindPopup(popup);
+          this.deviceLayer.addLayer(marker);
+        } else {
+          marker.setLatLng([lat, lon]);
+          marker.setIcon(icon);
+          marker.bindPopup(popup);
+          marker.setOpacity(opacity);
+        }
+      } else {
+        console.log("Skip position update");
+      }
+    },
+    fitMarkers() {
+      // Only change center and zoom if layer has markers
+      if (this.deviceLayer.getLayers().length !== 0) {
+        const bounds = this.deviceLayer.getBounds().pad(0.2);
+        const paddingRight =
+          this.map.getSize().x - this.map.getContainer().clientWidth;
+        const paddingBottom =
+          this.map.getSize().y - this.map.getContainer().clientHeight;
+        this.map.flyToBounds(bounds, {
+          paddingBottomRight: [paddingRight, paddingBottom],
+          maxZoom: 12,
+        });
+      }
     },
     getGeoJsonOptions(geojson) {
       return {
@@ -198,14 +241,15 @@ export default {
               markerColor:
                 (geojson.properties &&
                   geojson.properties.marker &&
-                  geojson.properties.marker.markercolor) ||
-                "green",
+                  sColor(geojson.properties.marker.markercolor)) ||
+                sColor("green"),
               iconColor:
                 (geojson.properties &&
                   geojson.properties.marker &&
-                  geojson.properties.marker.iconcolor) ||
-                "white",
+                  sColor(geojson.properties.marker.iconcolor)) ||
+                sColor("white"),
               shape: "circle",
+              svg: true,
             }),
           });
         },
@@ -216,8 +260,8 @@ export default {
               color:
                 (geojson.properties &&
                   geojson.properties.line &&
-                  geojson.properties.line.color) ||
-                "red",
+                  sColor(geojson.properties.line.color)) ||
+                sColor("red"),
               weight:
                 (geojson.properties &&
                   geojson.properties.line &&
@@ -250,10 +294,103 @@ export default {
         },
       };
     },
-    openPopup(device_id) {
+    getPopupText(dev) {
+      const loc_type_str = {
+        rec: "Recorded",
+        left: "Last known",
+      };
+      let htmlText = "",
+        PopupType;
+
+      const PopupTime = new Date(dev.loc_timestamp);
+      // If loc_type is defined use predefined label
+      if (dev.loc_type) {
+        PopupType = loc_type_str[dev.loc_type];
+        htmlText += "<b>" + dev.alias + "</b>";
+        if (typeof PopupType !== "undefined") {
+          htmlText += " (" + PopupType + ")";
+        }
+        htmlText += "<br>";
+        htmlText += PopupTime.toLocaleString() + "<br>";
+      } else {
+        if (dev.loc_attr) {
+          if (dev.loc_attr.labelshowalias) {
+            htmlText += "<b>" + dev.alias + "</b><br>";
+          }
+          if (dev.loc_attr.labelshowtime) {
+            htmlText += PopupTime.toLocaleString() + "<br>";
+          }
+          if (dev.loc_attr.labelcustomhtml) {
+            htmlText += dev.loc_attr.labelcustomhtml;
+          }
+        }
+      }
+
+      if (htmlText === "") {
+        // Show at least the alias
+        htmlText = "<b>" + dev.alias + "</b>";
+      }
+
+      return htmlText;
+    },
+    getMarkerIconAttr(dev) {
+      // Default marker icon
+      let cIcon = "home";
+      let cPrefix = "mdi"; // Ignore prefix provided by the device
+      let cMarkerColor = sColor("cyan");
+      let cIconColor = sColor("white");
+      let cShape = "circle";
+
+      // If loc_type is defined use predefined marker/icon sets
+      if (dev.loc_type) {
+        if (dev.loc_type === "rec") {
+          cIcon = "circle";
+          cMarkerColor = sColor("blue");
+        }
+        if (dev.loc_type === "now" || dev.loc_type === "left") {
+          cIcon = "circle";
+          cMarkerColor = sColor("green");
+        }
+      } else {
+        if (dev.loc_attr) {
+          if (dev.loc_attr.miconname) {
+            cIcon = dev.loc_attr.miconname;
+          }
+          if (dev.loc_attr.mcolor) {
+            cMarkerColor = sColor(dev.loc_attr.mcolor);
+          }
+          if (dev.loc_attr.miconcolor) {
+            cIconColor = sColor(dev.loc_attr.miconcolor);
+          }
+        }
+      }
+      let customIconAttr = {
+        icon: `${cPrefix}-${cIcon}`,
+        prefix: cPrefix,
+        markerColor: cMarkerColor,
+        iconColor: cIconColor,
+        shape: cShape,
+      };
+      return customIconAttr;
+    },
+    getMarkerOpacity(dev) {
+      // Default marker options
+      let opacity = 1.0;
+
+      // Define icon opacity
+      if (dev.loc_type && dev.loc_type === "left") {
+        opacity = 0.5;
+      } else {
+        if (dev.loc_attr && dev.loc_attr.mopacity) {
+          opacity = dev.loc_attr.mopacity;
+        }
+      }
+      return opacity;
+    },
+    openPopup(id) {
       if (this.deviceLayer !== null) {
         this.deviceLayer.eachLayer((layer) => {
-          if (layer.options.device_id === device_id) {
+          if (layer.options.id === id) {
             layer.openPopup();
             if (this.map !== null) {
               this.map.panTo(layer.getLatLng());
@@ -262,15 +399,28 @@ export default {
         });
       }
     },
-  },
-  sockets: {
-    positionUpdate(socketPayloadStr) {
+    updateFromSocket(socketPayloadStr) {
       try {
-        const newMarker = createMarker(JSON.parse(socketPayloadStr).data);
+        const dev = JSON.parse(socketPayloadStr).data;
+        const popup = this.getPopupText(dev);
+        const iconAttr = this.getMarkerIconAttr(dev);
+        const opacity = this.getMarkerOpacity(dev);
+        this.updateMarker(
+          dev.device_id,
+          dev.loc_lat,
+          dev.loc_lon,
+          popup,
+          iconAttr,
+          opacity
+        );
         const cbFindDuplicates = (e, i, a) =>
           e.raw.device_id === a[a.length - 1].raw.device_id;
         this.$store.dispatch("addLastPositions", {
-          marker: newMarker,
+          raw: dev,
+          latLng: { lat: dev.loc_lat, lon: dev.loc_lon },
+          popup,
+          iconAttr,
+          opacity,
           cb: cbFindDuplicates,
         });
       } catch (err) {
@@ -279,115 +429,11 @@ export default {
     },
   },
 };
-
-function createMarker(payload) {
-  let newMarker = {};
-  newMarker.raw = payload;
-  newMarker.latLng = { lat: payload.loc_lat, lon: payload.loc_lon };
-  newMarker.popup = getPopupText(payload);
-  newMarker.icon = ExtraMarkers.icon(getMarkerIcon(payload));
-  newMarker.options = getMarkerOptions(payload);
-  return newMarker;
-}
-
-const loc_type_str = {
-  rec: "Recorded",
-  left: "Last known",
-};
-
-function getPopupText(dev) {
-  let htmlText = "",
-    PopupType;
-
-  const PopupTime = new Date(dev.loc_timestamp);
-  // If loc_type is defined use predefined label
-  if (dev.loc_type) {
-    PopupType = loc_type_str[dev.loc_type];
-    htmlText += "<b>" + dev.alias + "</b>";
-    if (typeof PopupType !== "undefined") {
-      htmlText += " (" + PopupType + ")";
-    }
-    htmlText += "<br>";
-    htmlText += PopupTime.toLocaleString() + "<br>";
-  } else {
-    if (dev.loc_attr) {
-      if (dev.loc_attr.labelshowalias) {
-        htmlText += "<b>" + dev.alias + "</b><br>";
-      }
-      if (dev.loc_attr.labelshowtime) {
-        htmlText += PopupTime.toLocaleString() + "<br>";
-      }
-      if (dev.loc_attr.labelcustomhtml) {
-        htmlText += dev.loc_attr.labelcustomhtml;
-      }
-    }
-  }
-
-  if (htmlText === "") {
-    // Show at least the alias
-    htmlText = "<b>" + dev.alias + "</b>";
-  }
-
-  return htmlText;
-}
-
-function getMarkerIcon(dev) {
-  // Default marker icon
-  let cIcon = "home";
-  let cPrefix = "mdi"; // Ignore prefix provided by the device
-  let cMarkerColor = "cyan";
-  let cIconColor = "white";
-  let cShape = "circle";
-
-  // If loc_type is defined use predefined marker/icon sets
-  if (dev.loc_type) {
-    if (dev.loc_type === "rec") {
-      cIcon = "circle";
-      cMarkerColor = "blue";
-    }
-    if (dev.loc_type === "now" || dev.loc_type === "left") {
-      cIcon = "circle";
-      cMarkerColor = "green";
-    }
-  } else {
-    if (dev.loc_attr) {
-      if (dev.loc_attr.miconname) {
-        cIcon = dev.loc_attr.miconname;
-      }
-      if (dev.loc_attr.mcolor) {
-        cMarkerColor = dev.loc_attr.mcolor;
-      }
-      if (dev.loc_attr.miconcolor) {
-        cIconColor = dev.loc_attr.miconcolor;
-      }
-    }
-  }
-  let customIcon = {
-    icon: `${cPrefix}-${cIcon}`,
-    prefix: cPrefix,
-    markerColor: cMarkerColor,
-    iconColor: cIconColor,
-    shape: cShape,
-  };
-  return customIcon;
-}
-
-function getMarkerOptions(dev) {
-  // Default marker options
-  let cOpacity = 1.0;
-
-  // Define icon opacity
-  if (dev.loc_type && dev.loc_type === "left") {
-    cOpacity = 0.5;
-  } else {
-    if (dev.loc_attr && dev.loc_attr.mopacity) {
-      cOpacity = dev.loc_attr.mopacity;
-    }
-  }
-  return { opacity: cOpacity, device_id: dev.device_id };
-}
 </script>
 
-<style>
-@import "../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
+<style scoped>
+#worldmap {
+  height: 100%;
+  z-index: 0;
+}
 </style>
