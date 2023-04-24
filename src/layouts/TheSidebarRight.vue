@@ -40,7 +40,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from "pinia";
+import { usePositionStore } from "@/store.js";
+import { useLayoutStore } from "@/store.js";
 
 export default {
   name: "TheSidebarRight",
@@ -51,7 +53,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["lastPositions", "drawerOpen"]),
+    ...mapState(usePositionStore, ["lastPositions"]),
+    ...mapState(useLayoutStore, ["drawerOpen"]),
     lastPositionsOrdered: function () {
       let lastPositionsOrdered = this.lastPositions;
       lastPositionsOrdered.sort((a, b) =>
@@ -65,6 +68,7 @@ export default {
       this.drawer = this.drawerOpen.right;
     } else {
       this.drawer = !this.$vuetify.display.mobile;
+      this.drawerOpen.right = this.drawer;
     }
     this.emitter.on("toggle-sidebar-right", () => {
       this.drawer = !this.drawer;
@@ -97,10 +101,7 @@ export default {
     },
     onTransistionEnd(event) {
       if (event.propertyName === "transform") {
-        this.$store.dispatch("setDrawerOpen", {
-          name: "right",
-          open: this.drawer,
-        });
+        this.drawerOpen.right = this.drawer;
       }
     },
   },

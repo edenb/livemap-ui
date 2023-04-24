@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
-import store from "@/store.js";
+import { useAuthStore } from "@/store.js";
 const TheLayout = () => import("@/layouts/TheLayout.vue");
 const WorldMap = () => import("@/views/WorldMap.vue");
 const UserList = () => import("@/views/UserList.vue");
@@ -72,14 +72,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    console.log(`Authorized: ${store.state.authorized}`);
+    const authStore = useAuthStore();
     // Re-authenticate if a token is present but user not authorized
-    if (store.state.token !== "" && !store.state.authorized) {
-      console.log(`Start re-authorize`);
-      store
-        .dispatch("setUserToken", store.state.token)
+    if (authStore.token !== "" && !authStore.authorized) {
+      authStore
+        .setAuthorized(authStore.token)
         .then(() => {
-          console.log(`Re-authorized`);
           next();
         })
         .catch(() => {
@@ -87,7 +85,7 @@ router.beforeEach((to, from, next) => {
             path: "/login",
           });
         });
-    } else if (store.state.authorized) {
+    } else if (authStore.authorized) {
       next();
     } else {
       next({

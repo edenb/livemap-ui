@@ -38,7 +38,7 @@
             prepend-icon="mdi-account-circle"
             v-bind="props"
           >
-            {{ $store.state.user.fullname }}
+            {{ authStore.user.fullname }}
           </v-chip>
           <v-btn
             v-else
@@ -49,7 +49,7 @@
         </template>
         <v-card>
           <v-toolbar color="secondary" density="compact">
-            <v-toolbar-title>{{ $store.state.user.fullname }}</v-toolbar-title>
+            <v-toolbar-title>{{ authStore.user.fullname }}</v-toolbar-title>
           </v-toolbar>
           <v-list density="compact">
             <v-list-item>
@@ -57,7 +57,7 @@
                 <v-icon icon="mdi-account" />
               </template>
               <v-list-item-title>
-                {{ $store.state.user.username }}
+                {{ authStore.user.username }}
               </v-list-item-title>
               <v-list-item-subtitle> Username </v-list-item-subtitle>
             </v-list-item>
@@ -66,7 +66,7 @@
                 <v-icon icon="mdi-account-key" />
               </template>
               <v-list-item-title>
-                {{ $store.state.user.role }}
+                {{ authStore.user.role }}
               </v-list-item-title>
               <v-list-item-subtitle> Permission level </v-list-item-subtitle>
             </v-list-item>
@@ -79,6 +79,10 @@
 </template>
 
 <script>
+import { inject } from "vue";
+import { useAuthStore } from "@/store.js";
+import ServerInfo from "@/components/ServerInfo.vue";
+
 const connectionIcon = [];
 connectionIcon["connected"] = {
   name: "mdi-circle",
@@ -91,18 +95,17 @@ connectionIcon["disconnected"] = {
   tooltip: "No live connection",
 };
 
-import { inject } from "vue";
-import ServerInfo from "@/components/ServerInfo.vue";
-
 export default {
   name: "TheNavBar",
   components: {
     ServerInfo,
   },
   setup() {
+    const authStore = useAuthStore();
     const connect = inject("connect");
     const isConnected = inject("isConnected");
     return {
+      authStore,
       connect,
       isConnected,
     };
@@ -115,7 +118,7 @@ export default {
     },
   },
   mounted() {
-    this.connect(this.$store.state.token);
+    this.connect(this.authStore.token);
   },
   methods: {
     toggleSidebarLeft() {

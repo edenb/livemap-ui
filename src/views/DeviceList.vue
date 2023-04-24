@@ -51,7 +51,7 @@
       </template>
       <template #[`item.actions`]="{ item }">
         <v-btn
-          v-if="item.raw.api_key === $store.state.user.api_key"
+          v-if="item.raw.api_key === user.api_key"
           icon="mdi-pencil"
           size="small"
           title="Edit device"
@@ -59,7 +59,7 @@
           @click="editItem(item.raw)"
         />
         <v-btn
-          v-if="item.raw.api_key === $store.state.user.api_key"
+          v-if="item.raw.api_key === user.api_key"
           icon="mdi-share-all"
           size="small"
           title="Share/unshare device"
@@ -67,7 +67,7 @@
           @click="shareItems([item.raw])"
         />
         <v-btn
-          v-if="item.raw.api_key === $store.state.user.api_key"
+          v-if="item.raw.api_key === user.api_key"
           icon="mdi-delete"
           size="small"
           title="Remove device"
@@ -99,6 +99,8 @@
 </template>
 
 <script>
+import { mapState } from "pinia";
+import { useAuthStore } from "@/store.js";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import DeviceListEditDevice from "@/components/DeviceListEditDevice.vue";
@@ -119,6 +121,9 @@ export default {
       usernameColors: [],
     };
   },
+  computed: {
+    ...mapState(useAuthStore, ["user"]),
+  },
   created() {
     this.headers = [
       { title: "Name", key: "alias" },
@@ -130,7 +135,7 @@ export default {
       device_id: -1,
       alias: "",
       identifier: "",
-      api_key: this.$store.state.user.api_key,
+      api_key: this.user.api_key,
       fixed_loc_lat: "",
       fixed_loc_lon: "",
     };
@@ -138,7 +143,7 @@ export default {
   },
   methods: {
     loadTable() {
-      this.apiRequest("get", `users/${this.$store.state.user.user_id}/devices`)
+      this.apiRequest("get", `users/${this.user.user_id}/devices`)
         .then((response) => {
           this.allDevices = response.data;
           this.allDevices.forEach((e) => {
@@ -177,7 +182,7 @@ export default {
           if (confirm) {
             this.apiRequest(
               "delete",
-              `users/${this.$store.state.user.user_id}/devices/${deviceIdList}`
+              `users/${this.user.user_id}/devices/${deviceIdList}`
             )
               .then(() => {
                 this.loadTable();
@@ -227,7 +232,7 @@ export default {
         return (
           ids.includes(e.device_id) &&
           e.api_key &&
-          e.api_key === this.$store.state.user.api_key
+          e.api_key === this.user.api_key
         );
       });
     },

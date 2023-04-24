@@ -4,21 +4,25 @@
 
 <script>
 import { inject } from "vue";
+import { useAuthStore } from "@/store.js";
+import { usePositionStore } from "@/store.js";
 
 export default {
   name: "UserLogout",
   setup() {
+    const authStore = useAuthStore();
     const disconnect = inject("disconnect");
+    const positionStore = usePositionStore();
     return {
+      authStore,
       disconnect,
+      positionStore,
     };
   },
   created() {
     this.disconnect();
-    this.$store.dispatch("revokeUserToken");
-    this.$store.dispatch("clearLastPositions");
-    this.$store.dispatch("clearMapZoom");
-    this.$store.dispatch("clearMapCenter");
+    this.authStore.revokeAuthorized();
+    this.positionStore.clearLastPositions();
     this.$router.push("/");
   },
 };

@@ -51,6 +51,7 @@
 
 <script>
 import { ref } from "vue";
+import { useAuthStore } from "@/store.js";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 
@@ -77,6 +78,7 @@ export default {
   },
   mixins: [ApiMixin],
   setup() {
+    const authStore = useAuthStore();
     const devices = ref([]);
     const formData = ref({});
     const inputValid = ref(false);
@@ -86,6 +88,7 @@ export default {
     const reject = ref(null);
     const username = ref("");
     return {
+      authStore,
       devices,
       formData,
       inputValid,
@@ -125,7 +128,7 @@ export default {
         }
         this.apiRequest(
           "post",
-          `users/${this.$store.state.user.user_id}/devices/${deviceIdList}/shareduser`,
+          `users/${this.authStore.user.user_id}/devices/${deviceIdList}/shareduser`,
           sharedUser
         )
           .then(() => {
@@ -149,7 +152,7 @@ export default {
         }
         this.apiRequest(
           "delete",
-          `users/${this.$store.state.user.user_id}/devices/${deviceIdList}/shareduser`,
+          `users/${this.authStore.user.user_id}/devices/${deviceIdList}/shareduser`,
           unsharedUser
         )
           .then(() => {

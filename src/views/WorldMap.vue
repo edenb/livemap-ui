@@ -5,12 +5,16 @@
 
 <script>
 import { inject } from "vue";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/store.js";
+import { useLayoutStore } from "@/store.js";
+import { usePositionStore } from "@/store.js";
+import { useWorldmapStore } from "@/store.js";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
 import { ExtraMarkers } from "leaflet-extra-markers";
-import { mapState } from "vuex";
 import TheSidebarRight from "@/layouts/TheSidebarRight.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
@@ -23,12 +27,21 @@ export default {
   setup() {
     const connect = inject("connect");
     const positionUpdate = inject("positionUpdate");
+    const authStore = useAuthStore();
+    const positionStore = usePositionStore();
+    const worldmapStore = useWorldmapStore();
+    const layoutStore = useLayoutStore();
+    const { drawerOpen } = storeToRefs(layoutStore);
+
     return {
+      authStore,
       connect,
+      drawerOpen,
+      positionStore,
       positionUpdate,
+      worldmapStore,
     };
   },
-  computed: mapState(["drawerOpen"]),
   watch: {
     drawerOpen: {
       deep: true,
@@ -74,7 +87,7 @@ export default {
     this.emitter.on("open-device-popup", (device_id) => {
       this.openPopup(device_id);
     });
-    this.connect(this.$store.state.token);
+    this.connect(this.authStore.token);
   },
   beforeUnmount() {
     if (this.map) {
@@ -85,8 +98,8 @@ export default {
   methods: {
     initMap() {
       this.map = L.map("worldmap");
-      const center = this.$store.state.mapCenter;
-      const zoom = this.$store.state.mapZoom;
+      const center = this.worldmapStore.center;
+      const zoom = this.worldmapStore.zoom;
       if (center !== null && zoom !== null) {
         this.map.setView(center, zoom);
       } else {
@@ -111,17 +124,16 @@ export default {
         .layers(baseMaps, {}, { collapsed: false })
         .addTo(this.map);
       this.map.on("moveend", (e) => {
-        this.$store.dispatch("setMapCenter", e.target.getCenter());
+        this.worldmapStore.center = e.target.getCenter();
       });
       this.map.on("zoomend", (e) => {
-        this.$store.dispatch("setMapZoom", e.target.getZoom());
+        this.worldmapStore.zoom = e.target.getZoom();
       });
     },
     loadDeviceLayer() {
       this.apiRequest("get", "/positions").then((response) => {
         this.deviceLayer = L.featureGroup().addTo(this.map);
-        //console.log("Positions loaded")
-        this.$store.dispatch("clearLastPositions");
+        this.positionStore.clearLastPositions();
         for (let dev of response.data) {
           const popup = this.getPopupText(dev);
           const iconAttr = this.getMarkerIconAttr(dev);
@@ -134,7 +146,7 @@ export default {
             iconAttr,
             opacity
           );
-          this.$store.dispatch("addLastPositions", {
+          this.positionStore.addLastPositions({
             raw: dev,
             latLng: { lat: dev.loc_lat, lon: dev.loc_lon },
             popup,
@@ -143,8 +155,8 @@ export default {
           });
         }
         if (
-          this.$store.state.mapCenter === null ||
-          this.$store.state.mapZoom === null
+          this.worldmapStore.center === null ||
+          this.worldmapStore.zoom === null
         ) {
           this.fitMarkers();
         }
@@ -182,7 +194,6 @@ export default {
       return name;
     },
     updateMarker(id, lat, lon, popup, iconAttr, opacity) {
-      //console.log(id, lon, lat, popup);
       if (this.deviceLayer) {
         const icon = ExtraMarkers.icon({
           icon: iconAttr.icon,
@@ -415,7 +426,7 @@ export default {
         );
         const cbFindDuplicates = (e, i, a) =>
           e.raw.device_id === a[a.length - 1].raw.device_id;
-        this.$store.dispatch("addLastPositions", {
+        this.positionStore.addLastPositions({
           raw: dev,
           latLng: { lat: dev.loc_lat, lon: dev.loc_lon },
           popup,
