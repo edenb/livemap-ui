@@ -58,6 +58,8 @@
 
 <script>
 import { ApiMixin } from "@/mixins/ApiMixin.js";
+import { mapActions } from "pinia";
+import { useAuthStore } from "@/store.js";
 export default {
   name: "UserLogin",
   mixins: [ApiMixin],
@@ -69,6 +71,7 @@ export default {
     valid: false,
   }),
   methods: {
+    ...mapActions(useAuthStore, ["setAuthorized"]),
     loginUser() {
       if (this.username && this.password) {
         this.apiRequest("post", "/login", {
@@ -76,11 +79,7 @@ export default {
           password: this.password,
         })
           .then((response) => {
-            console.log(`User token: ${response.data.access_token}`);
-            return this.$store.dispatch(
-              "setUserToken",
-              response.data.access_token
-            );
+            return this.setAuthorized(response.data.access_token);
           })
           .then(() => {
             this.$router.push("/worldmap");

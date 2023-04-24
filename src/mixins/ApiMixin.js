@@ -32,9 +32,6 @@ function apiRequest(method, path, data) {
           } else {
             this.errorResponseText = err.response.statusText;
           }
-          //if (err.response.status == 401) {
-          //this.$store.dispatch('revokeUserToken');
-          //}
         } else {
           this.errorResponseText = "No server connection";
         }

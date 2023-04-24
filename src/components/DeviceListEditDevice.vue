@@ -50,6 +50,7 @@
 
 <script>
 import { computed, ref } from "vue";
+import { useAuthStore } from "@/store.js";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 
@@ -154,6 +155,7 @@ export default {
   },
   mixins: [ApiMixin],
   setup() {
+    const authStore = useAuthStore();
     const device = ref({});
     const formData = ref({});
     const inputValid = ref(false);
@@ -167,6 +169,7 @@ export default {
       return device.value.device_id < 0 ? "New Device" : "Edit Device";
     });
     return {
+      authStore,
       device,
       formData,
       inputValid,
@@ -221,7 +224,7 @@ export default {
           );
           this.apiRequest(
             "put",
-            `users/${this.$store.state.user.user_id}/devices/${modifiedDevice.device_id}`,
+            `users/${this.authStore.user.user_id}/devices/${modifiedDevice.device_id}`,
             modifiedDevice
           )
             .then(() => {
@@ -246,7 +249,7 @@ export default {
           );
           this.apiRequest(
             "post",
-            `users/${this.$store.state.user.user_id}/devices`,
+            `users/${this.authStore.user.user_id}/devices`,
             addedDevice
           )
             .then(() => {

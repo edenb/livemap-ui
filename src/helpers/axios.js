@@ -1,5 +1,5 @@
 import Axios from "axios";
-import store from "@/store.js";
+import { useAuthStore } from "@/store.js";
 import Configuration from "@/configuration.js";
 
 const serverUrl =
@@ -18,9 +18,10 @@ export function getServerUrl() {
 
 export default function httpRequest(method, path, data) {
   let headers = {};
-  if (store.state.token) {
+  const authStore = useAuthStore();
+  if (authStore.token) {
     headers = {
-      Authorization: "Bearer " + store.state.token,
+      Authorization: "Bearer " + authStore.token,
     };
   }
 

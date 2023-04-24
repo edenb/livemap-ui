@@ -46,8 +46,7 @@
           <v-btn
             :disabled="
               selected.length !== 1 ||
-              (selected.length === 1 &&
-                selected[0] === $store.state.user.user_id)
+              (selected.length === 1 && selected[0] === user.user_id)
             "
             icon="mdi-delete"
             title="Remove selected user"
@@ -71,7 +70,7 @@
           @click="editPasswordItem(item.raw)"
         />
         <v-btn
-          :disabled="item.raw.user_id === $store.state.user.user_id"
+          :disabled="item.raw.user_id === user.user_id"
           icon="mdi-delete"
           size="small"
           title="Remove user"
@@ -84,6 +83,8 @@
 </template>
 
 <script>
+import { mapState } from "pinia";
+import { useAuthStore } from "@/store.js";
 import { ApiMixin } from "@/mixins/ApiMixin.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import UserListEditUser from "@/components/UserListEditUser.vue";
@@ -102,6 +103,9 @@ export default {
       search: "",
       selected: [],
     };
+  },
+  computed: {
+    ...mapState(useAuthStore, ["user"]),
   },
   created() {
     this.headers = [

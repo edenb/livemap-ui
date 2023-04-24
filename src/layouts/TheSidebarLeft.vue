@@ -12,7 +12,7 @@
         @click="changeRoute('worldmap', 1)"
       />
       <v-list-item
-        v-if="$store.state.user.role === 'admin'"
+        v-if="user.role === 'admin'"
         link
         title="Users"
         prepend-icon="mdi-account-multiple-outline"
@@ -36,7 +36,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from "pinia";
+import { useAuthStore } from "@/store.js";
+import { useLayoutStore } from "@/store.js";
 
 export default {
   name: "TheSidebarLeft",
@@ -45,13 +47,15 @@ export default {
     selectedIndex: 1,
   }),
   computed: {
-    ...mapState(["drawerOpen"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapState(useLayoutStore, ["drawerOpen"]),
   },
   mounted() {
     if ("left" in this.drawerOpen) {
       this.drawer = this.drawerOpen.left;
     } else {
       this.drawer = !this.$vuetify.display.mobile;
+      this.drawerOpen.left = this.drawer;
     }
     this.emitter.on("toggle-sidebar-left", () => {
       this.drawer = !this.drawer;
@@ -68,10 +72,7 @@ export default {
     },
     onTransistionEnd(event) {
       if (event.propertyName === "transform") {
-        this.$store.dispatch("setDrawerOpen", {
-          name: "left",
-          open: this.drawer,
-        });
+        this.drawerOpen.left = this.drawer;
       }
     },
   },
