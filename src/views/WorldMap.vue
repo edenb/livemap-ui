@@ -57,7 +57,6 @@ export default {
     // Leaflet objects do not have to be reactive
     this.map = null;
     this.deviceLayer = null;
-    this.staticLayers = null;
     this.layerControl = null;
     this.tileProviders = [
       {
@@ -165,21 +164,17 @@ export default {
     },
     loadStaticLayers() {
       this.apiRequest("get", "/staticlayers").then((response) => {
-        this.staticLayers = L.featureGroup().addTo(this.map);
         let layerControlStatic = [];
         let layerIndex = 1;
         for (let geojson of response.data) {
-          const staticLayer = this.staticLayers.addLayer(
-            L.geoJSON(geojson, this.getGeoJsonOptions(geojson))
-          );
           layerControlStatic.push({
-            layer: staticLayer,
+            layer: L.geoJSON(geojson, this.getGeoJsonOptions(geojson)),
             layerName: this.getStaticLayerName(geojson, layerIndex),
           });
           layerIndex++;
         }
         layerControlStatic.sort((a, b) => {
-          return a.layerName - b.layerName;
+          return a.layerName.localeCompare(b.layerName);
         });
         layerControlStatic.forEach((element) => {
           this.layerControl.addOverlay(element.layer, element.layerName);
