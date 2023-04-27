@@ -173,6 +173,7 @@ export default {
           });
           layerIndex++;
         }
+        this.replaceDuplicateNames(layerControlStatic);
         layerControlStatic.sort((a, b) => {
           return a.layerName.localeCompare(b.layerName);
         });
@@ -187,6 +188,24 @@ export default {
         name = geojson.properties.name;
       }
       return name;
+    },
+    replaceDuplicateNames(layerList) {
+      const dupNames = layerList
+        .map(({ layerName }) => layerName)
+        .filter((e, i, a) => a.indexOf(e) === i && a.lastIndexOf(e) !== i);
+      layerList.forEach((layer) => {
+        if (dupNames.includes(layer.layerName)) {
+          let count = 1;
+          let newName = "";
+          let allNames = [];
+          do {
+            allNames = layerList.map(({ layerName }) => layerName);
+            newName = `${layer.layerName}-${count}`;
+            count++;
+          } while (allNames.includes(newName));
+          layer.layerName = newName;
+        }
+      });
     },
     updateMarker(id, lat, lon, popup, iconAttr, opacity) {
       if (this.deviceLayer) {
