@@ -81,8 +81,8 @@ export default {
   },
   mounted() {
     this.initMap();
-    this.loadDeviceLayer();
-    this.loadStaticLayers();
+    this.loadDeviceLayer(this.worldmapStore.overlayNames);
+    this.loadStaticLayers(this.worldmapStore.overlayNames);
     this.emitter.on("open-device-popup", (device_id) => {
       this.openPopup(device_id);
     });
@@ -128,10 +128,26 @@ export default {
       this.map.on("zoomend", (e) => {
         this.worldmapStore.zoom = e.target.getZoom();
       });
+      this.map.on("overlayadd", (e) => {
+        this.storeOverlayControls(e.name, true);
+      });
+      this.map.on("overlayremove", (e) => {
+        this.storeOverlayControls(e.name, false);
+      });
     },
-    loadDeviceLayer() {
+    storeOverlayControls(name, active) {
+      const overlayNames = this.worldmapStore.overlayNames;
+      if (active) {
+        if (!overlayNames.includes(name)) {
+          overlayNames.push(name);
+        }
+      } else {
+        overlayNames.splice(overlayNames.indexOf(name), 1);
+      }
+    },
+    loadDeviceLayer(activeLayerNames) {
       this.apiRequest("get", "/positions").then((response) => {
-        this.deviceLayer = L.featureGroup().addTo(this.map);
+        this.deviceLayer = L.featureGroup();
         this.positionStore.clearLastPositions();
         for (let dev of response.data) {
           const popup = this.getPopupText(dev);
@@ -160,9 +176,12 @@ export default {
           this.fitMarkers();
         }
         this.layerControl.addOverlay(this.deviceLayer, "Device");
+        if (activeLayerNames.includes("Device")) {
+          this.deviceLayer.addTo(this.map);
+        }
       });
     },
-    loadStaticLayers() {
+    loadStaticLayers(activeLayerNames) {
       this.apiRequest("get", "/staticlayers").then((response) => {
         let layerControlStatic = [];
         let layerIndex = 1;
@@ -179,6 +198,9 @@ export default {
         });
         layerControlStatic.forEach((element) => {
           this.layerControl.addOverlay(element.layer, element.layerName);
+          if (activeLayerNames.includes(element.layerName)) {
+            element.layer.addTo(this.map);
+          }
         });
       });
     },
