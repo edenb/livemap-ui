@@ -114,7 +114,11 @@ export default {
           tileProvider.urlTemplate,
           tileProvider.options
         );
-        if (tileProvider.options.visible) {
+        if (
+          this.worldmapStore.baseLayerName === tileProvider.options.name ||
+          (this.worldmapStore.baseLayerName === "" &&
+            tileProvider.options.visible)
+        ) {
           baseLayer.addTo(this.map);
         }
         baseMaps[tileProvider.options.name] = baseLayer;
@@ -127,6 +131,9 @@ export default {
       });
       this.map.on("zoomend", (e) => {
         this.worldmapStore.zoom = e.target.getZoom();
+      });
+      this.map.on("baselayerchange", (e) => {
+        this.worldmapStore.baseLayerName = e.name;
       });
       this.map.on("overlayadd", (e) => {
         this.storeOverlayControls(e.name, true);
