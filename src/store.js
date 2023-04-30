@@ -7,8 +7,14 @@ export const useWorldmapStore = defineStore("worldmap", () => {
   const center = ref(null);
   const overlayNames = ref(["Device"]);
   const zoom = ref(null);
+  function resetAll() {
+    baseLayerName.value = "";
+    center.value = null;
+    overlayNames.value = ["Device"];
+    zoom.value = null;
+  }
 
-  return { baseLayerName, center, overlayNames, zoom };
+  return { baseLayerName, center, overlayNames, zoom, resetAll };
 });
 
 export const usePositionStore = defineStore("position", () => {
