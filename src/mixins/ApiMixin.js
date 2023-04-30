@@ -8,9 +8,6 @@ export const ApiMixin = {
       loading: false,
     };
   },
-  created: function () {
-    console.log("Axios instance created");
-  },
   methods: {
     apiRequest: apiRequest,
   },
