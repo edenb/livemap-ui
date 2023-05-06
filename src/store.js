@@ -3,10 +3,18 @@ import { defineStore } from "pinia";
 import httpRequest from "@/helpers/axios.js";
 
 export const useWorldmapStore = defineStore("worldmap", () => {
-  const zoom = ref(null);
+  const baseLayerName = ref("");
   const center = ref(null);
+  const overlayNames = ref(["Device"]);
+  const zoom = ref(null);
+  function resetAll() {
+    baseLayerName.value = "";
+    center.value = null;
+    overlayNames.value = ["Device"];
+    zoom.value = null;
+  }
 
-  return { zoom, center };
+  return { baseLayerName, center, overlayNames, zoom, resetAll };
 });
 
 export const usePositionStore = defineStore("position", () => {

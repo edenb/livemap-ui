@@ -57,7 +57,6 @@ export default {
     // Leaflet objects do not have to be reactive
     this.map = null;
     this.deviceLayer = null;
-    this.staticLayers = null;
     this.layerControl = null;
     this.tileProviders = [
       {
@@ -82,8 +81,8 @@ export default {
   },
   mounted() {
     this.initMap();
-    this.loadDeviceLayer();
-    this.loadStaticLayers();
+    this.loadDeviceLayer(this.worldmapStore.overlayNames);
+    this.loadStaticLayers(this.worldmapStore.overlayNames);
     this.emitter.on("open-device-popup", (device_id) => {
       this.openPopup(device_id);
     });
@@ -115,13 +114,25 @@ export default {
           tileProvider.urlTemplate,
           tileProvider.options
         );
-        if (tileProvider.options.visible) {
+        if (
+          this.worldmapStore.baseLayerName === tileProvider.options.name ||
+          (this.worldmapStore.baseLayerName === "" &&
+            tileProvider.options.visible)
+        ) {
           baseLayer.addTo(this.map);
         }
         baseMaps[tileProvider.options.name] = baseLayer;
       });
       this.layerControl = L.control
-        .layers(baseMaps, {}, { collapsed: false })
+        .layers(
+          baseMaps,
+          {},
+          {
+            collapsed: false,
+            sortLayers: true,
+            sortFunction: this.deviceOnTop,
+          }
+        )
         .addTo(this.map);
       this.map.on("moveend", (e) => {
         this.worldmapStore.center = e.target.getCenter();
@@ -129,10 +140,38 @@ export default {
       this.map.on("zoomend", (e) => {
         this.worldmapStore.zoom = e.target.getZoom();
       });
+      this.map.on("baselayerchange", (e) => {
+        this.worldmapStore.baseLayerName = e.name;
+      });
+      this.map.on("overlayadd", (e) => {
+        this.storeOverlayControls(e.name, true);
+      });
+      this.map.on("overlayremove", (e) => {
+        this.storeOverlayControls(e.name, false);
+      });
     },
-    loadDeviceLayer() {
+    deviceOnTop(layerA, layerB) {
+      if (layerA.options.onTop) {
+        return -1;
+      } else if (layerB.options.onTop) {
+        return 1;
+      } else {
+        return 0;
+      }
+    },
+    storeOverlayControls(name, active) {
+      const overlayNames = this.worldmapStore.overlayNames;
+      if (active) {
+        if (!overlayNames.includes(name)) {
+          overlayNames.push(name);
+        }
+      } else {
+        overlayNames.splice(overlayNames.indexOf(name), 1);
+      }
+    },
+    loadDeviceLayer(activeLayerNames) {
       this.apiRequest("get", "/positions").then((response) => {
-        this.deviceLayer = L.featureGroup().addTo(this.map);
+        this.deviceLayer = L.featureGroup();
         this.positionStore.clearLastPositions();
         for (let dev of response.data) {
           const popup = this.getPopupText(dev);
@@ -160,29 +199,33 @@ export default {
         ) {
           this.fitMarkers();
         }
+        this.deviceLayer.options.onTop = true;
         this.layerControl.addOverlay(this.deviceLayer, "Device");
+        if (activeLayerNames.includes("Device")) {
+          this.deviceLayer.addTo(this.map);
+        }
       });
     },
-    loadStaticLayers() {
+    loadStaticLayers(activeLayerNames) {
       this.apiRequest("get", "/staticlayers").then((response) => {
-        this.staticLayers = L.featureGroup().addTo(this.map);
         let layerControlStatic = [];
         let layerIndex = 1;
         for (let geojson of response.data) {
-          const staticLayer = this.staticLayers.addLayer(
-            L.geoJSON(geojson, this.getGeoJsonOptions(geojson))
-          );
           layerControlStatic.push({
-            layer: staticLayer,
+            layer: L.geoJSON(geojson, this.getGeoJsonOptions(geojson)),
             layerName: this.getStaticLayerName(geojson, layerIndex),
           });
           layerIndex++;
         }
+        this.replaceDuplicateNames(layerControlStatic);
         layerControlStatic.sort((a, b) => {
-          return a.layerName - b.layerName;
+          return a.layerName.localeCompare(b.layerName);
         });
         layerControlStatic.forEach((element) => {
           this.layerControl.addOverlay(element.layer, element.layerName);
+          if (activeLayerNames.includes(element.layerName)) {
+            element.layer.addTo(this.map);
+          }
         });
       });
     },
@@ -192,6 +235,24 @@ export default {
         name = geojson.properties.name;
       }
       return name;
+    },
+    replaceDuplicateNames(layerList) {
+      const dupNames = layerList
+        .map(({ layerName }) => layerName)
+        .filter((e, i, a) => a.indexOf(e) === i && a.lastIndexOf(e) !== i);
+      layerList.forEach((layer) => {
+        if (dupNames.includes(layer.layerName)) {
+          let count = 1;
+          let newName = "";
+          let allNames = [];
+          do {
+            allNames = layerList.map(({ layerName }) => layerName);
+            newName = `${layer.layerName}-${count}`;
+            count++;
+          } while (allNames.includes(newName));
+          layer.layerName = newName;
+        }
+      });
     },
     updateMarker(id, lat, lon, popup, iconAttr, opacity) {
       if (this.deviceLayer) {
