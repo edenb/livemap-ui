@@ -124,7 +124,15 @@ export default {
         baseMaps[tileProvider.options.name] = baseLayer;
       });
       this.layerControl = L.control
-        .layers(baseMaps, {}, { collapsed: false })
+        .layers(
+          baseMaps,
+          {},
+          {
+            collapsed: false,
+            sortLayers: true,
+            sortFunction: this.deviceOnTop,
+          }
+        )
         .addTo(this.map);
       this.map.on("moveend", (e) => {
         this.worldmapStore.center = e.target.getCenter();
@@ -141,6 +149,16 @@ export default {
       this.map.on("overlayremove", (e) => {
         this.storeOverlayControls(e.name, false);
       });
+    },
+    deviceOnTop(layerA, layerB) {
+      console.log(layerA.options.onTop, layerB.options.onTop);
+      if (layerA.options.onTop) {
+        return -1;
+      } else if (layerB.options.onTop) {
+        return 1;
+      } else {
+        return 0;
+      }
     },
     storeOverlayControls(name, active) {
       const overlayNames = this.worldmapStore.overlayNames;
@@ -182,6 +200,7 @@ export default {
         ) {
           this.fitMarkers();
         }
+        this.deviceLayer.options.onTop = true;
         this.layerControl.addOverlay(this.deviceLayer, "Device");
         if (activeLayerNames.includes("Device")) {
           this.deviceLayer.addTo(this.map);
