@@ -151,7 +151,6 @@ export default {
       });
     },
     deviceOnTop(layerA, layerB) {
-      console.log(layerA.options.onTop, layerB.options.onTop);
       if (layerA.options.onTop) {
         return -1;
       } else if (layerB.options.onTop) {
