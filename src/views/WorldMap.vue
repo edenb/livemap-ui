@@ -10,7 +10,6 @@ import { useAuthStore } from "@/store.js";
 import { useLayoutStore } from "@/store.js";
 import { usePositionStore } from "@/store.js";
 import { useWorldmapStore } from "@/store.js";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
@@ -23,9 +22,9 @@ export default {
   components: {
     TheSidebarRight,
   },
-  mixins: [ApiMixin],
   setup() {
     const connect = inject("connect");
+    const httpRequest = inject("httpRequest");
     const positionUpdate = inject("positionUpdate");
     const authStore = useAuthStore();
     const positionStore = usePositionStore();
@@ -37,6 +36,7 @@ export default {
       authStore,
       connect,
       drawerOpen,
+      httpRequest,
       positionStore,
       positionUpdate,
       worldmapStore,
@@ -170,7 +170,7 @@ export default {
       }
     },
     loadDeviceLayer(activeLayerNames) {
-      this.apiRequest("get", "/positions").then((response) => {
+      this.httpRequest("get", "/positions").then((response) => {
         this.deviceLayer = L.featureGroup();
         this.positionStore.clearLastPositions();
         for (let dev of response.data) {
@@ -207,7 +207,7 @@ export default {
       });
     },
     loadStaticLayers(activeLayerNames) {
-      this.apiRequest("get", "/staticlayers").then((response) => {
+      this.httpRequest("get", "/staticlayers").then((response) => {
         let layerControlStatic = [];
         let layerIndex = 1;
         for (let geojson of response.data) {

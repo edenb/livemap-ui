@@ -85,7 +85,6 @@
 <script>
 import { mapState } from "pinia";
 import { useAuthStore } from "@/store.js";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import UserListEditUser from "@/components/UserListEditUser.vue";
 import UserListChangePassword from "@/components/UserListChangePassword.vue";
@@ -96,7 +95,7 @@ export default {
     UserListEditUser,
     UserListChangePassword,
   },
-  mixins: [ApiMixin],
+  inject: ["httpRequest"],
   data() {
     return {
       allUsers: [],
@@ -127,7 +126,7 @@ export default {
   },
   methods: {
     loadTable() {
-      this.apiRequest("get", `users`)
+      this.httpRequest("get", `users`)
         .then((response) => {
           this.allUsers = response.data;
         })
@@ -148,7 +147,7 @@ export default {
         .open("Delete", messageText, [item.fullname], { color: "red" })
         .then((confirm) => {
           if (confirm) {
-            this.apiRequest("delete", `users/${item.user_id}`)
+            this.httpRequest("delete", `users/${item.user_id}`)
               .then(() => {
                 this.loadTable();
               })

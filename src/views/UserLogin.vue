@@ -57,13 +57,14 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin.js";
 import { mapActions } from "pinia";
 import { useAuthStore } from "@/store.js";
 export default {
   name: "UserLogin",
-  mixins: [ApiMixin],
+  inject: ["httpRequest"],
   data: () => ({
+    errorResponseText: "",
+    loading: false,
     username: "",
     usernameRules: [(v) => !!v || "Username is required"],
     password: "",
@@ -74,7 +75,8 @@ export default {
     ...mapActions(useAuthStore, ["setAuthorized"]),
     loginUser() {
       if (this.username && this.password) {
-        this.apiRequest("post", "/login", {
+        this.loading = true;
+        this.httpRequest("post", "/login", {
           username: this.username,
           password: this.password,
         })
@@ -84,7 +86,12 @@ export default {
           .then(() => {
             this.$router.push("/worldmap");
           })
-          .catch(() => {});
+          .catch((err) => {
+            this.errorResponseText = err.errorResponseText;
+          })
+          .finally(() => {
+            this.loading = false;
+          });
       }
     },
   },

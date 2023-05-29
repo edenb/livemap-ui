@@ -49,9 +49,8 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { useAuthStore } from "@/store.js";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 
 const rules = {
@@ -153,11 +152,12 @@ export default {
   components: {
     FormRenderer,
   },
-  mixins: [ApiMixin],
   setup() {
     const authStore = useAuthStore();
     const device = ref({});
+    const errorResponseText = ref("");
     const formData = ref({});
+    const httpRequest = inject("httpRequest");
     const inputValid = ref(false);
     const schemaIdentifier = formSchemaIdentifier;
     const schemaIdentifierRO = formSchemaIdentifierRO;
@@ -171,7 +171,9 @@ export default {
     return {
       authStore,
       device,
+      errorResponseText,
       formData,
+      httpRequest,
       inputValid,
       schemaIdentifier,
       schemaIdentifierRO,
@@ -222,7 +224,7 @@ export default {
           modifiedDevice.fixed_loc_lon = this.convertToNumber(
             modifiedDevice.fixed_loc_lon
           );
-          this.apiRequest(
+          this.httpRequest(
             "put",
             `users/${this.authStore.user.user_id}/devices/${modifiedDevice.device_id}`,
             modifiedDevice
@@ -231,7 +233,9 @@ export default {
               this.resolve(true);
               this.showDialog = false;
             })
-            .catch(() => {});
+            .catch((err) => {
+              this.errorResponseText = err.errorResponseText;
+            });
         } else {
           let addedDevice = {};
           this.copyObject(this.formData, addedDevice, [
@@ -247,7 +251,7 @@ export default {
           addedDevice.fixed_loc_lon = this.convertToNumber(
             addedDevice.fixed_loc_lon
           );
-          this.apiRequest(
+          this.httpRequest(
             "post",
             `users/${this.authStore.user.user_id}/devices`,
             addedDevice
@@ -256,7 +260,9 @@ export default {
               this.resolve(true);
               this.showDialog = false;
             })
-            .catch(() => {});
+            .catch((err) => {
+              this.errorResponseText = err.errorResponseText;
+            });
         }
       }
     },

@@ -40,8 +40,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
+import { inject, ref } from "vue";
 import FormRenderer from "@/components/FormRenderer.vue";
 
 const rules = {
@@ -85,9 +84,10 @@ export default {
   components: {
     FormRenderer,
   },
-  mixins: [ApiMixin],
   setup() {
+    const errorResponseText = ref("");
     const formData = ref({});
+    const httpRequest = inject("httpRequest");
     const inputValid = ref(false);
     const schemaPassword = formSchemaPassword;
     const showDialog = ref(false);
@@ -95,7 +95,9 @@ export default {
     const reject = ref(null);
     const user = ref({});
     return {
+      errorResponseText,
       formData,
+      httpRequest,
       inputValid,
       schemaPassword,
       showDialog,
@@ -136,7 +138,7 @@ export default {
           "newpwd",
           "confirmpwd",
         ]);
-        this.apiRequest(
+        this.httpRequest(
           "post",
           `users/${this.user.user_id}/password/reset`,
           modifiedPassword
@@ -145,7 +147,9 @@ export default {
             this.resolve(true);
             this.showDialog = false;
           })
-          .catch(() => {});
+          .catch((err) => {
+            this.errorResponseText = err.errorResponseText;
+          });
       }
     },
     noChange() {
