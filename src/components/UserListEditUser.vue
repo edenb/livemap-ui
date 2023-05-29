@@ -44,8 +44,7 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
+import { computed, inject, ref } from "vue";
 import FormRenderer from "@/components/FormRenderer.vue";
 
 const rules = {
@@ -167,10 +166,11 @@ export default {
   components: {
     FormRenderer,
   },
-  mixins: [ApiMixin],
   emits: ["input"],
   setup() {
+    const errorResponseText = ref("");
     const formData = ref({});
+    const httpRequest = inject("httpRequest");
     const inputValid = ref(false);
     const schemaPassword = formSchemaPassword;
     const schemaUser = formSchemaUser;
@@ -182,7 +182,9 @@ export default {
       return user.value.user_id < 0 ? "New User" : "Edit User";
     });
     return {
+      errorResponseText,
       formData,
+      httpRequest,
       inputValid,
       schemaPassword,
       schemaUser,
@@ -231,12 +233,14 @@ export default {
             "user_id",
             "username",
           ]);
-          this.apiRequest("put", `users/${modifiedUser.user_id}`, modifiedUser)
+          this.httpRequest("put", `users/${modifiedUser.user_id}`, modifiedUser)
             .then(() => {
               this.resolve(true);
               this.showDialog = false;
             })
-            .catch(() => {});
+            .catch((err) => {
+              this.errorResponseText = err.errorResponseText;
+            });
         } else {
           let AddedUser = {};
           this.copyObject(this.formData, AddedUser, [
@@ -247,12 +251,14 @@ export default {
             "role",
             "username",
           ]);
-          this.apiRequest("post", `users`, AddedUser)
+          this.httpRequest("post", `users`, AddedUser)
             .then(() => {
               this.resolve(true);
               this.showDialog = false;
             })
-            .catch(() => {});
+            .catch((err) => {
+              this.errorResponseText = err.errorResponseText;
+            });
         }
       }
     },

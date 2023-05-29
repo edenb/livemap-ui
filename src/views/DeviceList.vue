@@ -101,7 +101,6 @@
 <script>
 import { mapState } from "pinia";
 import { useAuthStore } from "@/store.js";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import DeviceListEditDevice from "@/components/DeviceListEditDevice.vue";
 import DeviceListEditSharedUser from "@/components/DeviceListEditSharedUser.vue";
@@ -112,7 +111,7 @@ export default {
     DeviceListEditDevice,
     DeviceListEditSharedUser,
   },
-  mixins: [ApiMixin],
+  inject: ["httpRequest"],
   data() {
     return {
       allDevices: [],
@@ -143,7 +142,7 @@ export default {
   },
   methods: {
     loadTable() {
-      this.apiRequest("get", `users/${this.user.user_id}/devices`)
+      this.httpRequest("get", `users/${this.user.user_id}/devices`)
         .then((response) => {
           this.allDevices = response.data;
           this.allDevices.forEach((e) => {
@@ -180,7 +179,7 @@ export default {
         .open("Delete", messageText, deviceAliasList, { color: "red" })
         .then((confirm) => {
           if (confirm) {
-            this.apiRequest(
+            this.httpRequest(
               "delete",
               `users/${this.user.user_id}/devices/${deviceIdList}`
             )

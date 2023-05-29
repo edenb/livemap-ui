@@ -91,18 +91,15 @@
 </template>
 
 <script>
-import { ApiMixin } from "@/mixins/ApiMixin.js";
-import { getServerUrl } from "@/helpers/axios.js";
 export default {
   name: "ServerInfo",
-  mixins: [ApiMixin],
+  inject: ["httpRequest", "serverUrl"],
   data() {
     return {
       dialog: false,
       resolve: null,
       reject: null,
       info: {},
-      serverUrl: "",
       copied: [false, false],
       options: {
         color: "primary",
@@ -114,8 +111,7 @@ export default {
   methods: {
     open() {
       this.dialog = true;
-      this.serverUrl = getServerUrl();
-      this.apiRequest("get", `server/info`).then((response) => {
+      this.httpRequest("get", `server/info`).then((response) => {
         this.info = response.data;
         return new Promise((resolve, reject) => {
           this.resolve = resolve;

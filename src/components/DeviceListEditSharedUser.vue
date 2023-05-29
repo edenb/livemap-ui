@@ -50,9 +50,8 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import { useAuthStore } from "@/store.js";
-import { ApiMixin } from "@/mixins/ApiMixin.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 
 const formSchemaUsername = [
@@ -76,11 +75,12 @@ export default {
   components: {
     FormRenderer,
   },
-  mixins: [ApiMixin],
   setup() {
     const authStore = useAuthStore();
     const devices = ref([]);
+    const errorResponseText = ref("");
     const formData = ref({});
+    const httpRequest = inject("httpRequest");
     const inputValid = ref(false);
     const schemaUsername = formSchemaUsername;
     const showDialog = ref(false);
@@ -90,7 +90,9 @@ export default {
     return {
       authStore,
       devices,
+      errorResponseText,
       formData,
+      httpRequest,
       inputValid,
       schemaUsername,
       showDialog,
@@ -126,7 +128,7 @@ export default {
         for (let item of this.devices) {
           deviceIdList.push(item.device_id);
         }
-        this.apiRequest(
+        this.httpRequest(
           "post",
           `users/${this.authStore.user.user_id}/devices/${deviceIdList}/shareduser`,
           sharedUser
@@ -135,7 +137,9 @@ export default {
             this.resolve(true);
             this.showDialog = false;
           })
-          .catch(() => {});
+          .catch((err) => {
+            this.errorResponseText = err.errorResponseText;
+          });
       }
     },
     async removeUser() {
@@ -150,7 +154,7 @@ export default {
         for (let item of this.devices) {
           deviceIdList.push(item.device_id);
         }
-        this.apiRequest(
+        this.httpRequest(
           "delete",
           `users/${this.authStore.user.user_id}/devices/${deviceIdList}/shareduser`,
           unsharedUser
@@ -159,7 +163,9 @@ export default {
             this.resolve(true);
             this.showDialog = false;
           })
-          .catch(() => {});
+          .catch((err) => {
+            this.errorResponseText = err.errorResponseText;
+          });
       }
     },
     noChange() {

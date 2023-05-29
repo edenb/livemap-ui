@@ -7,6 +7,7 @@ import { loadFonts } from "./plugins/webfontloader";
 import Configuration from "@/configuration.js";
 import mitt from "mitt";
 import socketio from "@/plugins/socketio.js";
+import http from "@/plugins/http.js";
 
 loadFonts();
 
@@ -23,9 +24,15 @@ const socketioConf = {
   },
 };
 
+const httpConf = {
+  serverUrl: Configuration.value("envServerUrl") || "http://localhost:3000",
+  apiPath: "/api/v1",
+};
+
 app
   .use(pinia)
   .use(router)
   .use(vuetify)
   .use(socketio, socketioConf)
+  .use(http, httpConf)
   .mount("#app");

@@ -1,6 +1,5 @@
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import { defineStore } from "pinia";
-import httpRequest from "@/helpers/axios.js";
 
 export const useWorldmapStore = defineStore("worldmap", () => {
   const baseLayerName = ref("");
@@ -44,9 +43,10 @@ export const useLayoutStore = defineStore("layout", () => {
 });
 
 export const useAuthStore = defineStore("auth", () => {
+  const authorized = ref(false);
+  const httpRequest = inject("httpRequest");
   const user = ref({});
   const token = ref(localStorage.getItem("jwt"));
-  const authorized = ref(false);
   function setAuthorized(token) {
     this.token = token;
     return new Promise((resolve, reject) => {
