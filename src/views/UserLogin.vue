@@ -16,7 +16,8 @@
               <v-form ref="form" v-model="valid">
                 <v-text-field
                   v-model="username"
-                  label="Username"
+                  autocomplete="username"
+                  label="Username*"
                   name="username"
                   prepend-icon="mdi-account"
                   type="text"
@@ -27,7 +28,8 @@
                 <v-text-field
                   id="password"
                   v-model="password"
-                  label="Password"
+                  autocomplete="current-password"
+                  label="Password*"
                   name="password"
                   prepend-icon="mdi-lock"
                   type="password"
