@@ -14,37 +14,29 @@
   />
 </template>
 
-<script>
-import { ref, computed } from "vue";
-export default {
-  name: "FormField",
-  props: {
-    modelValue: {
-      type: String,
-      default: "",
-      required: true,
-    },
-    schema: {
-      type: Object,
-      default: () => ({}),
-      required: true,
-    },
+<script setup>
+import { computed, ref } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: "",
+    required: true,
   },
-  emits: ["update:modelValue"],
-  setup(props) {
-    const showHidden = ref(false);
-    const appendIcon = computed(() => {
-      if (props.schema.hasHiddenControl) {
-        return showHidden.value ? "mdi-eye" : "mdi-eye-off";
-      } else {
-        return "";
-      }
-    });
-    return {
-      value: props.modelValue,
-      showHidden,
-      appendIcon,
-    };
+  schema: {
+    type: Object,
+    default: () => ({}),
+    required: true,
   },
-};
+});
+defineEmits(["update:modelValue"]);
+const value = ref(props.modelValue);
+const showHidden = ref(false);
+const appendIcon = computed(() => {
+  if (props.schema.hasHiddenControl) {
+    return showHidden.value ? "mdi-eye" : "mdi-eye-off";
+  } else {
+    return "";
+  }
+});
 </script>

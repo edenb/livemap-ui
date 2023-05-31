@@ -12,34 +12,21 @@
   />
 </template>
 
-<script>
-import { computed } from "vue";
-export default {
-  name: "FormSelect",
-  props: {
-    modelValue: {
-      type: String,
-      default: "",
-      required: true,
-    },
-    schema: {
-      type: Object,
-      default: () => ({}),
-      required: true,
-    },
+<script setup>
+import { ref } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: "",
+    required: true,
   },
-  emits: ["update:modelValue"],
-  setup(props) {
-    const value = computed(() => {
-      if (props.modelValue == "") {
-        return null;
-      } else {
-        return props.modelValue;
-      }
-    });
-    return {
-      value,
-    };
+  schema: {
+    type: Object,
+    default: () => ({}),
+    required: true,
   },
-};
+});
+defineEmits(["update:modelValue"]);
+const value = ref(props.modelValue === "" ? null : props.modelValue);
 </script>
