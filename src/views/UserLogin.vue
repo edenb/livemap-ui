@@ -58,44 +58,41 @@
   </v-main>
 </template>
 
-<script>
-import { mapActions } from "pinia";
+<script setup>
+import { inject, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store.js";
-export default {
-  name: "UserLogin",
-  inject: ["httpRequest"],
-  data: () => ({
-    errorResponseText: "",
-    loading: false,
-    username: "",
-    usernameRules: [(v) => !!v || "Username is required"],
-    password: "",
-    passwordRules: [(v) => !!v || "Password is required"],
-    valid: false,
-  }),
-  methods: {
-    ...mapActions(useAuthStore, ["setAuthorized"]),
-    loginUser() {
-      if (this.username && this.password) {
-        this.loading = true;
-        this.httpRequest("post", "/login", {
-          username: this.username,
-          password: this.password,
-        })
-          .then((response) => {
-            return this.setAuthorized(response.data.access_token);
-          })
-          .then(() => {
-            this.$router.push("/worldmap");
-          })
-          .catch((err) => {
-            this.errorResponseText = err.errorResponseText;
-          })
-          .finally(() => {
-            this.loading = false;
-          });
-      }
-    },
-  },
-};
+
+const authStore = useAuthStore();
+const errorResponseText = ref("");
+const httpRequest = inject("httpRequest");
+const loading = ref(false);
+const username = ref("");
+const usernameRules = [(v) => !!v || "Username is required"];
+const password = ref("");
+const passwordRules = [(v) => !!v || "Password is required"];
+const router = useRouter();
+const valid = ref(false);
+
+function loginUser() {
+  if (username.value && password.value) {
+    loading.value = true;
+    httpRequest("post", "/login", {
+      username: username.value,
+      password: password.value,
+    })
+      .then((response) => {
+        return authStore.setAuthorized(response.data.access_token);
+      })
+      .then(() => {
+        router.push("/worldmap");
+      })
+      .catch((err) => {
+        errorResponseText.value = err.errorResponseText;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  }
+}
 </script>

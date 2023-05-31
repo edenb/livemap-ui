@@ -2,32 +2,22 @@
   <div />
 </template>
 
-<script>
-import { inject } from "vue";
-import { useAuthStore } from "@/store.js";
-import { usePositionStore } from "@/store.js";
-import { useWorldmapStore } from "@/store.js";
+<script setup>
+import { inject, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore, usePositionStore, useWorldmapStore } from "@/store.js";
 
-export default {
-  name: "UserLogout",
-  setup() {
-    const authStore = useAuthStore();
-    const disconnect = inject("disconnect");
-    const positionStore = usePositionStore();
-    const worldmapStore = useWorldmapStore();
-    return {
-      authStore,
-      disconnect,
-      positionStore,
-      worldmapStore,
-    };
-  },
-  created() {
-    this.disconnect();
-    this.authStore.revokeAuthorized();
-    this.positionStore.clearLastPositions();
-    this.worldmapStore.resetAll();
-    this.$router.push("/");
-  },
-};
+const authStore = useAuthStore();
+const disconnect = inject("disconnect");
+const positionStore = usePositionStore();
+const router = useRouter();
+const worldmapStore = useWorldmapStore();
+
+onMounted(() => {
+  disconnect();
+  authStore.revokeAuthorized();
+  positionStore.clearLastPositions();
+  worldmapStore.resetAll();
+  router.push("/");
+});
 </script>
