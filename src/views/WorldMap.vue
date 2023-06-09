@@ -24,6 +24,7 @@ export default {
   },
   setup() {
     const connect = inject("connect");
+    const emitter = inject("emitter");
     const httpRequest = inject("httpRequest");
     const positionUpdate = inject("positionUpdate");
     const authStore = useAuthStore();
@@ -36,6 +37,7 @@ export default {
       authStore,
       connect,
       drawerOpen,
+      emitter,
       httpRequest,
       positionStore,
       positionUpdate,

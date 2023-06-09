@@ -39,71 +39,65 @@
   </v-navigation-drawer>
 </template>
 
-<script>
-import { mapState } from "pinia";
-import { usePositionStore } from "@/store.js";
-import { useLayoutStore } from "@/store.js";
+<script setup>
+import { computed, inject, onMounted, onUnmounted, ref } from "vue";
+import { useDisplay } from "vuetify";
+import { storeToRefs } from "pinia";
+import { usePositionStore, useLayoutStore } from "@/store.js";
 
-export default {
-  name: "TheSidebarRight",
-  data() {
-    return {
-      drawer: false,
-      headers: [{ text: "Name", value: "alias" }],
-    };
-  },
-  computed: {
-    ...mapState(usePositionStore, ["lastPositions"]),
-    ...mapState(useLayoutStore, ["drawerOpen"]),
-    lastPositionsOrdered: function () {
-      let lastPositionsOrdered = this.lastPositions;
-      lastPositionsOrdered.sort((a, b) =>
-        a.raw.alias.localeCompare(b.raw.alias)
-      );
-      return lastPositionsOrdered;
-    },
-  },
-  mounted() {
-    if ("right" in this.drawerOpen) {
-      this.drawer = this.drawerOpen.right;
-    } else {
-      this.drawer = !this.$vuetify.display.mobile;
-      this.drawerOpen.right = this.drawer;
-    }
-    this.emitter.on("toggle-sidebar-right", () => {
-      this.drawer = !this.drawer;
-    });
-  },
-  beforeUnmount() {
-    this.emitter.off("toggle-sidebar-right");
-  },
-  methods: {
-    openDevicePopup(device_id) {
-      this.emitter.emit("open-device-popup", device_id);
-    },
-    getAgeText(birth) {
-      const tsBirth = new Date(birth);
-      const tsNow = new Date(Date.now());
-      const td = (tsNow - tsBirth) / 1000;
-      if (td < 60) {
-        return `<1m`;
-      }
-      if (td < 3600) {
-        return `${(td / 60).toFixed()}m`;
-      }
-      if (td < 3600 * 24) {
-        return `${(td / 3600).toFixed()}h`;
-      }
-      if (td < 3600 * 24 * 99) {
-        return `${(td / (3600 * 24)).toFixed()}d`;
-      }
-      return `>99d`;
-    },
-    onTransistionEnd(event) {
-      if (event.propertyName === "transform") {
-        this.drawerOpen.right = this.drawer;
-      }
-    },
-  },
-};
+const drawer = ref(false);
+const { drawerOpen } = storeToRefs(useLayoutStore());
+const emitter = inject("emitter");
+const { lastPositions } = storeToRefs(usePositionStore());
+const lastPositionsOrdered = computed(() => {
+  let lastPositionsOrdered = lastPositions.value;
+  lastPositionsOrdered.sort((a, b) => a.raw.alias.localeCompare(b.raw.alias));
+  return lastPositionsOrdered;
+});
+const { mobile } = useDisplay();
+
+onMounted(() => {
+  if ("right" in drawerOpen.value) {
+    drawer.value = drawerOpen.value.right;
+  } else {
+    drawer.value = !mobile.value;
+    drawerOpen.value.right = drawer.value;
+  }
+  emitter.on("toggle-sidebar-right", () => {
+    drawer.value = !drawer.value;
+  });
+});
+
+onUnmounted(() => {
+  emitter.off("toggle-sidebar-right");
+});
+
+function openDevicePopup(device_id) {
+  emitter.emit("open-device-popup", device_id);
+}
+
+function getAgeText(birth) {
+  const tsBirth = new Date(birth);
+  const tsNow = new Date(Date.now());
+  const td = (tsNow - tsBirth) / 1000;
+  if (td < 60) {
+    return `<1m`;
+  }
+  if (td < 3600) {
+    return `${(td / 60).toFixed()}m`;
+  }
+  if (td < 3600 * 24) {
+    return `${(td / 3600).toFixed()}h`;
+  }
+  if (td < 3600 * 24 * 99) {
+    return `${(td / (3600 * 24)).toFixed()}d`;
+  }
+  return `>99d`;
+}
+
+function onTransistionEnd(event) {
+  if (event.propertyName === "transform") {
+    drawerOpen.value.right = drawer.value;
+  }
+}
 </script>
