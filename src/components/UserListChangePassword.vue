@@ -78,7 +78,7 @@ async function changed() {
     httpRequest(
       "post",
       `users/${user.value.user_id}/password/reset`,
-      modifiedPassword
+      modifiedPassword,
     )
       .then(() => {
         resolve(true);

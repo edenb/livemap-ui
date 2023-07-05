@@ -175,7 +175,7 @@ function deleteItems(items) {
       if (confirm) {
         httpRequest(
           "delete",
-          `users/${user.value.user_id}/devices/${deviceIdList}`
+          `users/${user.value.user_id}/devices/${deviceIdList}`,
         )
           .then(() => {
             loadTable();

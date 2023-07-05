@@ -58,7 +58,7 @@ watch(
   () => {
     map.invalidateSize({ pan: false });
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch(positionUpdate, () => {
@@ -99,7 +99,7 @@ function initMap() {
   tileProviders.forEach((tileProvider) => {
     const baseLayer = L.tileLayer(
       tileProvider.urlTemplate,
-      tileProvider.options
+      tileProvider.options,
     );
     if (
       worldmapStore.baseLayerName === tileProvider.options.name ||
@@ -117,7 +117,7 @@ function initMap() {
         collapsed: false,
         sortLayers: true,
         sortFunction: deviceOnTop,
-      }
+      },
     )
     .addTo(map);
   map.on("moveend", (e) => {
@@ -172,7 +172,7 @@ function loadDeviceLayer(activeLayerNames) {
         dev.loc_lon,
         popup,
         iconAttr,
-        opacity
+        opacity,
       );
       positionStore.addLastPositions({
         raw: dev,
@@ -478,7 +478,7 @@ function updateFromSocket(socketPayloadStr) {
       dev.loc_lon,
       popup,
       iconAttr,
-      opacity
+      opacity,
     );
     const cbFindDuplicates = (e, i, a) =>
       e.raw.device_id === a[a.length - 1].raw.device_id;

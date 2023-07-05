@@ -101,15 +101,15 @@ async function changed() {
       ]);
       // For inputs that require numbers convert form strings
       modifiedDevice.fixed_loc_lat = convertToNumber(
-        modifiedDevice.fixed_loc_lat
+        modifiedDevice.fixed_loc_lat,
       );
       modifiedDevice.fixed_loc_lon = convertToNumber(
-        modifiedDevice.fixed_loc_lon
+        modifiedDevice.fixed_loc_lon,
       );
       httpRequest(
         "put",
         `users/${user.value.user_id}/devices/${modifiedDevice.device_id}`,
-        modifiedDevice
+        modifiedDevice,
       )
         .then(() => {
           resolve(true);

@@ -1,7 +1,7 @@
 export const rules = {
   emptyOrEmail: (v) =>
     /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/.test(
-      v
+      v,
     ) ||
     v.length == 0 ||
     "E-mail must be valid",

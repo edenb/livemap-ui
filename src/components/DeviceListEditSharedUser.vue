@@ -84,7 +84,7 @@ async function addUser() {
     httpRequest(
       "post",
       `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
-      sharedUser
+      sharedUser,
     )
       .then(() => {
         resolve(true);
@@ -109,7 +109,7 @@ async function removeUser() {
     httpRequest(
       "delete",
       `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
-      unsharedUser
+      unsharedUser,
     )
       .then(() => {
         resolve(true);
