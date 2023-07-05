@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="devices" v-model="showDialog" max-width="500px">
-    <v-form ref="form" v-model="inputValid">
+    <v-form ref="formDialog" v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">Share / Unshare</span>
@@ -10,12 +10,7 @@
         </template>
         <v-card-text>
           <div class="text-h5">Affected devices</div>
-          <v-chip
-            v-for="device in devices"
-            :key="device"
-            class="ma-1"
-            :model-value="true"
-          >
+          <v-chip v-for="device in devices" :key="device" class="ma-1">
             {{ device.alias }}
           </v-chip>
         </v-card-text>
@@ -49,129 +44,91 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup>
 import { inject, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/store.js";
 import FormRenderer from "@/components/FormRenderer.vue";
+import { schemaUsername } from "@/forms/schemas.js";
 
-const formSchemaUsername = [
-  {
-    label: "Username",
-    type: "FormField",
-    state: "username",
-    colsSm: 12,
-    hint: "User to share or unshare the affected devices with",
-    rules: [],
-    isHidden: false,
-    isPassword: false,
-    isReadonly: false,
-    hasCounter: false,
-    hasHiddenControl: false,
-  },
-];
+defineExpose({ open });
+const devices = ref([]);
+const errorResponseText = ref("");
+const formData = ref({});
+const formDialog = ref(null);
+const httpRequest = inject("httpRequest");
+const inputValid = ref(false);
+let resolve = null;
+const showDialog = ref(false);
+const { user } = storeToRefs(useAuthStore());
 
-export default {
-  name: "EditSharedUser",
-  components: {
-    FormRenderer,
-  },
-  setup() {
-    const authStore = useAuthStore();
-    const devices = ref([]);
-    const errorResponseText = ref("");
-    const formData = ref({});
-    const httpRequest = inject("httpRequest");
-    const inputValid = ref(false);
-    const schemaUsername = formSchemaUsername;
-    const showDialog = ref(false);
-    const resolve = ref(null);
-    const reject = ref(null);
-    const username = ref("");
-    return {
-      authStore,
-      devices,
-      errorResponseText,
-      formData,
-      httpRequest,
-      inputValid,
-      schemaUsername,
-      showDialog,
-      reject,
-      resolve,
-      username,
-    };
-  },
-  methods: {
-    copyObject(from, to, keys) {
-      for (let key of keys) {
-        to[key] = from[key];
-      }
-    },
-    open(devices) {
-      this.devices = devices;
-      this.errorResponseText = "";
-      this.showDialog = true;
-      return new Promise((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
+function open(dialogDevices) {
+  devices.value = dialogDevices;
+  errorResponseText.value = "";
+  showDialog.value = true;
+  return new Promise((resolveOpen) => {
+    resolve = resolveOpen;
+  });
+}
+
+async function addUser() {
+  errorResponseText.value = "";
+  await formDialog.value.validate();
+  if (inputValid.value) {
+    let sharedUser = {};
+    copyObject(formData.value, sharedUser, ["username"]);
+    let deviceIdList = [];
+    for (let item of devices.value) {
+      deviceIdList.push(item.device_id);
+    }
+    httpRequest(
+      "post",
+      `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
+      sharedUser
+    )
+      .then(() => {
+        resolve(true);
+        showDialog.value = false;
+      })
+      .catch((err) => {
+        errorResponseText.value = err.errorResponseText;
       });
-    },
-    async addUser() {
-      this.errorResponseText = "";
-      await this.$refs.form.validate();
+  }
+}
 
-      if (this.inputValid) {
-        let sharedUser = {};
-        this.copyObject(this.formData, sharedUser, ["username"]);
+async function removeUser() {
+  errorResponseText.value = "";
+  await formDialog.value.validate();
+  if (inputValid.value) {
+    let unsharedUser = {};
+    copyObject(formData.value, unsharedUser, ["username"]);
+    let deviceIdList = [];
+    for (let item of devices.value) {
+      deviceIdList.push(item.device_id);
+    }
+    httpRequest(
+      "delete",
+      `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
+      unsharedUser
+    )
+      .then(() => {
+        resolve(true);
+        showDialog.value = false;
+      })
+      .catch((err) => {
+        errorResponseText.value = err.errorResponseText;
+      });
+  }
+}
 
-        let deviceIdList = [];
-        for (let item of this.devices) {
-          deviceIdList.push(item.device_id);
-        }
-        this.httpRequest(
-          "post",
-          `users/${this.authStore.user.user_id}/devices/${deviceIdList}/shareduser`,
-          sharedUser
-        )
-          .then(() => {
-            this.resolve(true);
-            this.showDialog = false;
-          })
-          .catch((err) => {
-            this.errorResponseText = err.errorResponseText;
-          });
-      }
-    },
-    async removeUser() {
-      this.errorResponseText = "";
-      await this.$refs.form.validate();
+function noChange() {
+  resolve(false);
+  showDialog.value = false;
+}
 
-      if (this.inputValid) {
-        let unsharedUser = {};
-        this.copyObject(this.formData, unsharedUser, ["username"]);
-
-        let deviceIdList = [];
-        for (let item of this.devices) {
-          deviceIdList.push(item.device_id);
-        }
-        this.httpRequest(
-          "delete",
-          `users/${this.authStore.user.user_id}/devices/${deviceIdList}/shareduser`,
-          unsharedUser
-        )
-          .then(() => {
-            this.resolve(true);
-            this.showDialog = false;
-          })
-          .catch((err) => {
-            this.errorResponseText = err.errorResponseText;
-          });
-      }
-    },
-    noChange() {
-      this.resolve(false);
-      this.showDialog = false;
-    },
-  },
-};
+function copyObject(from, to, keys) {
+  for (let key of keys) {
+    to[key] = from[key];
+  }
+}
 </script>

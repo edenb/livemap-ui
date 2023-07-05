@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="user" v-model="showDialog" max-width="500px">
-    <v-form ref="form" v-model="inputValid">
+    <v-form ref="formDialog" v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">Reset Password</span>
@@ -10,7 +10,7 @@
           <div>Username: {{ user.username }}</div>
         </template>
         <template #text>
-          <FormRenderer v-model="formData" :form-schema="schemaPassword" />
+          <FormRenderer v-model="formData" :form-schema="schemaPasswordEdit" />
         </template>
         <template #actions>
           <v-card-item>
@@ -39,123 +39,65 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup>
 import { inject, ref } from "vue";
 import FormRenderer from "@/components/FormRenderer.vue";
+import { schemaPasswordEdit } from "@/forms/schemas.js";
 
-const rules = {
-  required: (v) => !!v || "Field is required",
-  min(minLength) {
-    return (v) => v.length >= minLength || `At least ${minLength} characters`;
-  },
-};
+defineExpose({ open });
+const errorResponseText = ref("");
+const formData = ref({});
+const formDialog = ref(null);
+const httpRequest = inject("httpRequest");
+const inputValid = ref(false);
+let resolve = null;
+const showDialog = ref(false);
+const user = ref({});
 
-const formSchemaPassword = [
-  {
-    label: "Password*",
-    type: "FormField",
-    state: "newpwd",
-    colsSm: 12,
-    hint: "*required. At least 8 characters",
-    rules: [rules.required, rules.min(8)],
-    isHidden: true,
-    isPassword: true,
-    isReadonly: false,
-    hasCounter: true,
-    hasHiddenControl: true,
-  },
-  {
-    label: "Confirm password*",
-    type: "FormField",
-    state: "confirmpwd",
-    colsSm: 12,
-    hint: "*required. At least 8 characters",
-    rules: [rules.required, rules.min(8)],
-    isHidden: true,
-    isPassword: true,
-    isReadonly: false,
-    hasCounter: true,
-    hasHiddenControl: true,
-  },
-];
+function open(dialogUser) {
+  user.value = dialogUser;
+  formData.value = { ...user.value };
+  errorResponseText.value = "";
+  showDialog.value = true;
+  return new Promise((resolveOpen) => {
+    resolve = resolveOpen;
+  });
+}
 
-export default {
-  name: "EditPassword",
-  components: {
-    FormRenderer,
-  },
-  setup() {
-    const errorResponseText = ref("");
-    const formData = ref({});
-    const httpRequest = inject("httpRequest");
-    const inputValid = ref(false);
-    const schemaPassword = formSchemaPassword;
-    const showDialog = ref(false);
-    const resolve = ref(null);
-    const reject = ref(null);
-    const user = ref({});
-    return {
-      errorResponseText,
-      formData,
-      httpRequest,
-      inputValid,
-      schemaPassword,
-      showDialog,
-      reject,
-      resolve,
-      user,
-    };
-  },
-  methods: {
-    copyObject(from, to, keys) {
-      for (let key of keys) {
-        to[key] = from[key];
-      }
-    },
-    open(user) {
-      this.user = user;
-      this.formData = { ...user };
-      this.errorResponseText = "";
-      this.showDialog = true;
-      return new Promise((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
+async function changed() {
+  errorResponseText.value = "";
+  await formDialog.value.validate();
+  let formValid = true;
+  if (formData.value.newpwd !== formData.value.confirmpwd) {
+    errorResponseText.value = "Passwords should match";
+    formValid = false;
+  }
+  if (inputValid.value && formValid) {
+    let modifiedPassword = {};
+    copyObject(formData.value, modifiedPassword, ["newpwd", "confirmpwd"]);
+    httpRequest(
+      "post",
+      `users/${user.value.user_id}/password/reset`,
+      modifiedPassword
+    )
+      .then(() => {
+        resolve(true);
+        showDialog.value = false;
+      })
+      .catch((err) => {
+        errorResponseText.value = err.errorResponseText;
       });
-    },
-    async changed() {
-      this.errorResponseText = "";
-      await this.$refs.form.validate();
+  }
+}
 
-      let formValid = true;
-      if (this.formData.newpwd !== this.formData.confirmpwd) {
-        this.errorResponseText = "Passwords should match";
-        formValid = false;
-      }
+function noChange() {
+  resolve(false);
+  showDialog.value = false;
+}
 
-      if (this.inputValid && formValid) {
-        let modifiedPassword = {};
-        this.copyObject(this.formData, modifiedPassword, [
-          "newpwd",
-          "confirmpwd",
-        ]);
-        this.httpRequest(
-          "post",
-          `users/${this.user.user_id}/password/reset`,
-          modifiedPassword
-        )
-          .then(() => {
-            this.resolve(true);
-            this.showDialog = false;
-          })
-          .catch((err) => {
-            this.errorResponseText = err.errorResponseText;
-          });
-      }
-    },
-    noChange() {
-      this.resolve(false);
-      this.showDialog = false;
-    },
-  },
-};
+function copyObject(from, to, keys) {
+  for (let key of keys) {
+    to[key] = from[key];
+  }
+}
 </script>

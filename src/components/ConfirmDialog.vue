@@ -55,8 +55,8 @@ function open(dialogTitle, dialogMessages, dialogItems, dialogOptions) {
   messages.value = dialogMessages;
   items.value = dialogItems;
   options.value = Object.assign(options.value, dialogOptions);
-  return new Promise((openResolve) => {
-    resolve = openResolve;
+  return new Promise((resolveOpen) => {
+    resolve = resolveOpen;
   });
 }
 
