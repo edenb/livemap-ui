@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="devices" v-model="showDialog" max-width="500px">
-    <v-form ref="formDialog" v-model="inputValid">
+    <v-form v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">Share / Unshare</span>
@@ -55,7 +55,6 @@ defineExpose({ open });
 const devices = ref([]);
 const errorResponseText = ref("");
 const formData = ref({});
-const formDialog = ref(null);
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve = null;
@@ -73,7 +72,6 @@ function open(dialogDevices) {
 
 async function addUser() {
   errorResponseText.value = "";
-  await formDialog.value.validate();
   if (inputValid.value) {
     let sharedUser = {};
     copyObject(formData.value, sharedUser, ["username"]);
@@ -98,7 +96,6 @@ async function addUser() {
 
 async function removeUser() {
   errorResponseText.value = "";
-  await formDialog.value.validate();
   if (inputValid.value) {
     let unsharedUser = {};
     copyObject(formData.value, unsharedUser, ["username"]);

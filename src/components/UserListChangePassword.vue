@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="user" v-model="showDialog" max-width="500px">
-    <v-form ref="formDialog" v-model="inputValid">
+    <v-form v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">Reset Password</span>
@@ -47,7 +47,6 @@ import { schemaPasswordEdit } from "@/forms/schemas.js";
 defineExpose({ open });
 const errorResponseText = ref("");
 const formData = ref({});
-const formDialog = ref(null);
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve = null;
@@ -66,7 +65,6 @@ function open(dialogUser) {
 
 async function changed() {
   errorResponseText.value = "";
-  await formDialog.value.validate();
   let formValid = true;
   if (formData.value.newpwd !== formData.value.confirmpwd) {
     errorResponseText.value = "Passwords should match";

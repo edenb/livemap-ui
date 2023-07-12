@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="device" v-model="showDialog" max-width="800px">
-    <v-form ref="formDialog" v-model="inputValid">
+    <v-form v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">{{ formTitle }}</span>
@@ -63,7 +63,6 @@ defineExpose({ open });
 const device = ref({});
 const errorResponseText = ref("");
 const formData = ref({});
-const formDialog = ref(null);
 const formTitle = computed(() => {
   return device.value.device_id < 0 ? "New Device" : "Edit Device";
 });
@@ -88,7 +87,6 @@ function open(dialogDevice) {
 
 async function changed() {
   errorResponseText.value = "";
-  await formDialog.value.validate();
   if (inputValid.value) {
     // Existing devices already have an ID
     if (formData.value.device_id >= 0) {

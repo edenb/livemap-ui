@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="user" v-model="showDialog" max-width="800px">
-    <v-form ref="formDialog" v-model="inputValid">
+    <v-form v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">{{ formTitle }}</span>
@@ -51,7 +51,6 @@ import { schemaUser, schemaPasswordNew } from "@/forms/schemas.js";
 defineExpose({ open });
 const errorResponseText = ref("");
 const formData = ref({});
-const formDialog = ref(null);
 const formTitle = computed(() => {
   return user.value.user_id < 0 ? "New User" : "Edit User";
 });
@@ -73,7 +72,6 @@ function open(dialogUser) {
 
 async function changed() {
   errorResponseText.value = "";
-  await formDialog.value.validate();
   let formValid = true;
   if (formData.value.password !== formData.value.password2) {
     errorResponseText.value = "Passwords should match";
