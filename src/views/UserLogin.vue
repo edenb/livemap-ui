@@ -25,7 +25,12 @@
                 </div>
               </template>
               <v-spacer />
-              <v-btn :disabled="!inputValid" color="primary" @click="loginUser">
+              <v-btn
+                color="primary"
+                variant="text"
+                :disabled="!inputValid"
+                @click="loginUser"
+              >
                 Login
               </v-btn>
             </v-card-actions>

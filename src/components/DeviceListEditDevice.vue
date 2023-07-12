@@ -39,7 +39,14 @@
           <v-btn color="primary" variant="text" @click="noChange">
             Cancel
           </v-btn>
-          <v-btn color="primary" variant="text" @click="changed"> Save </v-btn>
+          <v-btn
+            color="primary"
+            variant="text"
+            :disabled="!inputValid"
+            @click="changed"
+          >
+            Save
+          </v-btn>
         </template>
       </v-card>
     </v-form>
