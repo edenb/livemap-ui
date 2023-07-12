@@ -13,30 +13,8 @@
               color="primary"
             />
             <v-card-text>
-              <v-form ref="form" v-model="valid">
-                <v-text-field
-                  v-model="username"
-                  autocomplete="username"
-                  label="Username*"
-                  name="username"
-                  prepend-icon="mdi-account"
-                  type="text"
-                  :rules="usernameRules"
-                  required
-                  @keyup.enter="loginUser"
-                />
-                <v-text-field
-                  id="password"
-                  v-model="password"
-                  autocomplete="current-password"
-                  label="Password*"
-                  name="password"
-                  prepend-icon="mdi-lock"
-                  type="password"
-                  :rules="passwordRules"
-                  required
-                  @keyup.enter="loginUser"
-                />
+              <v-form v-model="inputValid" @keydown.enter="loginUser">
+                <FormRenderer v-model="formData" :form-schema="schemaLogin" />
               </v-form>
             </v-card-text>
             <v-card-actions class="px-4">
@@ -47,7 +25,7 @@
                 </div>
               </template>
               <v-spacer />
-              <v-btn :disabled="!valid" color="primary" @click="loginUser">
+              <v-btn :disabled="!inputValid" color="primary" @click="loginUser">
                 Login
               </v-btn>
             </v-card-actions>
@@ -62,24 +40,23 @@
 import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store.js";
+import FormRenderer from "@/components/FormRenderer.vue";
+import { schemaLogin } from "@/forms/schemas.js";
 
 const authStore = useAuthStore();
 const errorResponseText = ref("");
+const formData = ref({});
 const httpRequest = inject("httpRequest");
+const inputValid = ref(false);
 const loading = ref(false);
-const username = ref("");
-const usernameRules = [(v) => !!v || "Username is required"];
-const password = ref("");
-const passwordRules = [(v) => !!v || "Password is required"];
 const router = useRouter();
-const valid = ref(false);
 
 function loginUser() {
-  if (username.value && password.value) {
+  if (inputValid.value) {
     loading.value = true;
     httpRequest("post", "/login", {
-      username: username.value,
-      password: password.value,
+      username: formData.value.username,
+      password: formData.value.password,
     })
       .then((response) => {
         return authStore.setAuthorized(response.data.access_token);

@@ -87,6 +87,39 @@ export const schemaIdentifierRO = [
   },
 ];
 
+export const schemaLogin = [
+  {
+    label: "username*",
+    type: "FormField",
+    state: "username",
+    autocomplete: "username",
+    colsSm: 12,
+    hint: "*required. At least 4 characters",
+    prependIcon: "mdi-account",
+    rules: [rules.required, rules.min(4)],
+    isHidden: false,
+    isPassword: false,
+    isReadonly: false,
+    hasCounter: true,
+    hasHiddenControl: false,
+  },
+  {
+    label: "password*",
+    type: "FormField",
+    state: "password",
+    autocomplete: "current-password",
+    colsSm: 12,
+    hint: "*required. At least 4 characters",
+    prependIcon: "mdi-lock",
+    rules: [rules.required, rules.min(4)],
+    isHidden: true,
+    isPassword: true,
+    isReadonly: false,
+    hasCounter: true,
+    hasHiddenControl: true,
+  },
+];
+
 export const schemaPasswordEdit = [
   {
     label: "Password*",
