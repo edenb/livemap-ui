@@ -151,11 +151,11 @@ export const schemaPasswordEdit = [
 
 export const schemaPasswordNew = [
   {
-    label: "Password",
+    label: "Password*",
     type: "FormField",
     state: "password",
     colsSm: 6,
-    hint: "At least 8 characters",
+    hint: "*required. At least 8 characters",
     rules: [rules.required, rules.min(8)],
     isHidden: true,
     isPassword: true,
@@ -164,11 +164,11 @@ export const schemaPasswordNew = [
     hasHiddenControl: true,
   },
   {
-    label: "Confirm password",
+    label: "Confirm password*",
     type: "FormField",
     state: "password2",
     colsSm: 6,
-    hint: "At least 8 characters",
+    hint: "*required. At least 8 characters",
     rules: [rules.required, rules.min(8)],
     isHidden: true,
     isPassword: true,
