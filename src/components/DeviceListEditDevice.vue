@@ -36,12 +36,10 @@
             </template>
           </v-card-item>
           <v-spacer />
-          <v-btn color="blue-darken-1" variant="text" @click="noChange">
+          <v-btn color="primary" variant="text" @click="noChange">
             Cancel
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="changed">
-            Save
-          </v-btn>
+          <v-btn color="primary" variant="text" @click="changed"> Save </v-btn>
         </template>
       </v-card>
     </v-form>

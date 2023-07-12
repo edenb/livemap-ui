@@ -29,13 +29,11 @@
             </template>
           </v-card-item>
           <v-spacer />
-          <v-btn color="blue-darken-1" variant="text" @click="noChange">
+          <v-btn color="primary" variant="text" @click="noChange">
             Cancel
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="addUser">
-            Share
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="removeUser">
+          <v-btn color="primary" variant="text" @click="addUser"> Share </v-btn>
+          <v-btn color="primary" variant="text" @click="removeUser">
             Unshare
           </v-btn>
         </template>

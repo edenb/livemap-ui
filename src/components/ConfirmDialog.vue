@@ -25,10 +25,8 @@
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer />
-        <v-btn color="blue-darken-1" variant="text" @click="cancel">
-          Cancel
-        </v-btn>
-        <v-btn color="blue-darken-1" variant="text" @click="agree"> Yes </v-btn>
+        <v-btn color="primary" variant="text" @click="cancel"> Cancel </v-btn>
+        <v-btn color="primary" variant="text" @click="agree"> Yes </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
