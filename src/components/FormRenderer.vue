@@ -10,7 +10,7 @@
       :lg="schema.colsLg"
     >
       <component
-        :is="schema.type"
+        :is="schemaTypes[schema.type]"
         v-model="data[schema.state]"
         :schema="schema"
         @update:model-value="$emit('update:modelValue', data)"
@@ -20,32 +20,28 @@
   </v-row>
 </template>
 
-<script>
+<script setup>
+import { ref } from "vue";
 import FormField from "@/components/FormField.vue";
 import FormSelect from "@/components/FormSelect.vue";
-export default {
-  name: "FormRenderer",
-  components: {
-    FormField,
-    FormSelect,
-  },
-  props: {
-    modelValue: {
-      type: Object,
-      default: () => {},
-      required: true,
-    },
-    formSchema: {
-      type: Array,
-      default: () => [],
-      required: true,
-    },
-  },
-  emits: ["update:modelValue"],
-  setup(props) {
-    return {
-      data: props.modelValue,
-    };
-  },
+
+const schemaTypes = {
+  FormField,
+  FormSelect,
 };
+
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default: () => {},
+    required: true,
+  },
+  formSchema: {
+    type: Array,
+    default: () => [],
+    required: true,
+  },
+});
+defineEmits(["update:modelValue"]);
+const data = ref(props.modelValue);
 </script>

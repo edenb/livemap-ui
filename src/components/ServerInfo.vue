@@ -82,52 +82,42 @@
 
       <v-card-actions class="pt-0">
         <v-spacer />
-        <v-btn color="primary-darken-1" variant="text" @click="cancel">
-          OK
-        </v-btn>
+        <v-btn color="primary" variant="text" @click="cancel"> OK </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script>
-export default {
-  name: "ServerInfo",
-  inject: ["httpRequest", "serverUrl"],
-  data() {
-    return {
-      dialog: false,
-      resolve: null,
-      reject: null,
-      info: {},
-      copied: [false, false],
-      options: {
-        color: "primary",
-        width: 480,
-        zIndex: 2000,
-      },
-    };
-  },
-  methods: {
-    open() {
-      this.dialog = true;
-      this.httpRequest("get", `server/info`).then((response) => {
-        this.info = response.data;
-        return new Promise((resolve, reject) => {
-          this.resolve = resolve;
-          this.reject = reject;
-        });
-      });
-    },
-    cancel() {
-      this.dialog = false;
-    },
-    async copy(clipboardText, copiedIdx) {
-      // Use splice to make variable reactive
-      this.copied.splice(copiedIdx, copiedIdx + 1, true);
-      await navigator.clipboard.writeText(clipboardText);
-      this.copied.splice(copiedIdx, copiedIdx + 1, false);
-    },
-  },
+<script setup>
+import { inject, ref } from "vue";
+
+defineExpose({ open });
+const copied = ref([false, false]);
+const dialog = ref(false);
+const httpRequest = inject("httpRequest");
+const info = ref({});
+const options = {
+  color: "primary",
+  width: 480,
+  zIndex: 2000,
 };
+const serverUrl = inject("serverUrl");
+
+function open() {
+  dialog.value = true;
+  httpRequest("get", `server/info`).then((response) => {
+    info.value = response.data;
+  });
+}
+
+function cancel() {
+  dialog.value = false;
+}
+
+async function copy(clipboardText, copiedIdx) {
+  // Use splice to make variable reactive
+  this.copied.splice(copiedIdx, copiedIdx + 1, true);
+  await navigator.clipboard.writeText(clipboardText);
+  this.copied.splice(copiedIdx, copiedIdx + 1, false);
+}
 </script>

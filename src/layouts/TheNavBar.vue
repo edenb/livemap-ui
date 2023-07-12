@@ -25,11 +25,11 @@
     </v-app-bar-title>
 
     <template #append>
-      <serverInfo ref="serverInfo" />
+      <ServerInfo ref="serverInfo" />
       <v-btn
         variant="text"
         icon="mdi-information-outline"
-        @click="showServerInfo()"
+        @click="serverInfo.open()"
       />
       <v-menu>
         <template #activator="{ props }">
@@ -78,58 +78,41 @@
   </v-app-bar>
 </template>
 
-<script>
-import { inject } from "vue";
+<script setup>
+import { computed, inject, onMounted, ref } from "vue";
 import { useAuthStore } from "@/store.js";
 import ServerInfo from "@/components/ServerInfo.vue";
 
-const connectionIcon = [];
-connectionIcon["connected"] = {
-  name: "mdi-circle",
-  color: "green",
-  tooltip: "Live connection",
-};
-connectionIcon["disconnected"] = {
-  name: "mdi-alert",
-  color: "red",
-  tooltip: "No live connection",
-};
-
-export default {
-  name: "TheNavBar",
-  components: {
-    ServerInfo,
-  },
-  setup() {
-    const authStore = useAuthStore();
-    const connect = inject("connect");
-    const isConnected = inject("isConnected");
+const authStore = useAuthStore();
+const connect = inject("connect");
+const connectionIcon = computed(() => {
+  if (isConnected) {
     return {
-      authStore,
-      connect,
-      isConnected,
+      name: "mdi-circle",
+      color: "green",
+      tooltip: "Live connection",
     };
-  },
-  computed: {
-    connectionIcon: function () {
-      return this.isConnected
-        ? connectionIcon["connected"]
-        : connectionIcon["disconnected"];
-    },
-  },
-  mounted() {
-    this.connect(this.authStore.token);
-  },
-  methods: {
-    toggleSidebarLeft() {
-      this.emitter.emit("toggle-sidebar-left");
-    },
-    toggleSidebarRight() {
-      this.emitter.emit("toggle-sidebar-right");
-    },
-    showServerInfo() {
-      this.$refs.serverInfo.open();
-    },
-  },
-};
+  } else {
+    return {
+      name: "mdi-alert",
+      color: "red",
+      tooltip: "No live connection",
+    };
+  }
+});
+const emitter = inject("emitter");
+const isConnected = inject("isConnected");
+const serverInfo = ref(null);
+
+onMounted(() => {
+  connect(authStore.token);
+});
+
+function toggleSidebarLeft() {
+  emitter.emit("toggle-sidebar-left");
+}
+
+function toggleSidebarRight() {
+  emitter.emit("toggle-sidebar-right");
+}
 </script>

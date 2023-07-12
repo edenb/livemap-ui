@@ -13,28 +13,8 @@
               color="primary"
             />
             <v-card-text>
-              <v-form ref="form" v-model="valid">
-                <v-text-field
-                  v-model="username"
-                  label="Username"
-                  name="username"
-                  prepend-icon="mdi-account"
-                  type="text"
-                  :rules="usernameRules"
-                  required
-                  @keyup.enter="loginUser"
-                />
-                <v-text-field
-                  id="password"
-                  v-model="password"
-                  label="Password"
-                  name="password"
-                  prepend-icon="mdi-lock"
-                  type="password"
-                  :rules="passwordRules"
-                  required
-                  @keyup.enter="loginUser"
-                />
+              <v-form v-model="inputValid" @keydown.enter="loginUser">
+                <FormRenderer v-model="formData" :form-schema="schemaLogin" />
               </v-form>
             </v-card-text>
             <v-card-actions class="px-4">
@@ -45,7 +25,12 @@
                 </div>
               </template>
               <v-spacer />
-              <v-btn :disabled="!valid" color="primary" @click="loginUser">
+              <v-btn
+                color="primary"
+                variant="text"
+                :disabled="!inputValid"
+                @click="loginUser"
+              >
                 Login
               </v-btn>
             </v-card-actions>
@@ -56,44 +41,40 @@
   </v-main>
 </template>
 
-<script>
-import { mapActions } from "pinia";
+<script setup>
+import { inject, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store.js";
-export default {
-  name: "UserLogin",
-  inject: ["httpRequest"],
-  data: () => ({
-    errorResponseText: "",
-    loading: false,
-    username: "",
-    usernameRules: [(v) => !!v || "Username is required"],
-    password: "",
-    passwordRules: [(v) => !!v || "Password is required"],
-    valid: false,
-  }),
-  methods: {
-    ...mapActions(useAuthStore, ["setAuthorized"]),
-    loginUser() {
-      if (this.username && this.password) {
-        this.loading = true;
-        this.httpRequest("post", "/login", {
-          username: this.username,
-          password: this.password,
-        })
-          .then((response) => {
-            return this.setAuthorized(response.data.access_token);
-          })
-          .then(() => {
-            this.$router.push("/worldmap");
-          })
-          .catch((err) => {
-            this.errorResponseText = err.errorResponseText;
-          })
-          .finally(() => {
-            this.loading = false;
-          });
-      }
-    },
-  },
-};
+import FormRenderer from "@/components/FormRenderer.vue";
+import { schemaLogin } from "@/forms/schemas.js";
+
+const authStore = useAuthStore();
+const errorResponseText = ref("");
+const formData = ref({});
+const httpRequest = inject("httpRequest");
+const inputValid = ref(false);
+const loading = ref(false);
+const router = useRouter();
+
+function loginUser() {
+  if (inputValid.value) {
+    loading.value = true;
+    httpRequest("post", "/login", {
+      username: formData.value.username,
+      password: formData.value.password,
+    })
+      .then((response) => {
+        return authStore.setAuthorized(response.data.access_token);
+      })
+      .then(() => {
+        router.push("/worldmap");
+      })
+      .catch((err) => {
+        errorResponseText.value = err.errorResponseText;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  }
+}
 </script>

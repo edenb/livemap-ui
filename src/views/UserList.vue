@@ -1,4 +1,3 @@
-<!-- eslint-disable vuetify/no-deprecated-components -->
 <template>
   <v-container fluid pa-3>
     <v-data-table
@@ -14,7 +13,7 @@
     >
       <template #top>
         <v-toolbar density="compact" color="secondary">
-          <ConfirmDialog ref="confirm" />
+          <ConfirmDialog ref="confirmDialog" />
           <UserListEditUser ref="editUser" />
           <UserListChangePassword ref="editPassword" />
           <v-toolbar-title>Users</v-toolbar-title>
@@ -82,97 +81,95 @@
   </v-container>
 </template>
 
-<script>
-import { mapState } from "pinia";
+<script setup>
+import { inject, onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/store.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import UserListEditUser from "@/components/UserListEditUser.vue";
 import UserListChangePassword from "@/components/UserListChangePassword.vue";
-export default {
-  name: "UserList",
-  components: {
-    ConfirmDialog,
-    UserListEditUser,
-    UserListChangePassword,
-  },
-  inject: ["httpRequest"],
-  data() {
-    return {
-      allUsers: [],
-      search: "",
-      selected: [],
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ["user"]),
-  },
-  created() {
-    this.headers = [
-      { title: "Full Name", key: "fullname" },
-      { title: "Username", key: "username" },
-      { title: "Role", key: "role" },
-      { title: "Actions", key: "actions", sortable: false },
-    ];
-    this.newUser = {
-      api_key: "",
-      email: "",
-      fullname: "",
-      password: "",
-      role: "",
-      user_id: -1,
-      username: "",
-    };
-    this.loadTable();
-  },
-  methods: {
-    loadTable() {
-      this.httpRequest("get", `users`)
-        .then((response) => {
-          this.allUsers = response.data;
-        })
-        .catch(() => {
-          // Ignore failed (re)loads
-        });
-    },
-    editItem(item) {
-      this.showDialogUser(item);
-    },
-    newItem() {
-      this.showDialogUser(this.newUser);
-    },
-    deleteItem(item) {
-      let messageText = [];
-      messageText.push("Are you sure you want to delete the following user?");
-      this.$refs.confirm
-        .open("Delete", messageText, [item.fullname], { color: "red" })
-        .then((confirm) => {
-          if (confirm) {
-            this.httpRequest("delete", `users/${item.user_id}`)
-              .then(() => {
-                this.loadTable();
-              })
-              .catch((err) => {
-                // Do not reload the table on internal server error
-                if (err.response.status < 500) {
-                  this.loadTable();
-                }
-              });
-          }
-        });
-    },
-    editPasswordItem(item) {
-      this.showDialogPassword(item);
-    },
-    showDialogUser(user) {
-      this.$refs.editUser.open(user).then(() => {
-        this.loadTable();
-      });
-    },
-    showDialogPassword(user) {
-      this.$refs.editPassword.open(user).then(() => {
-        this.loadTable();
-      });
-    },
-  },
-};
+
+const allUsers = ref([]);
+const confirmDialog = ref(null);
+const editPassword = ref(null);
+const editUser = ref(null);
+const headers = [
+  { title: "Full Name", key: "fullname" },
+  { title: "Username", key: "username" },
+  { title: "Role", key: "role" },
+  { title: "Actions", key: "actions", sortable: false },
+];
+const httpRequest = inject("httpRequest");
+const newUser = ref({
+  api_key: "",
+  email: "",
+  fullname: "",
+  password: "",
+  role: "",
+  user_id: -1,
+  username: "",
+});
+const search = ref("");
+const selected = ref([]);
+const { user } = storeToRefs(useAuthStore());
+
+onMounted(() => {
+  loadTable();
+});
+
+function loadTable() {
+  httpRequest("get", `users`)
+    .then((response) => {
+      allUsers.value = response.data;
+    })
+    .catch(() => {
+      // Ignore failed (re)loads
+    });
+}
+
+function editItem(item) {
+  showDialogUser(item);
+}
+
+function newItem() {
+  showDialogUser(newUser.value);
+}
+
+function deleteItem(item) {
+  let messageText = [];
+  messageText.push("Are you sure you want to delete the following user?");
+  confirmDialog.value
+    .open("Delete", messageText, [item.fullname], { color: "red" })
+    .then((confirm) => {
+      if (confirm) {
+        httpRequest("delete", `users/${item.user_id}`)
+          .then(() => {
+            loadTable();
+            selected.value = [];
+          })
+          .catch((err) => {
+            // Do not reload the table on internal server error
+            if (err.response.status < 500) {
+              loadTable();
+            }
+          });
+      }
+    });
+}
+
+function editPasswordItem(item) {
+  showDialogPassword(item);
+}
+
+function showDialogUser(user) {
+  editUser.value.open(user).then(() => {
+    loadTable();
+  });
+}
+
+function showDialogPassword(user) {
+  editPassword.value.open(user).then(() => {
+    loadTable();
+  });
+}
 </script>

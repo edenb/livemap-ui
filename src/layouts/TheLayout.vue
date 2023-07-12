@@ -10,16 +10,9 @@
   </v-layout>
 </template>
 
-<script>
+<script setup>
 import TheNavBar from "@/layouts/TheNavBar.vue";
 import TheSidebarLeft from "@/layouts/TheSidebarLeft.vue";
-export default {
-  name: "TheLayout",
-  components: {
-    TheNavBar,
-    TheSidebarLeft,
-  },
-};
 </script>
 
 <style>

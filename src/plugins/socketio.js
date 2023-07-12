@@ -42,11 +42,11 @@ export default {
     app.provide("disconnect", disconnect);
     app.provide(
       "isConnected",
-      computed(() => isConnected.value)
+      computed(() => isConnected.value),
     );
     app.provide(
       "positionUpdate",
-      computed(() => positionUpdate.value)
+      computed(() => positionUpdate.value),
     );
   },
 };

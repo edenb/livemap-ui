@@ -5,76 +5,51 @@
     @transitionend="onTransistionEnd"
   >
     <v-list nav>
-      <v-list-item
-        link
-        title="Map"
-        prepend-icon="mdi-map-outline"
-        @click="changeRoute('worldmap', 1)"
-      />
+      <v-list-item title="Map" to="/worldmap" prepend-icon="mdi-map-outline" />
       <v-list-item
         v-if="user.role === 'admin'"
-        link
         title="Users"
+        to="/users"
         prepend-icon="mdi-account-multiple-outline"
-        @click="changeRoute('users', 2)"
       />
-      <v-list-item
-        link
-        title="Devices"
-        prepend-icon="mdi-devices"
-        @click="changeRoute('devices', 3)"
-      />
+      <v-list-item title="Devices" to="/devices" prepend-icon="mdi-devices" />
       <v-divider> default </v-divider>
-      <v-list-item
-        link
-        title="Logout"
-        prepend-icon="mdi-exit-to-app"
-        @click="changeRoute('logout', 4)"
-      />
+      <v-list-item title="Logout" to="/logout" prepend-icon="mdi-exit-to-app" />
     </v-list>
   </v-navigation-drawer>
 </template>
 
-<script>
-import { mapState } from "pinia";
-import { useAuthStore } from "@/store.js";
-import { useLayoutStore } from "@/store.js";
+<script setup>
+import { inject, onMounted, onUnmounted, ref } from "vue";
+import { useDisplay } from "vuetify";
+import { storeToRefs } from "pinia";
+import { useAuthStore, useLayoutStore } from "@/store.js";
 
-export default {
-  name: "TheSidebarLeft",
-  data: () => ({
-    drawer: false,
-    selectedIndex: 1,
-  }),
-  computed: {
-    ...mapState(useAuthStore, ["user"]),
-    ...mapState(useLayoutStore, ["drawerOpen"]),
-  },
-  mounted() {
-    if ("left" in this.drawerOpen) {
-      this.drawer = this.drawerOpen.left;
-    } else {
-      this.drawer = !this.$vuetify.display.mobile;
-      this.drawerOpen.left = this.drawer;
-    }
-    this.emitter.on("toggle-sidebar-left", () => {
-      this.drawer = !this.drawer;
-    });
-  },
-  beforeUnmount() {
-    this.emitter.off("toggle-sidebar-left");
-  },
-  methods: {
-    changeRoute(routeName, selectedIndex) {
-      const vm = this;
-      vm.selectedIndex = selectedIndex;
-      return vm.$router.push({ name: routeName });
-    },
-    onTransistionEnd(event) {
-      if (event.propertyName === "transform") {
-        this.drawerOpen.left = this.drawer;
-      }
-    },
-  },
-};
+const drawer = ref(false);
+const { drawerOpen } = storeToRefs(useLayoutStore());
+const emitter = inject("emitter");
+const { mobile } = useDisplay();
+const { user } = storeToRefs(useAuthStore());
+
+onMounted(() => {
+  if ("left" in drawerOpen.value) {
+    drawer.value = drawerOpen.value.left;
+  } else {
+    drawer.value = !mobile.value;
+    drawerOpen.value.left = drawer.value;
+  }
+  emitter.on("toggle-sidebar-left", () => {
+    drawer.value = !drawer.value;
+  });
+});
+
+onUnmounted(() => {
+  emitter.off("toggle-sidebar-left");
+});
+
+function onTransistionEnd(event) {
+  if (event.propertyName === "transform") {
+    drawerOpen.value.left = drawer.value;
+  }
+}
 </script>

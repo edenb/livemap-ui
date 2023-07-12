@@ -1,4 +1,3 @@
-<!-- eslint-disable vuetify/no-deprecated-components -->
 <template>
   <v-container fluid pa-3>
     <v-data-table
@@ -14,7 +13,7 @@
     >
       <template #top>
         <v-toolbar density="compact" color="secondary">
-          <ConfirmDialog ref="confirm" />
+          <ConfirmDialog ref="confirmDialog" />
           <DeviceListEditDevice ref="editDevice" />
           <DeviceListEditSharedUser ref="editSharedUser" />
           <v-toolbar-title>Devices</v-toolbar-title>
@@ -88,7 +87,6 @@
             :key="sharedUser"
             class="ma-1"
             :color="getColor(sharedUser)"
-            :model-value="true"
           >
             {{ sharedUser }}
           </v-chip>
@@ -98,143 +96,139 @@
   </v-container>
 </template>
 
-<script>
-import { mapState } from "pinia";
+<script setup>
+import { inject, onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/store.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import DeviceListEditDevice from "@/components/DeviceListEditDevice.vue";
 import DeviceListEditSharedUser from "@/components/DeviceListEditSharedUser.vue";
-export default {
-  name: "DeviceList",
-  components: {
-    ConfirmDialog,
-    DeviceListEditDevice,
-    DeviceListEditSharedUser,
-  },
-  inject: ["httpRequest"],
-  data() {
-    return {
-      allDevices: [],
-      search: "",
-      selected: [],
-      usernameColors: [],
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ["user"]),
-  },
-  created() {
-    this.headers = [
-      { title: "Name", key: "alias" },
-      { title: "Owner", key: "owner" },
-      { title: "Shared With", key: "shared" },
-      { title: "Actions", key: "actions", sortable: false },
-    ];
-    this.newDevice = {
-      device_id: -1,
-      alias: "",
-      identifier: "",
-      api_key: this.user.api_key,
-      fixed_loc_lat: "",
-      fixed_loc_lon: "",
-    };
-    this.loadTable();
-  },
-  methods: {
-    loadTable() {
-      this.httpRequest("get", `users/${this.user.user_id}/devices`)
-        .then((response) => {
-          this.allDevices = response.data;
-          this.allDevices.forEach((e) => {
-            if (e.shared) {
-              e.shared.sort();
+
+const allDevices = ref([]);
+const confirmDialog = ref(null);
+const editDevice = ref(null);
+const editSharedUser = ref(null);
+const headers = [
+  { title: "Name", key: "alias" },
+  { title: "Owner", key: "owner" },
+  { title: "Shared With", key: "shared" },
+  { title: "Actions", key: "actions", sortable: false },
+];
+const httpRequest = inject("httpRequest");
+const newDevice = ref({
+  device_id: -1,
+  alias: "",
+  identifier: "",
+  api_key: "",
+  fixed_loc_lat: "",
+  fixed_loc_lon: "",
+});
+const search = ref("");
+const selected = ref([]);
+const { user } = storeToRefs(useAuthStore());
+let usernameColors = [];
+
+onMounted(() => {
+  loadTable();
+});
+
+function loadTable() {
+  httpRequest("get", `users/${user.value.user_id}/devices`)
+    .then((response) => {
+      allDevices.value = response.data;
+      allDevices.value.forEach((e) => {
+        if (e.shared) {
+          e.shared.sort();
+        }
+      });
+    })
+    .catch(() => {
+      // Ignore failed (re)loads
+    });
+}
+
+function editItem(item) {
+  showDialogDevice(item);
+}
+
+function newItem() {
+  newDevice.value.api_key = user.value.api_key;
+  showDialogDevice(newDevice.value);
+}
+
+function shareItems(items) {
+  showDialogSharedUser(items);
+}
+
+function deleteItems(items) {
+  let deviceIdList = [];
+  let deviceAliasList = [];
+  let messageText = [];
+  messageText.push("Are you sure you want to delete the following devices?");
+  for (let item of items) {
+    deviceIdList.push(item.device_id);
+    deviceAliasList.push(item.alias);
+  }
+  confirmDialog.value
+    .open("Delete", messageText, deviceAliasList, { color: "red" })
+    .then((confirm) => {
+      if (confirm) {
+        httpRequest(
+          "delete",
+          `users/${user.value.user_id}/devices/${deviceIdList}`,
+        )
+          .then(() => {
+            loadTable();
+            selected.value = [];
+          })
+          .catch((err) => {
+            // Do not reload the table on internal server error
+            if (err.response.status < 500) {
+              loadTable();
             }
           });
-        })
-        .catch(() => {
-          // Ignore failed (re)loads
-        });
-    },
-    editItem(item) {
-      this.showDialogDevice(item);
-    },
-    newItem() {
-      this.showDialogDevice(this.newDevice);
-    },
-    shareItems(items) {
-      this.showDialogSharedUser(items);
-    },
-    deleteItems(items) {
-      let deviceIdList = [];
-      let deviceAliasList = [];
-      let messageText = [];
-      messageText.push(
-        "Are you sure you want to delete the following devices?"
-      );
-      for (let item of items) {
-        deviceIdList.push(item.device_id);
-        deviceAliasList.push(item.alias);
       }
-      this.$refs.confirm
-        .open("Delete", messageText, deviceAliasList, { color: "red" })
-        .then((confirm) => {
-          if (confirm) {
-            this.httpRequest(
-              "delete",
-              `users/${this.user.user_id}/devices/${deviceIdList}`
-            )
-              .then(() => {
-                this.loadTable();
-                this.selected = [];
-              })
-              .catch((err) => {
-                // Do not reload the table on internal server error
-                if (err.response.status < 500) {
-                  this.loadTable();
-                }
-              });
-          }
-        });
-    },
-    showDialogDevice(device) {
-      this.$refs.editDevice.open(device).then(() => {
-        this.loadTable();
-      });
-    },
-    showDialogSharedUser(devices) {
-      this.$refs.editSharedUser.open(devices).then(() => {
-        this.loadTable();
-      });
-    },
-    getColor(key) {
-      const colors = [
-        "blue",
-        "cyan",
-        "teal",
-        "green",
-        "amber",
-        "orange",
-        "pink",
-        "indigo",
-      ];
-      let i = 0;
-      while (i < this.usernameColors.length && this.usernameColors[i] !== key) {
-        i++;
-      }
-      if (i === this.usernameColors.length && typeof key === "string") {
-        this.usernameColors.push(key);
-      }
-      return colors[i % colors.length];
-    },
-    selectedOwned(ids) {
-      return this.allDevices.filter((e) => {
-        return (
-          ids.includes(e.device_id) &&
-          e.api_key &&
-          e.api_key === this.user.api_key
-        );
-      });
-    },
-  },
-};
+    });
+}
+
+function showDialogDevice(device) {
+  editDevice.value.open(device).then(() => {
+    loadTable();
+  });
+}
+
+function showDialogSharedUser(devices) {
+  editSharedUser.value.open(devices).then(() => {
+    loadTable();
+  });
+}
+
+function getColor(key) {
+  const colors = [
+    "blue",
+    "cyan",
+    "teal",
+    "green",
+    "amber",
+    "orange",
+    "pink",
+    "indigo",
+  ];
+  let i = 0;
+  while (i < usernameColors.length && usernameColors[i] !== key) {
+    i++;
+  }
+  if (i === usernameColors.length && typeof key === "string") {
+    usernameColors.push(key);
+  }
+  return colors[i % colors.length];
+}
+
+function selectedOwned(ids) {
+  return allDevices.value.filter((e) => {
+    return (
+      ids.includes(e.device_id) && e.api_key && e.api_key === user.value.api_key
+    );
+  });
+}
 </script>
