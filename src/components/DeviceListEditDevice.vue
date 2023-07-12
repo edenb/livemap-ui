@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-if="device" v-model="showDialog" max-width="800px">
-    <v-form v-model="inputValid">
+    <v-form v-model="inputValid" @keydown.enter="changed">
       <v-card class="pa-4">
         <template #title>
           <span class="text-h5">{{ formTitle }}</span>
