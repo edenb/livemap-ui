@@ -251,7 +251,7 @@ export const schemaUsername = [
     state: "username",
     colsSm: 12,
     hint: "User to share or unshare the affected devices with",
-    rules: [],
+    rules: [rules.required, rules.min(4)],
     isHidden: false,
     isPassword: false,
     isReadonly: false,
