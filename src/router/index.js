@@ -74,7 +74,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const authStore = useAuthStore();
     // Re-authenticate if a token is present but user not authorized
-    if (authStore.token !== "" && !authStore.authorized) {
+    if (authStore.token && !authStore.authorized) {
       authStore
         .setAuthorized(authStore.token)
         .then(() => {
