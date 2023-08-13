@@ -23,9 +23,9 @@
         <v-list-item>
           <v-list-item-title>
             <span class="text-overline">Server</span>
-            <transition :duration="1000" name="fade">
-              <span v-if="copied[0]" class="text-caption text-green">
-                Copied!
+            <transition name="fade-out">
+              <span v-if="copyResult[0]" :class="copyResult[0].class">
+                {{ copyResult[0].text }}
               </span>
             </transition>
           </v-list-item-title>
@@ -47,9 +47,9 @@
         <v-list-item>
           <v-list-item-title>
             <span class="text-overline">MQTT broker</span>
-            <transition :duration="1000" name="fade">
-              <span v-if="copied[1]" class="text-caption text-green">
-                Copied!
+            <transition name="fade-out">
+              <span v-if="copyResult[1]" :class="copyResult[1].class">
+                {{ copyResult[1].text }}
               </span>
             </transition>
           </v-list-item-title>
@@ -92,7 +92,7 @@
 import { inject, ref } from "vue";
 
 defineExpose({ open });
-const copied = ref([false, false]);
+const copyResult = ref([null, null]);
 const dialog = ref(false);
 const httpRequest = inject("httpRequest");
 const info = ref({});
@@ -114,10 +114,37 @@ function cancel() {
   dialog.value = false;
 }
 
-async function copy(clipboardText, copiedIdx) {
-  // Use splice to make variable reactive
-  this.copied.splice(copiedIdx, copiedIdx + 1, true);
-  await navigator.clipboard.writeText(clipboardText);
-  this.copied.splice(copiedIdx, copiedIdx + 1, false);
+async function copy(clipboardText, copyIdx) {
+  copyResult.value[copyIdx] = null;
+  try {
+    await navigator.clipboard.writeText(clipboardText);
+    copyResult.value[copyIdx] = {
+      text: "Copied!",
+      class: "ma-2 text-caption text-success",
+    };
+  } catch {
+    copyResult.value[copyIdx] = {
+      text: "Copy failed!",
+      class: "ma-2 text-caption text-error",
+    };
+  } finally {
+    setTimeout(
+      (idx) => {
+        copyResult.value[idx] = null;
+      },
+      1000,
+      copyIdx,
+    );
+  }
 }
 </script>
+
+<style scoped>
+.fade-out-leave-active {
+  transition: opacity 1s;
+}
+
+.fade-out-leave-to {
+  opacity: 0;
+}
+</style>
