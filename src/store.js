@@ -62,7 +62,7 @@ export const useAuthStore = defineStore("auth", () => {
         .catch((err) => {
           console.log(`Error: ${err}`);
           this.authorized = false;
-          this.token = ""; //ToDo: 401 only?
+          this.token = null; //ToDo: 401 only?
           this.user = {};
           localStorage.removeItem("jwt");
           reject(err);
@@ -71,7 +71,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
   function revokeAuthorized() {
     this.authorized = false;
-    this.token = "";
+    this.token = null;
     this.user = {};
     localStorage.removeItem("jwt");
   }

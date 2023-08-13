@@ -15,7 +15,7 @@
           </v-chip>
         </v-card-text>
         <template #actions>
-          <v-card-item>
+          <v-card-item class="pa-1">
             <template v-if="errorResponseText !== ''">
               <v-icon
                 class="px-2"
@@ -32,8 +32,20 @@
           <v-btn color="primary" variant="text" @click="noChange">
             Cancel
           </v-btn>
-          <v-btn color="primary" variant="text" @click="addUser"> Share </v-btn>
-          <v-btn color="primary" variant="text" @click="removeUser">
+          <v-btn
+            color="primary"
+            variant="text"
+            :disabled="!inputValid"
+            @click="addUser"
+          >
+            Share
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="text"
+            :disabled="!inputValid"
+            @click="removeUser"
+          >
             Unshare
           </v-btn>
         </template>
@@ -86,8 +98,8 @@ async function addUser() {
         resolve(true);
         showDialog.value = false;
       })
-      .catch((err) => {
-        errorResponseText.value = err.errorResponseText;
+      .catch(() => {
+        errorResponseText.value = "Unknown username";
       });
   }
 }
@@ -110,8 +122,8 @@ async function removeUser() {
         resolve(true);
         showDialog.value = false;
       })
-      .catch((err) => {
-        errorResponseText.value = err.errorResponseText;
+      .catch(() => {
+        errorResponseText.value = "Unknown username";
       });
   }
 }
