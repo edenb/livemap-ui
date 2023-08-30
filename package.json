@@ -24,7 +24,7 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.0",
+    "@vitejs/plugin-vue": "^4.3.4",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
