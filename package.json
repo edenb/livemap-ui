@@ -7,7 +7,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
-    "format": "prettier src --write"
+    "format": "prettier src --write",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",
@@ -25,8 +26,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.0",
+    "cypress": "^13.1.0",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-cypress": "^2.14.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.5.1",
     "eslint-plugin-vuetify": "^2.0.0",
@@ -44,7 +47,8 @@
       "eslint:recommended",
       "plugin:vue/vue3-recommended",
       "plugin:vuetify/base",
-      "prettier"
+      "prettier",
+      "plugin:cypress/recommended"
     ],
     "plugins": [
       "prettier"
