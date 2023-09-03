@@ -38,8 +38,8 @@ workflows:
               ignore: master
       - cypress/run:
           install-browsers: true
-          start-command: 'npm run start'
-          cypress-command: 'npx cypress run --browser chrome'
+          start-command: "npm run serve"
+          cypress-command: "npx cypress run --browser chrome"
           filters:
             branches:
               ignore: master
