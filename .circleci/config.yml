@@ -37,7 +37,7 @@ workflows:
             branches:
               ignore: master
       - cypress/run:
-          install-browsers: true
+          install-browsers: false
           start-command: "npm run serve"
           cypress-command: "npx cypress run --config baseUrl=http://localhost:4173"
           filters:
