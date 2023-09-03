@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   docker: circleci/docker@2.2.0
+  cypress: cypress-io/cypress@3
 jobs:
   lint:
     docker:
@@ -29,9 +30,16 @@ workflows:
           filters:
             branches:
               only: master
-  lint-build:
+  lint-cy-build:
     jobs:
       - lint:
+          filters:
+            branches:
+              ignore: master
+      - cypress/run:
+          install-browsers: true
+          start-command: 'npm run start'
+          cypress-command: 'npx cypress run --browser chrome'
           filters:
             branches:
               ignore: master
