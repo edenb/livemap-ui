@@ -15,9 +15,16 @@ jobs:
           name: Run lint
           command: npm run lint
 workflows:
-  lint-build-deploy:
+  lint-cy-build-deploy:
     jobs:
       - lint:
+          filters:
+            branches:
+              only: master
+      - cypress/run:
+          install-browsers: true
+          start-command: "npm run dev"
+          cypress-command: "npx cypress run --browser chrome --config baseUrl=http://localhost:5173"
           filters:
             branches:
               only: master
@@ -27,6 +34,7 @@ workflows:
           update-description: true
           requires:
             - lint
+            - cypress/run
           filters:
             branches:
               only: master
