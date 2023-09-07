@@ -48,6 +48,7 @@ workflows:
           deploy: false
           requires:
             - lint
+            - cypress/run
           filters:
             branches:
               ignore: master
