@@ -12,7 +12,7 @@ export const rules = {
   min(minLength) {
     return (v) => v.length >= minLength || `At least ${minLength} characters`;
   },
-  number: (v) => !isNaN(v) || "Field should be a number",
+  number: (v) => !Number.isNaN(v) || "Field should be a number",
   required: (v) => !!v || "Field is required",
   zeroOrMin(minLength) {
     return (v) =>

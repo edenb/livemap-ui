@@ -7,11 +7,11 @@ export default class ConfigProvider {
   }
 
   static value(name) {
-    if (!(name in this.CONFIG)) {
+    if (!(name in ConfigProvider.CONFIG)) {
       return;
     }
 
-    const value = this.CONFIG[name];
+    const value = ConfigProvider.CONFIG[name];
 
     if (!value) {
       return;
