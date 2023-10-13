@@ -59,22 +59,22 @@
           size="small"
           title="Edit user"
           variant="plain"
-          @click="editItem(item.raw)"
+          @click="editItem(item)"
         />
         <v-btn
           icon="mdi-lock-reset"
           size="small"
           title="Reset password"
           variant="plain"
-          @click="editPasswordItem(item.raw)"
+          @click="editPasswordItem(item)"
         />
         <v-btn
-          :disabled="item.raw.user_id === user.user_id"
+          :disabled="item.user_id === user.user_id"
           icon="mdi-delete"
           size="small"
           title="Remove user"
           variant="plain"
-          @click="deleteItem(item.raw)"
+          @click="deleteItem(item)"
         />
       </template>
     </v-data-table>

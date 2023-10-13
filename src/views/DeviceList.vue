@@ -50,40 +50,36 @@
       </template>
       <template #[`item.actions`]="{ item }">
         <v-btn
-          v-if="item.raw.api_key === user.api_key"
+          v-if="item.api_key === user.api_key"
           icon="mdi-pencil"
           size="small"
           title="Edit device"
           variant="plain"
-          @click="editItem(item.raw)"
+          @click="editItem(item)"
         />
         <v-btn
-          v-if="item.raw.api_key === user.api_key"
+          v-if="item.api_key === user.api_key"
           icon="mdi-share-all"
           size="small"
           title="Share/unshare device"
           variant="plain"
-          @click="shareItems([item.raw])"
+          @click="shareItems([item])"
         />
         <v-btn
-          v-if="item.raw.api_key === user.api_key"
+          v-if="item.api_key === user.api_key"
           icon="mdi-delete"
           size="small"
           title="Remove device"
           variant="plain"
-          @click="deleteItems([item.raw])"
+          @click="deleteItems([item])"
         />
       </template>
       <template #[`item.shared`]="{ item }">
         <div
-          v-if="
-            item.raw.shared &&
-            item.raw.shared[0] != null &&
-            item.raw.shared.length > 0
-          "
+          v-if="item.shared && item.shared[0] != null && item.shared.length > 0"
         >
           <v-chip
-            v-for="sharedUser in item.raw.shared"
+            v-for="sharedUser in item.shared"
             :key="sharedUser"
             class="ma-1"
             :color="getColor(sharedUser)"
