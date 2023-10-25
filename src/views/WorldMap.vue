@@ -105,6 +105,11 @@ function initMap() {
       worldmapStore.baseLayerName === tileProvider.options.name ||
       (worldmapStore.baseLayerName === "" && tileProvider.options.visible)
     ) {
+      baseLayer.on("load", () => {
+        document
+          .getElementById("worldmap")
+          .setAttribute("data-cy", "all-tiles-loaded");
+      });
       baseLayer.addTo(map);
     }
     baseMaps[tileProvider.options.name] = baseLayer;

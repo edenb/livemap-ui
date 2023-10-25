@@ -1,25 +1,50 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+Cypress.Commands.add("login", (username) => {
+  // Stub responses
+  cy.fixture("tokens.json").then((data) => {
+    cy.intercept("POST", "/api/v1/login", (req) => {
+      req.reply({
+        statusCode: 200,
+        headers: data[username].headers,
+        body: JSON.stringify(data[username].body),
+      });
+    }).as("loginUser");
+  });
+
+  cy.fixture("users.json").then((data) => {
+    cy.intercept("GET", "/api/v1/account", (req) => {
+      req.reply({
+        statusCode: 200,
+        headers: data[username].headers,
+        body: JSON.stringify(data[username].body),
+      });
+    }).as("getAccount");
+  });
+
+  cy.intercept("GET", "/socket.io/*", (req) => {
+    req.reply({
+      statusCode: 200,
+    });
+  }).as("getSocketIO");
+
+  cy.session([username], () => {
+    const log = Cypress.log({
+      name: "login",
+      displayName: "LOGIN",
+      message: [`🔐 Authenticating | ${username}`],
+      autoEnd: false,
+    });
+
+    log.snapshot("before");
+
+    cy.visit("/login");
+    cy.get("[data-cy=username]").type(username);
+    cy.get("[data-cy=password]").type("s3cr3t");
+    cy.get("[data-cy=login]").click();
+    cy.url().should("contain", "/worldmap");
+
+    cy.wait("@loginUser");
+
+    log.snapshot("after");
+    log.end();
+  });
+});

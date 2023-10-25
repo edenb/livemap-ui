@@ -1,6 +1,8 @@
 .DS_Store
+.dccache
 node_modules
-/dist
+dist
+cypress/screenshots
 
 # local env files
 .env.local

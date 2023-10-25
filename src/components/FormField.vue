@@ -5,6 +5,7 @@
     :append-inner-icon="appendIcon"
     :autocomplete="schema.autocomplete"
     :counter="schema.hasCounter"
+    :data-cy="schema.cyAttr"
     :hint="schema.hint"
     :label="schema.label"
     :prepend-icon="schema.prependIcon"

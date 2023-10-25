@@ -3,6 +3,7 @@
     v-model="value"
     density="comfortable"
     :counter="schema.hasCounter"
+    :data-cy="schema.cyAttr"
     :hint="schema.hint"
     :items="schema.items"
     :label="schema.label"
