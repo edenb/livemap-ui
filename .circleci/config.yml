@@ -47,7 +47,7 @@ workflows:
       - cypress/run:
           install-browsers: true
           start-command: "npm run dev"
-          cypress-command: "npx cypress run --browser chrome --config baseUrl=http://localhost:5173"
+          cypress-command: "npx wait-on@latest http://localhost:5173 && npx cypress run --browser chrome --config baseUrl=http://localhost:5173"
           filters:
             branches:
               ignore: master
