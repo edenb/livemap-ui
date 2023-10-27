@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
-  docker: circleci/docker@2.2.0
-  cypress: cypress-io/cypress@3.1.4
+  docker: circleci/docker@2.4.0
+  cypress: cypress-io/cypress@3.2.0
 jobs:
   lint:
     docker:
