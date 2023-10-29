@@ -27,6 +27,7 @@
               <v-spacer />
               <v-btn
                 color="primary"
+                data-cy="login"
                 variant="text"
                 :disabled="!inputValid"
                 @click="loginUser"

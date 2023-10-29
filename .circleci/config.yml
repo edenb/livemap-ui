@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
-  docker: circleci/docker@2.2.0
+  docker: circleci/docker@2.4.0
+  cypress: cypress-io/cypress@3.1.4
 jobs:
   lint:
     docker:
@@ -14,32 +15,33 @@ jobs:
           name: Run lint
           command: npm run lint
 workflows:
-  lint-build-deploy:
+  lint_cy_docker:
     jobs:
-      - lint:
+      - lint
+      - cypress/run:
+          name: cy-run
+          install-browsers: true
+          working-directory: "/home/circleci/project"
+          start-command: "npm run build && npm run serve"
+          cypress-command: "npx cypress run --browser chrome --config baseUrl=http://localhost:4173"
+      - docker/publish:
+          name: docker-build
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          deploy: false
+          requires:
+            - lint
+            - cy-run
           filters:
             branches:
-              only: master
+              ignore: master
       - docker/publish:
+          name: docker-build-publish
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           tag: $CIRCLE_SHA1,latest
           update-description: true
           requires:
             - lint
+            - cy-run
           filters:
             branches:
               only: master
-  lint-build:
-    jobs:
-      - lint:
-          filters:
-            branches:
-              ignore: master
-      - docker/publish:
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-          deploy: false
-          requires:
-            - lint
-          filters:
-            branches:
-              ignore: master
