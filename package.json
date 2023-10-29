@@ -8,7 +8,7 @@
     "serve": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "format": "prettier src --write",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run --browser chrome"
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",

@@ -15,48 +15,33 @@ jobs:
           name: Run lint
           command: npm run lint
 workflows:
-  lint-cy-build-deploy:
+  lint_cy_docker:
     jobs:
-      - lint:
-          filters:
-            branches:
-              only: master
+      - lint
       - cypress/run:
+          name: cy-run
           install-browsers: true
-          start-command: "npm run dev"
-          cypress-command: "npx cypress run --browser chrome --config baseUrl=http://localhost:5173"
+          working-directory: "/home/circleci/project"
+          start-command: "npm run build && npm run serve"
+          cypress-command: "npx cypress run --browser chrome --config baseUrl=http://localhost:4173"
+      - docker/publish:
+          name: docker-build
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          deploy: false
+          requires:
+            - lint
+            - cy-run
           filters:
             branches:
-              only: master
+              ignore: master
       - docker/publish:
+          name: docker-build-publish
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           tag: $CIRCLE_SHA1,latest
           update-description: true
           requires:
             - lint
-            - cypress/run
+            - cy-run
           filters:
             branches:
               only: master
-  lint-cy-build:
-    jobs:
-      - lint:
-          filters:
-            branches:
-              ignore: master
-      - cypress/run:
-          install-browsers: true
-          start-command: "npm run dev"
-          cypress-command: "npx wait-on@latest http://localhost:5173 -v && npx cypress run --browser chrome --config baseUrl=http://localhost:5173"
-          filters:
-            branches:
-              ignore: master
-      - docker/publish:
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-          deploy: false
-          requires:
-            - lint
-            - cypress/run
-          filters:
-            branches:
-              ignore: master
