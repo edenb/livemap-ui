@@ -20,6 +20,16 @@ Cypress.Commands.add("login", (username) => {
     }).as("getAccount");
   });
 
+  cy.fixture("positions.json").then((data) => {
+    cy.intercept("GET", "/api/v1/positions", (req) => {
+      req.reply({
+        statusCode: 200,
+        headers: data[username].headers,
+        body: JSON.stringify(data[username].body),
+      });
+    }).as("getPositions");
+  });
+
   cy.intercept("GET", "/socket.io/*", (req) => {
     req.reply({
       statusCode: 200,
