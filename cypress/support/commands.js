@@ -30,6 +30,16 @@ Cypress.Commands.add("login", (username) => {
     }).as("getPositions");
   });
 
+  cy.intercept("GET", "/api/v1/staticlayers", (req) => {
+    req.reply({
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([]),
+    });
+  }).as("getStaticlayers");
+
   cy.intercept("GET", "/socket.io/*", (req) => {
     req.reply({
       statusCode: 200,
