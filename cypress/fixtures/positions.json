@@ -84,5 +84,11 @@
         "alias": "MtKimball"
       }
     ]
+  },
+  "cleanMap": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": []
   }
 }

@@ -1,6 +1,7 @@
 describe("Login", () => {
   describe("Login user Alice with role admin", () => {
-    beforeEach(() => {
+    beforeEach(function () {
+      cy.mockMapResponses("Alice");
       // Login and go to the main page
       cy.login("Alice");
       cy.visit("/worldmap");
@@ -8,7 +9,7 @@ describe("Login", () => {
     });
 
     Cypress.config("screenSizes").forEach((screenSize) => {
-      it(`takes a screenshot on ${screenSize} screen`, () => {
+      it(`takes a screenshot on a ${screenSize} screen`, () => {
         cy.viewport(screenSize);
         cy.get("[data-cy=zoom-animation-end]", { timeout: 10000 });
         cy.get(".leaflet-marker-icon").should("have.length", 3);
@@ -18,7 +19,8 @@ describe("Login", () => {
   });
 
   describe("Login user Bobby with role manager", () => {
-    beforeEach(() => {
+    beforeEach(function () {
+      cy.mockMapResponses("Bobby");
       // Login and go to the main page
       cy.login("Bobby");
       cy.visit("/worldmap");
@@ -26,7 +28,7 @@ describe("Login", () => {
     });
 
     Cypress.config("screenSizes").forEach((screenSize) => {
-      it(`takes a screenshot on ${screenSize} screen`, () => {
+      it(`takes a screenshot on a ${screenSize} screen`, () => {
         cy.viewport(screenSize);
         cy.get("[data-cy=zoom-animation-end]", { timeout: 10000 });
         cy.get(".leaflet-marker-icon").should("have.length", 3);

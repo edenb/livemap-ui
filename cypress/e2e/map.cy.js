@@ -1,5 +1,6 @@
 describe("Map", () => {
-  beforeEach(() => {
+  beforeEach(function () {
+    cy.mockMapResponses("Bobby");
     // Login and go to the main page
     cy.login("Bobby");
     cy.visit("/worldmap");

@@ -1,5 +1,5 @@
 Cypress.Commands.add("login", (username) => {
-  // Stub responses
+  // Mock responses
   cy.fixture("tokens.json").then((data) => {
     cy.intercept("POST", "/api/v1/login", (req) => {
       req.reply({
@@ -20,6 +20,30 @@ Cypress.Commands.add("login", (username) => {
     }).as("getAccount");
   });
 
+  cy.session([username], () => {
+    const log = Cypress.log({
+      name: "login",
+      displayName: "LOGIN",
+      message: [`🔐 Authenticating | ${username}`],
+      autoEnd: false,
+    });
+
+    log.snapshot("before");
+
+    cy.visit("/login");
+    cy.get("[data-cy=username]").type(username);
+    cy.get("[data-cy=password]").type("s3cr3t");
+    cy.get("[data-cy=login]").click();
+    cy.url().should("contain", "/worldmap");
+
+    cy.wait("@loginUser");
+
+    log.snapshot("after");
+    log.end();
+  });
+});
+
+Cypress.Commands.add("mockMapResponses", (username) => {
   cy.fixture("positions.json").then((data) => {
     cy.intercept("GET", "/api/v1/positions", (req) => {
       req.reply({
@@ -45,26 +69,4 @@ Cypress.Commands.add("login", (username) => {
       statusCode: 200,
     });
   }).as("getSocketIO");
-
-  cy.session([username], () => {
-    const log = Cypress.log({
-      name: "login",
-      displayName: "LOGIN",
-      message: [`🔐 Authenticating | ${username}`],
-      autoEnd: false,
-    });
-
-    log.snapshot("before");
-
-    cy.visit("/login");
-    cy.get("[data-cy=username]").type(username);
-    cy.get("[data-cy=password]").type("s3cr3t");
-    cy.get("[data-cy=login]").click();
-    cy.url().should("contain", "/worldmap");
-
-    cy.wait("@loginUser");
-
-    log.snapshot("after");
-    log.end();
-  });
 });
