@@ -8,13 +8,24 @@
       <v-list-item title="Map" to="/worldmap" prepend-icon="mdi-map-outline" />
       <v-list-item
         v-if="user.role === 'admin'"
+        data-cy="menu-select-user-list"
         title="Users"
         to="/users"
         prepend-icon="mdi-account-multiple-outline"
       />
-      <v-list-item title="Devices" to="/devices" prepend-icon="mdi-devices" />
+      <v-list-item
+        data-cy="menu-select-device-list"
+        title="Devices"
+        to="/devices"
+        prepend-icon="mdi-devices"
+      />
       <v-divider> default </v-divider>
-      <v-list-item title="Logout" to="/logout" prepend-icon="mdi-exit-to-app" />
+      <v-list-item
+        data-cy="menu-select-logout"
+        title="Logout"
+        to="/logout"
+        prepend-icon="mdi-exit-to-app"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>

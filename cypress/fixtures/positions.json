@@ -1,0 +1,94 @@
+{
+  "Alice": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": [
+      {
+        "location_id": 1396895,
+        "device_id": 1690,
+        "device_id_tag": null,
+        "loc_timestamp": "2002-11-20T23:08:36.000Z",
+        "loc_lat": 32.288604,
+        "loc_lon": -111.122761,
+        "loc_type": "rec",
+        "loc_attr": null,
+        "created_at": "2023-10-24T19:23:39.136Z",
+        "alias": "WassonPeak"
+      },
+      {
+        "location_id": 1396902,
+        "device_id": 1689,
+        "device_id_tag": null,
+        "loc_timestamp": "2002-11-22T21:20:24.000Z",
+        "loc_lat": 32.161596,
+        "loc_lon": -110.787807,
+        "loc_type": "rec",
+        "loc_attr": null,
+        "created_at": "2023-10-24T19:23:52.003Z",
+        "alias": "FantasyIsland"
+      },
+      {
+        "location_id": 1396903,
+        "device_id": 1688,
+        "device_id_tag": null,
+        "loc_timestamp": "2002-11-24T18:04:20.000Z",
+        "loc_lat": 32.339566,
+        "loc_lon": -110.910244,
+        "loc_type": "rec",
+        "loc_attr": null,
+        "created_at": "2023-10-24T19:23:53.115Z",
+        "alias": "MtKimball"
+      }
+    ]
+  },
+  "Bobby": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": [
+      {
+        "location_id": 1396895,
+        "device_id": 1690,
+        "device_id_tag": null,
+        "loc_timestamp": "2002-11-20T23:08:36.000Z",
+        "loc_lat": 32.288604,
+        "loc_lon": -111.122761,
+        "loc_type": "rec",
+        "loc_attr": null,
+        "created_at": "2023-10-24T19:23:39.136Z",
+        "alias": "WassonPeak"
+      },
+      {
+        "location_id": 1396902,
+        "device_id": 1689,
+        "device_id_tag": null,
+        "loc_timestamp": "2002-11-22T21:20:24.000Z",
+        "loc_lat": 32.161596,
+        "loc_lon": -110.787807,
+        "loc_type": "rec",
+        "loc_attr": null,
+        "created_at": "2023-10-24T19:23:52.003Z",
+        "alias": "FantasyIsland"
+      },
+      {
+        "location_id": 1396903,
+        "device_id": 1688,
+        "device_id_tag": null,
+        "loc_timestamp": "2002-11-24T18:04:20.000Z",
+        "loc_lat": 32.339566,
+        "loc_lon": -110.910244,
+        "loc_type": "rec",
+        "loc_attr": null,
+        "created_at": "2023-10-24T19:23:53.115Z",
+        "alias": "MtKimball"
+      }
+    ]
+  },
+  "cleanMap": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": []
+  }
+}

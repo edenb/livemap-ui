@@ -5,7 +5,10 @@
     :density="$vuetify.display.mobile ? 'compact' : 'default'"
   >
     <template #prepend>
-      <v-app-bar-nav-icon @click.stop="toggleSidebarLeft"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        data-cy="navbar-menu-drawer-control"
+        @click.stop="toggleSidebarLeft"
+      ></v-app-bar-nav-icon>
     </template>
 
     <v-app-bar-title>
@@ -15,26 +18,29 @@
             :icon="connectionIcon.name"
             class="mb-1"
             :color="connectionIcon.color"
+            data-cy="navbar-connection-status"
             size="x-small"
             v-bind="props"
           />
         </template>
         <span>{{ connectionIcon.tooltip }}</span>
       </v-tooltip>
-      <span class="hidden-xs-only pl-3">Livemap</span>
+      <span class="hidden-xs pl-3">Livemap</span>
     </v-app-bar-title>
 
     <template #append>
       <ServerInfo ref="serverInfo" />
       <v-btn
-        variant="text"
+        data-cy="navbar-info-dialog-control"
         icon="mdi-information-outline"
+        variant="text"
         @click="serverInfo.open()"
       />
       <v-menu>
         <template #activator="{ props }">
           <v-chip
             v-if="!$vuetify.display.mobile"
+            data-cy="navbar-account-dialog-control"
             prepend-icon="mdi-account-circle"
             v-bind="props"
           >
@@ -42,8 +48,9 @@
           </v-chip>
           <v-btn
             v-else
-            variant="text"
+            data-cy="navbar-account-dialog-control"
             icon="mdi-account-circle"
+            variant="text"
             v-bind="props"
           />
         </template>
@@ -73,7 +80,10 @@
           </v-list>
         </v-card>
       </v-menu>
-      <v-app-bar-nav-icon @click.stop="toggleSidebarRight" />
+      <v-app-bar-nav-icon
+        data-cy="navbar-device-drawer-control"
+        @click.stop="toggleSidebarRight"
+      />
     </template>
   </v-app-bar>
 </template>

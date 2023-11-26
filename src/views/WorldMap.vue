@@ -130,6 +130,9 @@ function initMap() {
   });
   map.on("zoomend", (e) => {
     worldmapStore.zoom = e.target.getZoom();
+    document
+      .getElementById("worldmap")
+      .setAttribute("data-cy", "zoom-animation-end");
   });
   map.on("baselayerchange", (e) => {
     worldmapStore.baseLayerName = e.name;

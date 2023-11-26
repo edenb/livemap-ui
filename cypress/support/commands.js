@@ -1,5 +1,5 @@
 Cypress.Commands.add("login", (username) => {
-  // Stub responses
+  // Mock responses
   cy.fixture("tokens.json").then((data) => {
     cy.intercept("POST", "/api/v1/login", (req) => {
       req.reply({
@@ -19,12 +19,6 @@ Cypress.Commands.add("login", (username) => {
       });
     }).as("getAccount");
   });
-
-  cy.intercept("GET", "/socket.io/*", (req) => {
-    req.reply({
-      statusCode: 200,
-    });
-  }).as("getSocketIO");
 
   cy.session([username], () => {
     const log = Cypress.log({
@@ -47,4 +41,32 @@ Cypress.Commands.add("login", (username) => {
     log.snapshot("after");
     log.end();
   });
+});
+
+Cypress.Commands.add("mockMapResponses", (username) => {
+  cy.fixture("positions.json").then((data) => {
+    cy.intercept("GET", "/api/v1/positions", (req) => {
+      req.reply({
+        statusCode: 200,
+        headers: data[username].headers,
+        body: JSON.stringify(data[username].body),
+      });
+    }).as("getPositions");
+  });
+
+  cy.intercept("GET", "/api/v1/staticlayers", (req) => {
+    req.reply({
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([]),
+    });
+  }).as("getStaticlayers");
+
+  cy.intercept("GET", "/socket.io/*", (req) => {
+    req.reply({
+      statusCode: 200,
+    });
+  }).as("getSocketIO");
 });
