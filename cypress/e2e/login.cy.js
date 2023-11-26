@@ -1,5 +1,5 @@
 describe("Login", () => {
-  describe("Login user Alice with role admin", () => {
+  describe("For user Alice with role admin", () => {
     beforeEach(function () {
       cy.mockMapResponses("Alice");
       // Login and go to the main page
@@ -18,7 +18,7 @@ describe("Login", () => {
     });
   });
 
-  describe("Login user Bobby with role manager", () => {
+  describe("For user Bobby with role manager", () => {
     beforeEach(function () {
       cy.mockMapResponses("Bobby");
       // Login and go to the main page
