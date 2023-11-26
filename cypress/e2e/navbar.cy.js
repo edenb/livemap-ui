@@ -12,9 +12,8 @@ describe("Navigation bar", () => {
   });
   it("should show connected status", () => {
     cy.get("[data-cy=navbar-connection-status]").should(
-      "have.css",
-      "color",
-      "rgb(76, 175, 80)",
+      "have.class",
+      "text-green",
     );
   });
   it("should show info dialog control", () => {
