@@ -1,4 +1,4 @@
-describe("Navbar shows all controls", () => {
+describe("Navigation bar", () => {
   beforeEach(function () {
     cy.mockMapResponses("cleanMap");
     // Login and go to the main page
