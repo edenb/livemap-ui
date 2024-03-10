@@ -9,6 +9,7 @@
     "serve": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "format": "prettier src --write",
+    "cy:open": "cypress open",
     "cy:run": "cypress run --browser chrome"
   },
   "dependencies": {
@@ -26,7 +27,7 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.0",
+    "@vitejs/plugin-vue": "^5.0.0",
     "cypress": "^13.1.0",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^9.0.0",
