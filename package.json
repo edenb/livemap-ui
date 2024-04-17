@@ -31,7 +31,7 @@
     "cypress": "^13.1.0",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-cypress": "^2.14.0",
+    "eslint-plugin-cypress": "^2.15.2",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.5.1",
     "eslint-plugin-vuetify": "^2.0.0",
