@@ -19,7 +19,7 @@
         to="/devices"
         prepend-icon="mdi-devices"
       />
-      <v-divider> default </v-divider>
+      <v-divider />
       <v-list-item
         data-cy="menu-select-logout"
         title="Logout"
