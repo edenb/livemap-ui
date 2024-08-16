@@ -27,23 +27,23 @@
             single-line
           />
           <v-spacer />
-          <v-btn icon="mdi-plus" title="Add device" @click="newItem()" />
+          <v-btn v-tooltip="'Add device'" icon="mdi-plus" @click="newItem()" />
           <v-btn
+            v-tooltip="'Edit selected device'"
             :disabled="selectedOwned(selected).length !== 1"
             icon="mdi-pencil"
-            title="Edit selected device"
             @click="editItem(selectedOwned(selected)[0])"
           />
           <v-btn
+            v-tooltip="'Share/unshare selected devices'"
             :disabled="selectedOwned(selected).length == 0"
             icon="mdi-share-all"
-            title="Share/unshare selected devices"
             @click="shareItems(selectedOwned(selected))"
           />
           <v-btn
+            v-tooltip="'Remove selected devices'"
             :disabled="selectedOwned(selected).length == 0"
             icon="mdi-delete"
-            title="Remove selected devices"
             @click="deleteItems(selectedOwned(selected))"
           />
         </v-toolbar>
@@ -51,25 +51,25 @@
       <template #[`item.actions`]="{ item }">
         <v-btn
           v-if="item.api_key === user.api_key"
+          v-tooltip="'Edit device'"
           icon="mdi-pencil"
           size="small"
-          title="Edit device"
           variant="plain"
           @click="editItem(item)"
         />
         <v-btn
           v-if="item.api_key === user.api_key"
+          v-tooltip="'Share/unshare device'"
           icon="mdi-share-all"
           size="small"
-          title="Share/unshare device"
           variant="plain"
           @click="shareItems([item])"
         />
         <v-btn
           v-if="item.api_key === user.api_key"
+          v-tooltip="'Remove device'"
           icon="mdi-delete"
           size="small"
-          title="Remove device"
           variant="plain"
           @click="deleteItems([item])"
         />
