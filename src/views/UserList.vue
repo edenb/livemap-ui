@@ -27,52 +27,52 @@
             single-line
           />
           <v-spacer />
-          <v-btn icon="mdi-plus" title="Add user" @click="newItem()" />
+          <v-btn v-tooltip="'Add user'" icon="mdi-plus" @click="newItem()" />
           <v-btn
+            v-tooltip="'Edit selected user'"
             :disabled="selected.length !== 1"
             icon="mdi-pencil"
-            title="Edit selected user"
             @click="editItem(allUsers.find((e) => e.user_id === selected[0]))"
           />
           <v-btn
+            v-tooltip="'Reset password of selected user'"
             :disabled="selected.length !== 1"
             icon="mdi-lock-reset"
-            title="Reset password of selected user"
             @click="
               editPasswordItem(allUsers.find((e) => e.user_id === selected[0]))
             "
           />
           <v-btn
+            v-tooltip="'Remove selected user'"
             :disabled="
               selected.length !== 1 ||
               (selected.length === 1 && selected[0] === user.user_id)
             "
             icon="mdi-delete"
-            title="Remove selected user"
             @click="deleteItem(allUsers.find((e) => e.user_id === selected[0]))"
           />
         </v-toolbar>
       </template>
       <template #[`item.actions`]="{ item }">
         <v-btn
+          v-tooltip="'Edit user'"
           icon="mdi-pencil"
           size="small"
-          title="Edit user"
           variant="plain"
           @click="editItem(item)"
         />
         <v-btn
+          v-tooltip="'Reset password'"
           icon="mdi-lock-reset"
           size="small"
-          title="Reset password"
           variant="plain"
           @click="editPasswordItem(item)"
         />
         <v-btn
+          v-tooltip="'Remove user'"
           :disabled="item.user_id === user.user_id"
           icon="mdi-delete"
           size="small"
-          title="Remove user"
           variant="plain"
           @click="deleteItem(item)"
         />
