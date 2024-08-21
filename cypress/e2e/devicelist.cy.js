@@ -3,16 +3,25 @@ describe("Device List", () => {
     beforeEach(function () {
       cy.mockMapResponses("Alice");
       cy.login("Alice");
-      cy.visit("/devices");
-      cy.contains("Devices");
-    });
-
-    it("should show a spinner in the loading state", () => {
-      cy.get("[data-cy=device-list-state-loading]").should("be.visible");
     });
 
     it("should show a message that no devices are available", () => {
+      cy.visit("/devices");
+      cy.contains("Devices");
+      // Spinner should be visible during loading
+      cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-empty]").should("be.visible");
+    });
+
+    it("should show an error message if loading fails", () => {
+      cy.intercept("GET", "/api/v1/users/**", (req) => {
+        req.reply({
+          statusCode: 500,
+        });
+      });
+      cy.visit("/devices");
+      cy.contains("Devices");
+      cy.get("[data-cy=device-list-state-failed]").should("be.visible");
     });
   });
 
@@ -20,20 +29,29 @@ describe("Device List", () => {
     beforeEach(function () {
       cy.mockMapResponses("Bobby");
       cy.login("Bobby");
+    });
+
+    it("should show a device list with 3 devices", () => {
       cy.visit("/devices");
       cy.contains("Devices");
-    });
-
-    it("should show a spinner in the loading state", () => {
+      // Spinner should be visible during loading
       cy.get("[data-cy=device-list-state-loading]").should("be.visible");
-    });
-
-    it("should show the device list", () => {
       cy.get("[data-cy=device-list-state-loaded]").should("be.visible");
+      // Shows 4 rows (1 header and 3 devices)
+      cy.get("tr").should("have.length", 4);
     });
 
-    it("should show 4 rows (1 header and 3 devices)", () => {
-      cy.get("tr").should("have.length", 4);
+    it("should show an error message if loading fails", () => {
+      cy.intercept("GET", "/api/v1/users/**", (req) => {
+        req.reply({
+          statusCode: 500,
+        });
+      });
+      cy.visit("/devices");
+      cy.contains("Devices");
+      // Spinner should be visible during loading
+      cy.get("[data-cy=device-list-state-loading]").should("be.visible");
+      cy.get("[data-cy=device-list-state-failed]").should("be.visible");
     });
   });
 });
