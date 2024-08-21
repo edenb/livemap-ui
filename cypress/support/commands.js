@@ -54,6 +54,16 @@ Cypress.Commands.add("mockMapResponses", (username) => {
     }).as("getPositions");
   });
 
+  cy.fixture("devices.json").then((data) => {
+    cy.intercept("GET", "/api/v1/users/**", (req) => {
+      req.reply({
+        statusCode: 200,
+        headers: data[username].headers,
+        body: JSON.stringify(data[username].body),
+      });
+    }).as("getDevices");
+  });
+
   cy.intercept("GET", "/api/v1/staticlayers", (req) => {
     req.reply({
       statusCode: 200,
