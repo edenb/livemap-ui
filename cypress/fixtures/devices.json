@@ -1,0 +1,47 @@
+{
+  "Alice": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": []
+  },
+  "Bobby": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": [
+      {
+        "device_id": 1690,
+        "api_key": "bobby-key",
+        "identifier": "WassonPeak",
+        "alias": "WassonPeak",
+        "fixed_loc_lat": null,
+        "fixed_loc_lon": null,
+        "shared": [null],
+        "owner": "Bobby"
+      },
+      {
+        "device_id": 1689,
+        "api_key": "bobby-key",
+        "identifier": "FantasyIsland",
+        "alias": "FantasyIsland",
+        "fixed_loc_lat": null,
+        "fixed_loc_lon": null,
+        "shared": [null],
+        "owner": "Bobby"
+      },
+      {
+        "device_id": 1688,
+        "api_key": "bobby-key",
+        "identifier": "MtKimball",
+        "alias": "MtKimball",
+        "fixed_loc_lat": null,
+        "fixed_loc_lon": null,
+        "shared": [null],
+        "owner": "Bobby"
+      }
+    ]
+  }
+}

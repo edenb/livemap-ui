@@ -1,0 +1,30 @@
+{
+  "Alice": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "user_id": 1,
+      "username": "Alice",
+      "role": "admin",
+      "api_key": "alice-key",
+      "fullname": "Alice Smith",
+      "email": ""
+    }
+  },
+  "Bobby": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "user_id": 2,
+      "username": "Bobby",
+      "role": "manager",
+      "api_key": "bobby-key",
+      "fullname": "Bobby Smith",
+      "email": ""
+    }
+  }
+}

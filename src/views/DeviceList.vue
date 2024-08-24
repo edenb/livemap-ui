@@ -1,7 +1,42 @@
 <template>
-  <v-container fluid pa-3>
+  <v-container fluid pa-3 style="height: 100%">
+    <v-row v-if="state === 'loading'" style="height: 100%">
+      <v-col align-self="center" class="text-center">
+        <v-progress-circular
+          v-if="state === 'loading'"
+          data-cy="device-list-state-loading"
+          indeterminate
+          :size="50"
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
+
+    <v-empty-state
+      v-if="state === 'empty'"
+      action-text="Add a device manually"
+      data-cy="device-list-state-empty"
+      icon="mdi-devices"
+      style="height: 100%"
+      text="You have no devices and no devices have been shared with you. Add your own device manually or configure your device with your API key to automatically add a new device."
+      title="No devices yet."
+      @click:action="newItem()"
+    >
+      <DeviceListEditDevice ref="editDevice" />
+    </v-empty-state>
+
+    <v-empty-state
+      v-if="state === 'failed'"
+      data-cy="device-list-state-failed"
+      icon="mdi-emoticon-sad"
+      style="height: 100%"
+      text="This may be caused by a server failure or a problem with your connection."
+      title="Unable to show your devices."
+    ></v-empty-state>
+
     <v-data-table
+      v-if="state === 'loaded'"
       v-model="selected"
+      data-cy="device-list-state-loaded"
       density="compact"
       :headers="headers"
       item-value="device_id"
@@ -121,6 +156,7 @@ const newDevice = ref({
 });
 const search = ref("");
 const selected = ref([]);
+const state = ref(null);
 const { user } = storeToRefs(useAuthStore());
 let usernameColors = [];
 
@@ -129,6 +165,7 @@ onMounted(() => {
 });
 
 function loadTable() {
+  state.value = "loading";
   httpRequest("get", `users/${user.value.user_id}/devices`)
     .then((response) => {
       allDevices.value = response.data;
@@ -137,9 +174,14 @@ function loadTable() {
           e.shared.sort();
         }
       });
+      if (allDevices.value.length === 0) {
+        state.value = "empty";
+      } else {
+        state.value = "loaded";
+      }
     })
     .catch(() => {
-      // Ignore failed (re)loads
+      state.value = "failed";
     });
 }
 

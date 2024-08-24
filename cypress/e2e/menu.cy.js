@@ -1,7 +1,7 @@
 describe("Menu", () => {
   describe("For user Alice with role admin", () => {
     beforeEach(function () {
-      cy.mockMapResponses("cleanMap");
+      cy.mockMapResponses("Alice");
       // Login and go to the main page
       cy.login("Alice");
       cy.visit("/worldmap");
@@ -29,7 +29,7 @@ describe("Menu", () => {
 
   describe("For user Bobby with role manager", () => {
     beforeEach(function () {
-      cy.mockMapResponses("cleanMap");
+      cy.mockMapResponses("Bobby");
       // Login and go to the main page
       cy.login("Bobby");
       cy.visit("/worldmap");

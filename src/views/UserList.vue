@@ -1,7 +1,29 @@
 <template>
-  <v-container fluid pa-3>
+  <v-container fluid pa-3 style="height: 100%">
+    <v-row v-if="state === 'loading'" style="height: 100%">
+      <v-col align-self="center" class="text-center">
+        <v-progress-circular
+          v-if="state === 'loading'"
+          data-cy="user-list-state-loading"
+          indeterminate
+          :size="50"
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
+
+    <v-empty-state
+      v-if="state === 'failed'"
+      data-cy="user-list-state-failed"
+      icon="mdi-emoticon-sad"
+      style="height: 100%"
+      text="This may be caused by a server failure, a problem with your connection or insufficient rights to access the user list."
+      title="Unable to show the user list."
+    ></v-empty-state>
+
     <v-data-table
+      v-if="state === 'loaded'"
       v-model="selected"
+      data-cy="user-list-state-loaded"
       density="compact"
       :headers="headers"
       item-value="user_id"
@@ -111,6 +133,7 @@ const newUser = ref({
 });
 const search = ref("");
 const selected = ref([]);
+const state = ref(null);
 const { user } = storeToRefs(useAuthStore());
 
 onMounted(() => {
@@ -118,12 +141,18 @@ onMounted(() => {
 });
 
 function loadTable() {
+  state.value = "loading";
   httpRequest("get", `users`)
     .then((response) => {
       allUsers.value = response.data;
+      if (allUsers.value.length === 0) {
+        state.value = "empty";
+      } else {
+        state.value = "loaded";
+      }
     })
     .catch(() => {
-      // Ignore failed (re)loads
+      state.value = "failed";
     });
 }
 
