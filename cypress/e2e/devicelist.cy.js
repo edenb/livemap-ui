@@ -7,7 +7,6 @@ describe("Device List", () => {
 
     it("should show a message that no devices are available", () => {
       cy.visit("/devices");
-      cy.contains("Devices");
       // Spinner should be visible during loading
       cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-empty]").should("be.visible");
@@ -20,7 +19,6 @@ describe("Device List", () => {
         });
       });
       cy.visit("/devices");
-      cy.contains("Devices");
       // Spinner should be visible during loading
       cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-failed]").should("be.visible");
@@ -35,10 +33,10 @@ describe("Device List", () => {
 
     it("should show a device list with 3 devices", () => {
       cy.visit("/devices");
-      cy.contains("Devices");
       // Spinner should be visible during loading
       cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-loaded]").should("be.visible");
+      cy.get("[class=v-toolbar-title]").contains("Devices");
       // Shows 4 rows (1 header and 3 devices)
       cy.get("tr").should("have.length", 4);
     });
@@ -50,7 +48,6 @@ describe("Device List", () => {
         });
       });
       cy.visit("/devices");
-      cy.contains("Devices");
       // Spinner should be visible during loading
       cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-failed]").should("be.visible");
