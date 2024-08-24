@@ -10,7 +10,7 @@ Cypress.Commands.add("login", (username) => {
     }).as("loginUser");
   });
 
-  cy.fixture("users.json").then((data) => {
+  cy.fixture("accounts.json").then((data) => {
     cy.intercept("GET", "/api/v1/account", (req) => {
       req.reply({
         statusCode: 200,
