@@ -3,7 +3,7 @@ Cypress.Commands.add("login", (username) => {
   cy.fixture("tokens.json").then((data) => {
     cy.intercept("POST", "/api/v1/login", (req) => {
       req.reply({
-        statusCode: 200,
+        statusCode: data[username].statusCode,
         headers: data[username].headers,
         body: JSON.stringify(data[username].body),
       });
@@ -13,7 +13,7 @@ Cypress.Commands.add("login", (username) => {
   cy.fixture("accounts.json").then((data) => {
     cy.intercept("GET", "/api/v1/account", (req) => {
       req.reply({
-        statusCode: 200,
+        statusCode: data[username].statusCode,
         headers: data[username].headers,
         body: JSON.stringify(data[username].body),
       });
@@ -47,7 +47,7 @@ Cypress.Commands.add("mockMapResponses", (username) => {
   cy.fixture("positions.json").then((data) => {
     cy.intercept("GET", "/api/v1/positions", (req) => {
       req.reply({
-        statusCode: 200,
+        statusCode: data[username].statusCode,
         headers: data[username].headers,
         body: JSON.stringify(data[username].body),
       });
@@ -57,7 +57,7 @@ Cypress.Commands.add("mockMapResponses", (username) => {
   cy.fixture("devices.json").then((data) => {
     cy.intercept("GET", "/api/v1/users/**", (req) => {
       req.reply({
-        statusCode: 200,
+        statusCode: data[username].statusCode,
         headers: data[username].headers,
         body: JSON.stringify(data[username].body),
       });

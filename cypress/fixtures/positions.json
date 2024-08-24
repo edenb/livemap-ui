@@ -1,11 +1,13 @@
 {
   "Alice": {
+    "statusCode": 200,
     "headers": {
       "Content-Type": "application/json"
     },
     "body": []
   },
   "Bobby": {
+    "statusCode": 200,
     "headers": {
       "Content-Type": "application/json"
     },
@@ -49,6 +51,7 @@
     ]
   },
   "cleanMap": {
+    "statusCode": 200,
     "headers": {
       "Content-Type": "application/json"
     },
