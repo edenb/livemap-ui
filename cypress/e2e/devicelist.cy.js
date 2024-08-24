@@ -21,6 +21,8 @@ describe("Device List", () => {
       });
       cy.visit("/devices");
       cy.contains("Devices");
+      // Spinner should be visible during loading
+      cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-failed]").should("be.visible");
     });
   });
