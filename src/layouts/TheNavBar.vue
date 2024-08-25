@@ -96,7 +96,7 @@ import ServerInfo from "@/components/ServerInfo.vue";
 const authStore = useAuthStore();
 const connect = inject("connect");
 const connectionIcon = computed(() => {
-  if (isConnected) {
+  if (isConnected.value) {
     return {
       name: "mdi-circle",
       color: "green",
