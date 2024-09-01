@@ -115,7 +115,7 @@ const isConnected = inject("isConnected");
 const serverInfo = ref(null);
 
 onMounted(() => {
-  connect(authStore.token);
+  connect();
 });
 
 function toggleSidebarLeft() {

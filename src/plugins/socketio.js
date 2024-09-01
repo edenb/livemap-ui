@@ -7,7 +7,6 @@ export default {
   install: (app, { connection, options }) => {
     let isConnected = ref(false);
     let positionUpdate = ref("");
-    let token = null;
     let socketioConf = {
       ...defaults,
       ...{ connection, options },
@@ -17,24 +16,23 @@ export default {
     socketio.on("connect", () => {
       isConnected.value = true;
     });
-    socketio.on("disconnect", () => {
+    socketio.on("connect_error", () => {
+      // If the connection is denied by the server
       isConnected.value = false;
     });
-    socketio.on("authenticate", () => {
-      socketio.emit("token", token);
+    socketio.on("disconnect", () => {
+      isConnected.value = false;
     });
     socketio.on("positionUpdate", (data) => {
       positionUpdate.value = data;
     });
 
-    const connect = function (newToken) {
-      token = newToken;
+    const connect = function () {
       if (!isConnected.value) {
         socketio.open();
       }
     };
     const disconnect = function () {
-      token = null;
       socketio.close();
     };
 
