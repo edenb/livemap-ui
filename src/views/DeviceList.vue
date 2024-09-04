@@ -118,6 +118,7 @@
             :key="sharedUser"
             class="ma-1"
             :color="getColor(sharedUser)"
+            density="compact"
           >
             {{ sharedUser }}
           </v-chip>
