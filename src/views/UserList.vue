@@ -28,6 +28,8 @@
       :headers="headers"
       item-value="user_id"
       :items="allUsers"
+      :mobile="null"
+      mobile-breakpoint="md"
       :search="search"
       :sort-by="[{ key: 'fullname', order: 'asc' }]"
       show-select
@@ -38,11 +40,11 @@
           <ConfirmDialog ref="confirmDialog" />
           <UserListEditUser ref="editUser" />
           <UserListChangePassword ref="editPassword" />
-          <v-toolbar-title>Users</v-toolbar-title>
-          <v-spacer />
+          <v-toolbar-title class="hidden-xs">Users</v-toolbar-title>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            class="pl-4"
             density="compact"
             hide-details
             label="Search"
