@@ -36,7 +36,7 @@ describe("Device List", () => {
       // Spinner should be visible during loading
       cy.get("[data-cy=device-list-state-loading]").should("be.visible");
       cy.get("[data-cy=device-list-state-loaded]").should("be.visible");
-      cy.get("[class=v-toolbar-title]").contains("Devices");
+      cy.get(".v-toolbar-title").contains("Devices");
       // Shows 4 rows (1 header and 3 devices)
       cy.get("tr").should("have.length", 4);
     });
