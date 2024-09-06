@@ -41,6 +41,8 @@
       :headers="headers"
       item-value="device_id"
       :items="allDevices"
+      :mobile="null"
+      mobile-breakpoint="md"
       :search="search"
       :sort-by="[{ key: 'alias', order: 'asc' }]"
       show-select
@@ -51,11 +53,11 @@
           <ConfirmDialog ref="confirmDialog" />
           <DeviceListEditDevice ref="editDevice" />
           <DeviceListEditSharedUser ref="editSharedUser" />
-          <v-toolbar-title>Devices</v-toolbar-title>
-          <v-spacer />
+          <v-toolbar-title class="hidden-xs">Devices</v-toolbar-title>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            class="pl-4"
             density="compact"
             hide-details
             label="Search"
@@ -118,6 +120,7 @@
             :key="sharedUser"
             class="ma-1"
             :color="getColor(sharedUser)"
+            density="compact"
           >
             {{ sharedUser }}
           </v-chip>

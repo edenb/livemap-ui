@@ -10,7 +10,12 @@
         </template>
         <v-card-text>
           <div class="text-h5">Affected devices</div>
-          <v-chip v-for="device in devices" :key="device" class="ma-1">
+          <v-chip
+            v-for="device in devices"
+            :key="device"
+            class="ma-1"
+            density="compact"
+          >
             {{ device.alias }}
           </v-chip>
         </v-card-text>

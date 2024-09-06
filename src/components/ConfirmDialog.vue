@@ -19,7 +19,12 @@
         {{ message }}
       </v-card-text>
       <v-card-text>
-        <v-chip v-for="item in items" :key="item" class="ma-1">
+        <v-chip
+          v-for="item in items"
+          :key="item"
+          class="ma-1"
+          density="compact"
+        >
           {{ item }}
         </v-chip>
       </v-card-text>

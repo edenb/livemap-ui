@@ -6,12 +6,7 @@
 <script setup>
 import { inject, onMounted, onUnmounted, watch } from "vue";
 import { storeToRefs } from "pinia";
-import {
-  useAuthStore,
-  useLayoutStore,
-  usePositionStore,
-  useWorldmapStore,
-} from "@/store.js";
+import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
@@ -23,7 +18,6 @@ const connect = inject("connect");
 const emitter = inject("emitter");
 const httpRequest = inject("httpRequest");
 const positionUpdate = inject("positionUpdate");
-const authStore = useAuthStore();
 const positionStore = usePositionStore();
 const worldmapStore = useWorldmapStore();
 const layoutStore = useLayoutStore();
@@ -72,7 +66,7 @@ onMounted(() => {
   emitter.on("open-device-popup", (device_id) => {
     openPopup(device_id);
   });
-  connect(authStore.token);
+  connect();
 });
 
 onUnmounted(() => {
