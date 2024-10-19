@@ -1,16 +1,19 @@
 <template>
   <v-layout ref="app">
-    <TheNavBar />
-    <TheSidebarLeft />
-    <v-main>
-      <div style="height: 100%">
-        <router-view />
-      </div>
-    </v-main>
+    <SnackbarProvider>
+      <TheNavBar />
+      <TheSidebarLeft />
+      <v-main>
+        <div style="height: 100%">
+          <router-view />
+        </div>
+      </v-main>
+    </SnackbarProvider>
   </v-layout>
 </template>
 
 <script setup>
+import SnackbarProvider from "@/components/SnackbarProvider.vue";
 import TheNavBar from "@/layouts/TheNavBar.vue";
 import TheSidebarLeft from "@/layouts/TheSidebarLeft.vue";
 </script>
