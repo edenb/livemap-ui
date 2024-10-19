@@ -2,6 +2,7 @@
   <v-dialog
     v-if="info && info.application"
     v-model="dialog"
+    data-cy="server-info-dialog"
     :max-width="options.width"
   >
     <v-card>
@@ -101,13 +102,17 @@ const options = {
   width: 480,
   zIndex: 2000,
 };
+const { show } = inject("snackbar");
 const serverUrl = inject("serverUrl");
 
-function open() {
-  dialog.value = true;
-  httpRequest("get", `server/info`).then((response) => {
+async function open() {
+  try {
+    const response = await httpRequest("get", `server/info`);
     info.value = response.data;
-  });
+    dialog.value = true;
+  } catch (err) {
+    show({ message: err.errorResponseText, color: "error" });
+  }
 }
 
 function cancel() {
