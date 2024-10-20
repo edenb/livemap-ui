@@ -38,8 +38,8 @@
       <template #top>
         <v-toolbar density="compact" color="secondary">
           <ConfirmDialog ref="confirmDialog" />
-          <UserListEditUser ref="editUser" />
-          <UserListChangePassword ref="editPassword" />
+          <UserListEditUser ref="userListEditUser" />
+          <UserListChangePassword ref="userListChangePassword" />
           <v-toolbar-title class="hidden-xs">Users</v-toolbar-title>
           <v-text-field
             v-model="search"
@@ -115,8 +115,8 @@ import UserListChangePassword from "@/components/UserListChangePassword.vue";
 
 const allUsers = ref([]);
 const confirmDialog = ref(null);
-const editPassword = ref(null);
-const editUser = ref(null);
+const userListChangePassword = ref(null);
+const userListEditUser = ref(null);
 const headers = [
   { title: "Full Name", key: "fullname" },
   { title: "Username", key: "username" },
@@ -135,27 +135,27 @@ const newUser = ref({
 });
 const search = ref("");
 const selected = ref([]);
+const { show } = inject("snackbar");
 const state = ref(null);
 const { user } = storeToRefs(useAuthStore());
 
-onMounted(() => {
-  loadTable();
+onMounted(async () => {
+  await loadTable();
 });
 
-function loadTable() {
+async function loadTable() {
   state.value = "loading";
-  httpRequest("get", `users`)
-    .then((response) => {
-      allUsers.value = response.data;
-      if (allUsers.value.length === 0) {
-        state.value = "empty";
-      } else {
-        state.value = "loaded";
-      }
-    })
-    .catch(() => {
-      state.value = "failed";
-    });
+  try {
+    const response = await httpRequest("get", `users`);
+    allUsers.value = response.data;
+    if (allUsers.value.length === 0) {
+      state.value = "empty";
+    } else {
+      state.value = "loaded";
+    }
+  } catch {
+    state.value = "failed";
+  }
 }
 
 function editItem(item) {
@@ -166,41 +166,44 @@ function newItem() {
   showDialogUser(newUser.value);
 }
 
-function deleteItem(item) {
-  let messageText = [];
-  messageText.push("Are you sure you want to delete the following user?");
-  confirmDialog.value
-    .open("Delete", messageText, [item.fullname], { color: "red" })
-    .then((confirm) => {
-      if (confirm) {
-        httpRequest("delete", `users/${item.user_id}`)
-          .then(() => {
-            loadTable();
-            selected.value = [];
-          })
-          .catch((err) => {
-            // Do not reload the table on internal server error
-            if (err.response.status < 500) {
-              loadTable();
-            }
-          });
-      }
-    });
+async function deleteItem(item) {
+  const messageText = ["Are you sure you want to delete the following user?"];
+  const confirm = await confirmDialog.value.open(
+    "Delete",
+    messageText,
+    [item.fullname],
+    { color: "red" },
+  );
+  if (confirm) {
+    try {
+      await httpRequest("delete", `users/${item.user_id}`);
+      await loadTable();
+      selected.value = [];
+      show({ message: `User ${item.fullname} deleted.`, color: "success" });
+    } catch (err) {
+      show({
+        message: `Failed to delete user ${item.fullname}.`,
+        color: "error",
+      });
+    }
+  }
 }
 
 function editPasswordItem(item) {
   showDialogPassword(item);
 }
 
-function showDialogUser(user) {
-  editUser.value.open(user).then(() => {
-    loadTable();
-  });
+async function showDialogUser(user) {
+  const changed = await userListEditUser.value.open(user);
+  if (changed) {
+    await loadTable();
+  }
 }
 
-function showDialogPassword(user) {
-  editPassword.value.open(user).then(() => {
-    loadTable();
-  });
+async function showDialogPassword(user) {
+  const changed = await userListChangePassword.value.open(user);
+  if (changed) {
+    await loadTable();
+  }
 }
 </script>
