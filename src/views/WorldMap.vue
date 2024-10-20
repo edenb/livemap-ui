@@ -19,6 +19,7 @@ const emitter = inject("emitter");
 const httpRequest = inject("httpRequest");
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
+const { show } = inject("snackbar");
 const worldmapStore = useWorldmapStore();
 const layoutStore = useLayoutStore();
 const { drawerOpen } = storeToRefs(layoutStore);
@@ -160,8 +161,15 @@ function storeOverlayControls(name, active) {
   }
 }
 
-function loadDeviceLayer(activeLayerNames) {
-  httpRequest("get", "/positions").then((response) => {
+async function loadDeviceLayer(activeLayerNames) {
+  let response;
+  try {
+    response = await httpRequest("get", "/positions");
+  } catch (err) {
+    show({ message: err.errorResponseText, color: "error" });
+  }
+
+  if (response?.data) {
     deviceLayer = L.featureGroup();
     positionStore.clearLastPositions();
     for (let dev of response.data) {
@@ -192,31 +200,42 @@ function loadDeviceLayer(activeLayerNames) {
     if (activeLayerNames.includes("Device")) {
       deviceLayer.addTo(map);
     }
-  });
+  }
 }
 
-function loadStaticLayers(activeLayerNames) {
-  httpRequest("get", "/staticlayers").then((response) => {
-    let layerControlStatic = [];
-    let layerIndex = 1;
-    for (let geojson of response.data) {
-      layerControlStatic.push({
-        layer: L.geoJSON(geojson, getGeoJsonOptions(geojson)),
-        layerName: getStaticLayerName(geojson, layerIndex),
-      });
-      layerIndex++;
-    }
-    replaceDuplicateNames(layerControlStatic);
-    layerControlStatic.sort((a, b) => {
-      return a.layerName.localeCompare(b.layerName);
-    });
-    layerControlStatic.forEach((element) => {
-      layerControl.addOverlay(element.layer, element.layerName);
-      if (activeLayerNames.includes(element.layerName)) {
-        element.layer.addTo(map);
+async function loadStaticLayers(activeLayerNames) {
+  let response;
+  try {
+    response = await httpRequest("get", "/staticlayers");
+  } catch (err) {
+    show({ message: err.errorResponseText, color: "error" });
+  }
+
+  if (response?.data) {
+    try {
+      let layerControlStatic = [];
+      let layerIndex = 1;
+      for (let geojson of response.data) {
+        layerControlStatic.push({
+          layer: L.geoJSON(geojson, getGeoJsonOptions(geojson)),
+          layerName: getStaticLayerName(geojson, layerIndex),
+        });
+        layerIndex++;
       }
-    });
-  });
+      replaceDuplicateNames(layerControlStatic);
+      layerControlStatic.sort((a, b) => {
+        return a.layerName.localeCompare(b.layerName);
+      });
+      layerControlStatic.forEach((element) => {
+        layerControl.addOverlay(element.layer, element.layerName);
+        if (activeLayerNames.includes(element.layerName)) {
+          element.layer.addTo(map);
+        }
+      });
+    } catch (err) {
+      show({ message: err, color: "error" });
+    }
+  }
 }
 
 function getStaticLayerName(geojson, index) {
