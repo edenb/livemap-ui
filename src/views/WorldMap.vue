@@ -161,8 +161,15 @@ function storeOverlayControls(name, active) {
   }
 }
 
-function loadDeviceLayer(activeLayerNames) {
-  httpRequest("get", "/positions").then((response) => {
+async function loadDeviceLayer(activeLayerNames) {
+  let response;
+  try {
+    response = await httpRequest("get", "/positions");
+  } catch (err) {
+    show({ message: err.errorResponseText, color: "error" });
+  }
+
+  if (response?.data) {
     deviceLayer = L.featureGroup();
     positionStore.clearLastPositions();
     for (let dev of response.data) {
@@ -193,7 +200,7 @@ function loadDeviceLayer(activeLayerNames) {
     if (activeLayerNames.includes("Device")) {
       deviceLayer.addTo(map);
     }
-  });
+  }
 }
 
 async function loadStaticLayers(activeLayerNames) {
