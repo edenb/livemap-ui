@@ -60,7 +60,7 @@ export const useAuthStore = defineStore("auth", () => {
       this.authorized = false;
       this.user = {};
       localStorage.removeItem("jwt");
-      return err;
+      throw err;
     }
   }
 
