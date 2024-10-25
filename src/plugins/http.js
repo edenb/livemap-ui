@@ -10,7 +10,7 @@ export default {
       ...{ serverUrl, apiPath },
     };
 
-    const httpRequest = function (method, path, data) {
+    async function httpRequest(method, path, data) {
       const apiConfig = {
         apiURL: axiosConf.serverUrl + axiosConf.apiPath,
         timeout: 30000,
@@ -23,32 +23,29 @@ export default {
           Authorization: "Bearer " + authStore.token,
         };
       }
-      return new Promise((resolve, reject) => {
-        Axios(path, {
+      try {
+        const response = await Axios(path, {
           method: method,
           baseURL: apiConfig.apiURL,
           data: data,
           timeout: apiConfig.timeout,
           withCredentials: apiConfig.withCredentials,
           headers: headers,
-        })
-          .then((response) => {
-            resolve(response);
-          })
-          .catch((err) => {
-            if (err.response && err.response.status) {
-              if (err.response.data !== "") {
-                err.errorResponseText = err.response.data;
-              } else {
-                err.errorResponseText = err.response.statusText;
-              }
-            } else {
-              err.errorResponseText = "No server connection";
-            }
-            reject(err);
-          });
-      });
-    };
+        });
+        return response;
+      } catch (err) {
+        if (err.response && err.response.status) {
+          if (err.response.data !== "") {
+            err.errorResponseText = err.response.data;
+          } else {
+            err.errorResponseText = err.response.statusText;
+          }
+        } else {
+          err.errorResponseText = "No server connection";
+        }
+        throw err;
+      }
+    }
 
     app.provide("httpRequest", httpRequest);
     app.provide("serverUrl", serverUrl);
