@@ -54,7 +54,8 @@ const errorResponseText = ref("");
 const formData = ref({});
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
-let resolve = null;
+let resolve;
+const { show } = inject("snackbar");
 const showDialog = ref(false);
 const user = ref({});
 
@@ -78,24 +79,24 @@ async function changed() {
   if (inputValid.value && formValid) {
     let modifiedPassword = {};
     copyObject(formData.value, modifiedPassword, ["newpwd", "confirmpwd"]);
-    httpRequest(
-      "post",
-      `users/${user.value.user_id}/password/reset`,
-      modifiedPassword,
-    )
-      .then(() => {
-        resolve(true);
-        showDialog.value = false;
-      })
-      .catch((err) => {
-        errorResponseText.value = err.errorResponseText;
-      });
+    try {
+      await httpRequest(
+        "post",
+        `users/${user.value.user_id}/password/reset`,
+        modifiedPassword,
+      );
+      showDialog.value = false;
+      show({ message: `Password changed.`, color: "success" });
+      resolve(true);
+    } catch (err) {
+      errorResponseText.value = err.errorResponseText;
+    }
   }
 }
 
 function noChange() {
-  resolve(false);
   showDialog.value = false;
+  resolve(false);
 }
 
 function copyObject(from, to, keys) {
