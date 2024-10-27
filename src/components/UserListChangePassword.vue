@@ -77,8 +77,10 @@ async function changed() {
     formValid = false;
   }
   if (inputValid.value && formValid) {
-    let modifiedPassword = {};
-    copyObject(formData.value, modifiedPassword, ["newpwd", "confirmpwd"]);
+    const modifiedPassword = {
+      newpwd: formData.value.newpwd,
+      confirmpwd: formData.value.confirmpwd,
+    };
     try {
       await httpRequest(
         "post",
@@ -97,11 +99,5 @@ async function changed() {
 function noChange() {
   showDialog.value = false;
   resolve(false);
-}
-
-function copyObject(from, to, keys) {
-  for (let key of keys) {
-    to[key] = from[key];
-  }
 }
 </script>

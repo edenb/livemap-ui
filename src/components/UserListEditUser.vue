@@ -86,15 +86,14 @@ async function changed() {
   if (inputValid.value && formValid) {
     // Existing users already have an ID
     if (formData.value.user_id >= 0) {
-      let modifiedUser = {};
-      copyObject(formData.value, modifiedUser, [
-        "api_key",
-        "email",
-        "fullname",
-        "role",
-        "user_id",
-        "username",
-      ]);
+      const modifiedUser = {
+        api_key: formData.value.api_key,
+        email: formData.value.email,
+        fullname: formData.value.fullname,
+        role: formData.value.role,
+        user_id: formData.value.user_id,
+        username: formData.value.username,
+      };
       try {
         await httpRequest("put", `users/${modifiedUser.user_id}`, modifiedUser);
         showDialog.value = false;
@@ -107,15 +106,14 @@ async function changed() {
         errorResponseText.value = err.errorResponseText;
       }
     } else {
-      let addedUser = {};
-      copyObject(formData.value, addedUser, [
-        "api_key",
-        "email",
-        "fullname",
-        "password",
-        "role",
-        "username",
-      ]);
+      const addedUser = {
+        api_key: formData.value.api_key,
+        email: formData.value.email,
+        fullname: formData.value.fullname,
+        password: formData.value.password,
+        role: formData.value.role,
+        username: formData.value.username,
+      };
       try {
         await httpRequest("post", `users`, addedUser);
         showDialog.value = false;
@@ -134,11 +132,5 @@ async function changed() {
 function noChange() {
   showDialog.value = false;
   resolve(false);
-}
-
-function copyObject(from, to, keys) {
-  for (let key of keys) {
-    to[key] = from[key];
-  }
 }
 </script>
