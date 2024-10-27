@@ -49,7 +49,7 @@ const options = ref({
   width: 290,
   zIndex: 1200,
 });
-let resolve = null;
+let resolve;
 const title = ref(null);
 
 function open(dialogTitle, dialogMessages, dialogItems, dialogOptions) {
@@ -64,12 +64,12 @@ function open(dialogTitle, dialogMessages, dialogItems, dialogOptions) {
 }
 
 function agree() {
-  resolve(true);
   dialog.value = false;
+  resolve(true);
 }
 
 function cancel() {
-  resolve(false);
   dialog.value = false;
+  resolve(false);
 }
 </script>
