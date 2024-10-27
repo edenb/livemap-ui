@@ -61,7 +61,8 @@ const formTitle = computed(() => {
 });
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
-let resolve = null;
+let resolve;
+const { show } = inject("snackbar");
 const showDialog = ref(false);
 const user = ref({});
 
@@ -94,17 +95,20 @@ async function changed() {
         "user_id",
         "username",
       ]);
-      httpRequest("put", `users/${modifiedUser.user_id}`, modifiedUser)
-        .then(() => {
-          resolve(true);
-          showDialog.value = false;
-        })
-        .catch((err) => {
-          errorResponseText.value = err.errorResponseText;
+      try {
+        await httpRequest("put", `users/${modifiedUser.user_id}`, modifiedUser);
+        showDialog.value = false;
+        show({
+          message: `User ${modifiedUser.fullname} updated.`,
+          color: "success",
         });
+        resolve(true);
+      } catch (err) {
+        errorResponseText.value = err.errorResponseText;
+      }
     } else {
-      let AddedUser = {};
-      copyObject(formData.value, AddedUser, [
+      let addedUser = {};
+      copyObject(formData.value, addedUser, [
         "api_key",
         "email",
         "fullname",
@@ -112,21 +116,24 @@ async function changed() {
         "role",
         "username",
       ]);
-      httpRequest("post", `users`, AddedUser)
-        .then(() => {
-          resolve(true);
-          showDialog.value = false;
-        })
-        .catch((err) => {
-          errorResponseText.value = err.errorResponseText;
+      try {
+        await httpRequest("post", `users`, addedUser);
+        showDialog.value = false;
+        show({
+          message: `User ${addedUser.fullname} created.`,
+          color: "success",
         });
+        resolve(true);
+      } catch (err) {
+        errorResponseText.value = err.errorResponseText;
+      }
     }
   }
 }
 
 function noChange() {
-  resolve(false);
   showDialog.value = false;
+  resolve(false);
 }
 
 function copyObject(from, to, keys) {
