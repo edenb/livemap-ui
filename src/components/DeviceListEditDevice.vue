@@ -73,7 +73,8 @@ const formTitle = computed(() => {
 });
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
-let resolve = null;
+let resolve;
+const { show } = inject("snackbar");
 const showDialog = ref(false);
 const { user } = storeToRefs(useAuthStore());
 
@@ -95,13 +96,12 @@ async function changed() {
   if (inputValid.value) {
     // Existing devices already have an ID
     if (formData.value.device_id >= 0) {
-      let modifiedDevice = {};
-      copyObject(formData.value, modifiedDevice, [
-        "alias",
-        "device_id",
-        "fixed_loc_lat",
-        "fixed_loc_lon",
-      ]);
+      const modifiedDevice = {
+        alias: formData.value.alias,
+        device_id: formData.value.device_id,
+        fixed_loc_lat: formData.value.fixed_loc_lat,
+        fixed_loc_lon: formData.value.fixed_loc_lon,
+      };
       // For inputs that require numbers convert form strings
       modifiedDevice.fixed_loc_lat = convertToNumber(
         modifiedDevice.fixed_loc_lat,
@@ -109,50 +109,53 @@ async function changed() {
       modifiedDevice.fixed_loc_lon = convertToNumber(
         modifiedDevice.fixed_loc_lon,
       );
-      httpRequest(
-        "put",
-        `users/${user.value.user_id}/devices/${modifiedDevice.device_id}`,
-        modifiedDevice,
-      )
-        .then(() => {
-          resolve(true);
-          showDialog.value = false;
-        })
-        .catch((err) => {
-          errorResponseText.value = err.errorResponseText;
+      try {
+        await httpRequest(
+          "put",
+          `users/${user.value.user_id}/devices/${modifiedDevice.device_id}`,
+          modifiedDevice,
+        );
+        showDialog.value = false;
+        show({
+          message: `Device ${modifiedDevice.alias} updated.`,
+          color: "success",
         });
+        resolve(true);
+      } catch (err) {
+        errorResponseText.value = err.errorResponseText;
+      }
     } else {
-      let addedDevice = {};
-      copyObject(formData.value, addedDevice, [
-        "alias",
-        "fixed_loc_lat",
-        "fixed_loc_lon",
-        "identifier",
-      ]);
+      const addedDevice = {
+        alias: formData.value.alias,
+        fixed_loc_lat: formData.value.fixed_loc_lat,
+        fixed_loc_lon: formData.value.fixed_loc_lon,
+        identifier: formData.value.identifier,
+      };
       // For inputs that require numbers convert form strings
       addedDevice.fixed_loc_lat = convertToNumber(addedDevice.fixed_loc_lat);
       addedDevice.fixed_loc_lon = convertToNumber(addedDevice.fixed_loc_lon);
-      httpRequest("post", `users/${user.value.user_id}/devices`, addedDevice)
-        .then(() => {
-          resolve(true);
-          showDialog.value = false;
-        })
-        .catch((err) => {
-          errorResponseText.value = err.errorResponseText;
+      try {
+        await httpRequest(
+          "post",
+          `users/${user.value.user_id}/devices`,
+          addedDevice,
+        );
+        showDialog.value = false;
+        show({
+          message: `Device ${addedDevice.alias} created.`,
+          color: "success",
         });
+        resolve(true);
+      } catch (err) {
+        errorResponseText.value = err.errorResponseText;
+      }
     }
   }
 }
 
 function noChange() {
-  resolve(false);
   showDialog.value = false;
-}
-
-function copyObject(from, to, keys) {
-  for (let key of keys) {
-    to[key] = from[key];
-  }
+  resolve(false);
 }
 
 function convertToString(value) {
