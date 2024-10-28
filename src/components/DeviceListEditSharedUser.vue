@@ -72,7 +72,8 @@ const errorResponseText = ref("");
 const formData = ref({});
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
-let resolve = null;
+let resolve;
+const { show } = inject("snackbar");
 const showDialog = ref(false);
 const { user } = storeToRefs(useAuthStore());
 
@@ -88,59 +89,51 @@ function open(dialogDevices) {
 async function addUser() {
   errorResponseText.value = "";
   if (inputValid.value) {
-    let sharedUser = {};
-    copyObject(formData.value, sharedUser, ["username"]);
-    let deviceIdList = [];
-    for (let item of devices.value) {
-      deviceIdList.push(item.device_id);
-    }
-    httpRequest(
-      "post",
-      `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
-      sharedUser,
-    )
-      .then(() => {
-        resolve(true);
-        showDialog.value = false;
-      })
-      .catch(() => {
-        errorResponseText.value = "Unknown username";
+    const sharedUser = { username: formData.value.username };
+    const deviceIdList = devices.value.map(({ device_id }) => device_id);
+    try {
+      await httpRequest(
+        "post",
+        `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
+        sharedUser,
+      );
+      showDialog.value = false;
+      show({
+        message: `Device(s) shared with username ${sharedUser.username}.`,
+        color: "success",
       });
+      resolve(true);
+    } catch (err) {
+      errorResponseText.value = "Username not allowed";
+    }
   }
 }
 
 async function removeUser() {
   errorResponseText.value = "";
   if (inputValid.value) {
-    let unsharedUser = {};
-    copyObject(formData.value, unsharedUser, ["username"]);
-    let deviceIdList = [];
-    for (let item of devices.value) {
-      deviceIdList.push(item.device_id);
-    }
-    httpRequest(
-      "delete",
-      `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
-      unsharedUser,
-    )
-      .then(() => {
-        resolve(true);
-        showDialog.value = false;
-      })
-      .catch(() => {
-        errorResponseText.value = "Unknown username";
+    const unsharedUser = { username: formData.value.username };
+    const deviceIdList = devices.value.map(({ device_id }) => device_id);
+    try {
+      await httpRequest(
+        "delete",
+        `users/${user.value.user_id}/devices/${deviceIdList}/shareduser`,
+        unsharedUser,
+      );
+      showDialog.value = false;
+      show({
+        message: `Device(s) no longer shared with username ${unsharedUser.username}.`,
+        color: "success",
       });
+      resolve(true);
+    } catch (err) {
+      errorResponseText.value = "Username not allowed";
+    }
   }
 }
 
 function noChange() {
-  resolve(false);
   showDialog.value = false;
-}
-
-function copyObject(from, to, keys) {
-  for (let key of keys) {
-    to[key] = from[key];
-  }
+  resolve(false);
 }
 </script>

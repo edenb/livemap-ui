@@ -20,9 +20,7 @@
       text="You have no devices and no devices have been shared with you. Add your own device manually or configure your device with your API key to automatically add a new device."
       title="No devices yet."
       @click:action="newItem()"
-    >
-      <DeviceListEditDevice ref="editDevice" />
-    </v-empty-state>
+    ></v-empty-state>
 
     <v-empty-state
       v-if="state === 'failed'"
@@ -51,8 +49,8 @@
       <template #top>
         <v-toolbar density="compact" color="secondary">
           <ConfirmDialog ref="confirmDialog" />
-          <DeviceListEditDevice ref="editDevice" />
-          <DeviceListEditSharedUser ref="editSharedUser" />
+          <DeviceListEditDevice ref="deviceListEditDevice" />
+          <DeviceListEditSharedUser ref="deviceListEditSharedUser" />
           <v-toolbar-title class="hidden-xs">Devices</v-toolbar-title>
           <v-text-field
             v-model="search"
@@ -140,8 +138,8 @@ import DeviceListEditSharedUser from "@/components/DeviceListEditSharedUser.vue"
 
 const allDevices = ref([]);
 const confirmDialog = ref(null);
-const editDevice = ref(null);
-const editSharedUser = ref(null);
+const deviceListEditDevice = ref(null);
+const deviceListEditSharedUser = ref(null);
 const headers = [
   { title: "Name", key: "alias" },
   { title: "Owner", key: "owner" },
@@ -159,33 +157,36 @@ const newDevice = ref({
 });
 const search = ref("");
 const selected = ref([]);
+const { show } = inject("snackbar");
 const state = ref(null);
 const { user } = storeToRefs(useAuthStore());
 let usernameColors = [];
 
-onMounted(() => {
-  loadTable();
+onMounted(async () => {
+  await loadTable();
 });
 
-function loadTable() {
+async function loadTable() {
   state.value = "loading";
-  httpRequest("get", `users/${user.value.user_id}/devices`)
-    .then((response) => {
-      allDevices.value = response.data;
-      allDevices.value.forEach((e) => {
-        if (e.shared) {
-          e.shared.sort();
-        }
-      });
-      if (allDevices.value.length === 0) {
-        state.value = "empty";
-      } else {
-        state.value = "loaded";
+  try {
+    const response = await httpRequest(
+      "get",
+      `users/${user.value.user_id}/devices`,
+    );
+    allDevices.value = response.data;
+    allDevices.value.forEach((e) => {
+      if (e.shared) {
+        e.shared.sort();
       }
-    })
-    .catch(() => {
-      state.value = "failed";
     });
+    if (allDevices.value.length === 0) {
+      state.value = "empty";
+    } else {
+      state.value = "loaded";
+    }
+  } catch {
+    state.value = "failed";
+  }
 }
 
 function editItem(item) {
@@ -201,47 +202,49 @@ function shareItems(items) {
   showDialogSharedUser(items);
 }
 
-function deleteItems(items) {
+async function deleteItems(items) {
   let deviceIdList = [];
   let deviceAliasList = [];
-  let messageText = [];
-  messageText.push("Are you sure you want to delete the following devices?");
+  const messageText = [
+    "Are you sure you want to delete the following devices?",
+  ];
   for (let item of items) {
     deviceIdList.push(item.device_id);
     deviceAliasList.push(item.alias);
   }
-  confirmDialog.value
-    .open("Delete", messageText, deviceAliasList, { color: "red" })
-    .then((confirm) => {
-      if (confirm) {
-        httpRequest(
-          "delete",
-          `users/${user.value.user_id}/devices/${deviceIdList}`,
-        )
-          .then(() => {
-            loadTable();
-            selected.value = [];
-          })
-          .catch((err) => {
-            // Do not reload the table on internal server error
-            if (err.response.status < 500) {
-              loadTable();
-            }
-          });
-      }
-    });
+  const confirm = await confirmDialog.value.open(
+    "Delete",
+    messageText,
+    deviceAliasList,
+    { color: "red" },
+  );
+  if (confirm) {
+    try {
+      await httpRequest(
+        "delete",
+        `users/${user.value.user_id}/devices/${deviceIdList}`,
+      );
+      await loadTable();
+      selected.value = [];
+      show({ message: `Device(s) deleted.`, color: "success" });
+    } catch (err) {
+      show({ message: `Failed to delete device(s).`, color: "error" });
+    }
+  }
 }
 
-function showDialogDevice(device) {
-  editDevice.value.open(device).then(() => {
-    loadTable();
-  });
+async function showDialogDevice(device) {
+  const changed = await deviceListEditDevice.value.open(device);
+  if (changed) {
+    await loadTable();
+  }
 }
 
-function showDialogSharedUser(devices) {
-  editSharedUser.value.open(devices).then(() => {
-    loadTable();
-  });
+async function showDialogSharedUser(devices) {
+  const changed = await deviceListEditSharedUser.value.open(devices);
+  if (changed) {
+    await loadTable();
+  }
 }
 
 function getColor(key) {

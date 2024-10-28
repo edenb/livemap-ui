@@ -70,27 +70,21 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const authStore = useAuthStore();
     // Re-authenticate if a token is present but user not authorized
     if (authStore.token && !authStore.authorized) {
-      authStore
-        .setAuthorized(authStore.token)
-        .then(() => {
-          next();
-        })
-        .catch(() => {
-          next({
-            path: "/login",
-          });
-        });
+      try {
+        await authStore.setAuthorized(authStore.token);
+        next();
+      } catch {
+        next({ path: "/login" });
+      }
     } else if (authStore.authorized) {
       next();
     } else {
-      next({
-        path: "/login",
-      });
+      next({ path: "/login" });
     }
   } else {
     next();

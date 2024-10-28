@@ -61,7 +61,8 @@ const formTitle = computed(() => {
 });
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
-let resolve = null;
+let resolve;
+const { show } = inject("snackbar");
 const showDialog = ref(false);
 const user = ref({});
 
@@ -85,53 +86,51 @@ async function changed() {
   if (inputValid.value && formValid) {
     // Existing users already have an ID
     if (formData.value.user_id >= 0) {
-      let modifiedUser = {};
-      copyObject(formData.value, modifiedUser, [
-        "api_key",
-        "email",
-        "fullname",
-        "role",
-        "user_id",
-        "username",
-      ]);
-      httpRequest("put", `users/${modifiedUser.user_id}`, modifiedUser)
-        .then(() => {
-          resolve(true);
-          showDialog.value = false;
-        })
-        .catch((err) => {
-          errorResponseText.value = err.errorResponseText;
+      const modifiedUser = {
+        api_key: formData.value.api_key,
+        email: formData.value.email,
+        fullname: formData.value.fullname,
+        role: formData.value.role,
+        user_id: formData.value.user_id,
+        username: formData.value.username,
+      };
+      try {
+        await httpRequest("put", `users/${modifiedUser.user_id}`, modifiedUser);
+        showDialog.value = false;
+        show({
+          message: `User ${modifiedUser.fullname} updated.`,
+          color: "success",
         });
+        resolve(true);
+      } catch (err) {
+        errorResponseText.value = err.errorResponseText;
+      }
     } else {
-      let AddedUser = {};
-      copyObject(formData.value, AddedUser, [
-        "api_key",
-        "email",
-        "fullname",
-        "password",
-        "role",
-        "username",
-      ]);
-      httpRequest("post", `users`, AddedUser)
-        .then(() => {
-          resolve(true);
-          showDialog.value = false;
-        })
-        .catch((err) => {
-          errorResponseText.value = err.errorResponseText;
+      const addedUser = {
+        api_key: formData.value.api_key,
+        email: formData.value.email,
+        fullname: formData.value.fullname,
+        password: formData.value.password,
+        role: formData.value.role,
+        username: formData.value.username,
+      };
+      try {
+        await httpRequest("post", `users`, addedUser);
+        showDialog.value = false;
+        show({
+          message: `User ${addedUser.fullname} created.`,
+          color: "success",
         });
+        resolve(true);
+      } catch (err) {
+        errorResponseText.value = err.errorResponseText;
+      }
     }
   }
 }
 
 function noChange() {
-  resolve(false);
   showDialog.value = false;
-}
-
-function copyObject(from, to, keys) {
-  for (let key of keys) {
-    to[key] = from[key];
-  }
+  resolve(false);
 }
 </script>

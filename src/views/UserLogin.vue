@@ -57,25 +57,21 @@ const inputValid = ref(false);
 const loading = ref(false);
 const router = useRouter();
 
-function loginUser() {
+async function loginUser() {
   if (inputValid.value) {
     loading.value = true;
-    httpRequest("post", "/login", {
-      username: formData.value.username,
-      password: formData.value.password,
-    })
-      .then((response) => {
-        return authStore.setAuthorized(response.data.access_token);
-      })
-      .then(() => {
-        router.push("/worldmap");
-      })
-      .catch((err) => {
-        errorResponseText.value = err.errorResponseText;
-      })
-      .finally(() => {
-        loading.value = false;
+    try {
+      const response = await httpRequest("post", "/login", {
+        username: formData.value.username,
+        password: formData.value.password,
       });
+      await authStore.setAuthorized(response.data.access_token);
+      await router.push("/worldmap");
+    } catch (err) {
+      errorResponseText.value = err.errorResponseText;
+    } finally {
+      loading.value = false;
+    }
   }
 }
 </script>

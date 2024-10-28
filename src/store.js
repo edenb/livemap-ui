@@ -47,28 +47,23 @@ export const useAuthStore = defineStore("auth", () => {
   const httpRequest = inject("httpRequest");
   const user = ref({});
   const token = ref(localStorage.getItem("jwt"));
-  function setAuthorized(token) {
+
+  async function setAuthorized(token) {
     this.token = token;
-    return new Promise((resolve, reject) => {
-      httpRequest("get", "/account")
-        .then((response) => {
-          this.user = {
-            ...response.data,
-          };
-          localStorage.setItem("jwt", token);
-          this.authorized = true;
-          resolve(response);
-        })
-        .catch((err) => {
-          console.log(`Error: ${err}`);
-          this.authorized = false;
-          this.token = null; //ToDo: 401 only?
-          this.user = {};
-          localStorage.removeItem("jwt");
-          reject(err);
-        });
-    });
+    try {
+      const response = await httpRequest("get", "/account");
+      this.user = { ...response.data };
+      localStorage.setItem("jwt", token);
+      this.authorized = true;
+      return response;
+    } catch (err) {
+      this.authorized = false;
+      this.user = {};
+      localStorage.removeItem("jwt");
+      throw err;
+    }
   }
+
   function revokeAuthorized() {
     this.authorized = false;
     this.token = null;
