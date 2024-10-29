@@ -20,7 +20,9 @@
       text="You have no devices and no devices have been shared with you. Add your own device manually or configure your device with your API key to automatically add a new device."
       title="No devices yet."
       @click:action="newItem()"
-    ></v-empty-state>
+    >
+      <DeviceListEditDevice ref="deviceListEditDevice" />
+    </v-empty-state>
 
     <v-empty-state
       v-if="state === 'failed'"

@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-if="device" v-model="showDialog" max-width="800px">
+  <v-dialog
+    v-if="device"
+    v-model="showDialog"
+    data-cy="edit-device-dialog"
+    max-width="800px"
+  >
     <v-form v-model="inputValid" @keydown.enter="changed">
       <v-card class="pa-4">
         <template #title>

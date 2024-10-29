@@ -12,6 +12,14 @@ describe("Device List", () => {
       cy.get("[data-cy=device-list-state-empty]").should("be.visible");
     });
 
+    it("should open the dialog to create a new device", () => {
+      cy.visit("/devices");
+      cy.contains("button", "Add a device manually").click();
+      cy.get("[data-cy=edit-device-dialog]")
+        .should("be.visible")
+        .and("contain", "New Device");
+    });
+
     it("should show an error message if loading fails", () => {
       cy.intercept("GET", "/api/v1/users/**", (req) => {
         req.reply({
@@ -39,6 +47,14 @@ describe("Device List", () => {
       cy.get(".v-toolbar-title").contains("Devices");
       // Shows 4 rows (1 header and 3 devices)
       cy.get("tr").should("have.length", 4);
+    });
+
+    it("should open the dialog to create a new device", () => {
+      cy.visit("/devices");
+      cy.get(".mdi-plus").click();
+      cy.get("[data-cy=edit-device-dialog]")
+        .should("be.visible")
+        .and("contain", "New Device");
     });
 
     it("should show an error message if loading fails", () => {
