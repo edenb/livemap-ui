@@ -14,7 +14,7 @@ export default [
   js.configs.recommended,
   cypress.configs.recommended,
   ...vue.configs["flat/recommended"],
-  ...vuetify.configs["flat/base"],
+  ...vuetify.configs["flat/recommended"],
   {
     rules: {
       "no-unused-vars": "off",

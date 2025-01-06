@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid pa-3 style="height: 100%">
+  <v-container class="pa-3" fluid style="height: 100%">
     <v-row v-if="state === 'loading'" style="height: 100%">
       <v-col align-self="center" class="text-center">
         <v-progress-circular
