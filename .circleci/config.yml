@@ -1,11 +1,11 @@
 version: 2.1
 orbs:
-  docker: circleci/docker@2.6.0
-  cypress: cypress-io/cypress@3.3.1
+  docker: circleci/docker@2.8.1
+  cypress: cypress-io/cypress@3.4.2
 jobs:
   lint:
     docker:
-      - image: cimg/node:20.16
+      - image: cimg/node:20.18
     steps:
       - checkout
       - run:
