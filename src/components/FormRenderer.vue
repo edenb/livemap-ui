@@ -25,22 +25,11 @@ import { ref } from "vue";
 import FormField from "@/components/FormField.vue";
 import FormSelect from "@/components/FormSelect.vue";
 
-const schemaTypes = {
-  FormField,
-  FormSelect,
-};
+const schemaTypes = { FormField, FormSelect };
 
 const props = defineProps({
-  modelValue: {
-    type: Object,
-    default: () => {},
-    required: true,
-  },
-  formSchema: {
-    type: Array,
-    default: () => [],
-    required: true,
-  },
+  modelValue: { type: Object, default: () => {} },
+  formSchema: { type: Array, default: () => [] },
 });
 defineEmits(["update:modelValue"]);
 const data = ref(props.modelValue);

@@ -17,16 +17,8 @@
 import { ref } from "vue";
 
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  schema: {
-    type: Object,
-    default: () => ({}),
-    required: true,
-  },
+  modelValue: { type: String, default: "" },
+  schema: { type: Object, default: () => ({}) },
 });
 defineEmits(["update:modelValue"]);
 const value = ref(props.modelValue === "" ? null : props.modelValue);
