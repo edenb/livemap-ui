@@ -11,15 +11,9 @@ describe("Server Info Dialog", () => {
     cy.intercept("GET", "/api/v1/server/info", (req) => {
       req.reply({
         statusCode: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          application: {
-            name: "Livemap",
-            about: "About",
-            license: "MIT",
-          },
+          application: { name: "Livemap", about: "About", license: "MIT" },
         }),
       });
     });
@@ -46,6 +40,14 @@ describe("Server Info Dialog", () => {
     cy.intercept("GET", "/api/v1/server/info", (req) => {
       req.reply({
         statusCode: 500,
+        body: {
+          success: false,
+          statusCode: 500,
+          statusText: "Internal Server Error",
+          message: "",
+          errors: [],
+          stack: {},
+        },
       });
     });
     cy.get("[data-cy=navbar-info-dialog-control]").click();
