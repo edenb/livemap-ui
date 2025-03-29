@@ -5,20 +5,11 @@ import vue from "eslint-plugin-vue";
 import vuetify from "eslint-plugin-vuetify";
 
 export default [
-  {
-    files: ["**/*.js", "**/*.vue"],
-    languageOptions: {
-      ecmaVersion: 2021,
-    },
-  },
+  { files: ["**/*.js", "**/*.vue"], languageOptions: { ecmaVersion: 2021 } },
   js.configs.recommended,
   cypress.configs.recommended,
   ...vue.configs["flat/recommended"],
   ...vuetify.configs["flat/recommended"],
-  {
-    rules: {
-      "no-unused-vars": "off",
-    },
-  },
+  { rules: { "no-unused-vars": "off" } },
   prettier, // Prettier always last
 ];
