@@ -21,7 +21,7 @@
         </v-card-text>
         <template #actions>
           <v-card-item class="pa-1">
-            <template v-if="errorResponseText !== ''">
+            <template v-if="errorMessage">
               <v-icon
                 class="px-2"
                 icon="mdi-alert"
@@ -29,7 +29,7 @@
                 color="error"
               />
               <span class="text-error px-2">
-                {{ errorResponseText }}
+                {{ errorMessage }}
               </span>
             </template>
           </v-card-item>
@@ -68,7 +68,7 @@ import { schemaUsername } from "@/forms/schemas.js";
 
 defineExpose({ open });
 const devices = ref([]);
-const errorResponseText = ref("");
+const errorMessage = ref("");
 const formData = ref({});
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
@@ -79,7 +79,7 @@ const { user } = storeToRefs(useAuthStore());
 
 function open(dialogDevices) {
   devices.value = dialogDevices;
-  errorResponseText.value = "";
+  errorMessage.value = "";
   showDialog.value = true;
   return new Promise((resolveOpen) => {
     resolve = resolveOpen;
@@ -87,7 +87,7 @@ function open(dialogDevices) {
 }
 
 async function addUser() {
-  errorResponseText.value = "";
+  errorMessage.value = "";
   if (inputValid.value) {
     const sharedUser = { username: formData.value.username };
     const deviceIdList = devices.value.map(({ device_id }) => device_id);
@@ -104,13 +104,13 @@ async function addUser() {
       });
       resolve(true);
     } catch (err) {
-      errorResponseText.value = "Username not allowed";
+      errorMessage.value = err.httpError.message;
     }
   }
 }
 
 async function removeUser() {
-  errorResponseText.value = "";
+  errorMessage.value = "";
   if (inputValid.value) {
     const unsharedUser = { username: formData.value.username };
     const deviceIdList = devices.value.map(({ device_id }) => device_id);
@@ -127,7 +127,7 @@ async function removeUser() {
       });
       resolve(true);
     } catch (err) {
-      errorResponseText.value = "Username not allowed";
+      errorMessage.value = err.httpError.message;
     }
   }
 }

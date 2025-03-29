@@ -18,10 +18,10 @@
               </v-form>
             </v-card-text>
             <v-card-actions class="px-4">
-              <template v-if="errorResponseText !== ''">
+              <template v-if="errorMessage">
                 <v-icon icon="mdi-alert" size="medium" color="error" />
                 <div class="text-error px-2">
-                  {{ errorResponseText }}
+                  {{ errorMessage }}
                 </div>
               </template>
               <v-spacer />
@@ -50,7 +50,7 @@ import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaLogin } from "@/forms/schemas.js";
 
 const authStore = useAuthStore();
-const errorResponseText = ref("");
+const errorMessage = ref("");
 const formData = ref({});
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
@@ -68,7 +68,7 @@ async function loginUser() {
       await authStore.setAuthorized(response.data.access_token);
       await router.push("/worldmap");
     } catch (err) {
-      errorResponseText.value = err.errorResponseText;
+      errorMessage.value = err.httpError.message;
     } finally {
       loading.value = false;
     }

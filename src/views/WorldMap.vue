@@ -113,11 +113,7 @@ function initMap() {
     .layers(
       baseMaps,
       {},
-      {
-        collapsed: false,
-        sortLayers: true,
-        sortFunction: deviceOnTop,
-      },
+      { collapsed: false, sortLayers: true, sortFunction: deviceOnTop },
     )
     .addTo(map);
   map.on("moveend", (e) => {
@@ -166,7 +162,7 @@ async function loadDeviceLayer(activeLayerNames) {
   try {
     response = await httpRequest("get", "/positions");
   } catch (err) {
-    show({ message: err.errorResponseText, color: "error" });
+    show({ message: err.httpError.message, color: "error" });
   }
 
   if (response?.data) {
@@ -208,7 +204,7 @@ async function loadStaticLayers(activeLayerNames) {
   try {
     response = await httpRequest("get", "/staticlayers");
   } catch (err) {
-    show({ message: err.errorResponseText, color: "error" });
+    show({ message: err.httpError.message, color: "error" });
   }
 
   if (response?.data) {
@@ -379,10 +375,7 @@ function getGeoJsonOptions(geojson) {
 }
 
 function getPopupText(dev) {
-  const loc_type_str = {
-    rec: "Recorded",
-    left: "Last known",
-  };
+  const loc_type_str = { rec: "Recorded", left: "Last known" };
   let htmlText = "",
     PopupType;
 

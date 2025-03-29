@@ -28,7 +28,7 @@
         </template>
         <template #actions>
           <v-card-item>
-            <template v-if="errorResponseText !== ''">
+            <template v-if="errorMessage">
               <v-icon
                 class="px-2"
                 icon="mdi-alert"
@@ -36,7 +36,7 @@
                 color="error"
               />
               <span class="text-error px-2">
-                {{ errorResponseText }}
+                {{ errorMessage }}
               </span>
             </template>
           </v-card-item>
@@ -71,7 +71,7 @@ import {
 
 defineExpose({ open });
 const device = ref({});
-const errorResponseText = ref("");
+const errorMessage = ref("");
 const formData = ref({});
 const formTitle = computed(() => {
   return device.value.device_id < 0 ? "New Device" : "Edit Device";
@@ -89,7 +89,7 @@ function open(dialogDevice) {
   formData.value = { ...device.value };
   formData.value.fixed_loc_lat = convertToString(formData.value.fixed_loc_lat);
   formData.value.fixed_loc_lon = convertToString(formData.value.fixed_loc_lon);
-  errorResponseText.value = "";
+  errorMessage.value = "";
   showDialog.value = true;
   return new Promise((resolveOpen) => {
     resolve = resolveOpen;
@@ -97,7 +97,7 @@ function open(dialogDevice) {
 }
 
 async function changed() {
-  errorResponseText.value = "";
+  errorMessage.value = "";
   if (inputValid.value) {
     // Existing devices already have an ID
     if (formData.value.device_id >= 0) {
@@ -127,7 +127,11 @@ async function changed() {
         });
         resolve(true);
       } catch (err) {
-        errorResponseText.value = err.errorResponseText;
+        if (err.httpError.code && err.httpError.code === 409) {
+          errorMessage.value = "Identifier already exists";
+        } else {
+          errorMessage.value = err.httpError.message;
+        }
       }
     } else {
       const addedDevice = {
@@ -152,7 +156,11 @@ async function changed() {
         });
         resolve(true);
       } catch (err) {
-        errorResponseText.value = err.errorResponseText;
+        if (err.httpError.code && err.httpError.code === 409) {
+          errorMessage.value = "Identifier already exists";
+        } else {
+          errorMessage.value = err.httpError.message;
+        }
       }
     }
   }
