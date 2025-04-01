@@ -13,19 +13,12 @@
           <FormRenderer v-model="formData" :form-schema="schemaPasswordEdit" />
         </template>
         <template #actions>
-          <v-card-item>
-            <template v-if="errorResponseText !== ''">
-              <v-icon
-                class="px-2"
-                icon="mdi-alert"
-                size="medium"
-                color="error"
-              />
-              <span class="text-error px-2">
-                {{ errorResponseText }}
-              </span>
-            </template>
-          </v-card-item>
+          <template v-if="errorMessage">
+            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <span class="text-error px-2">
+              {{ errorMessage }}
+            </span>
+          </template>
           <v-spacer />
           <v-btn color="primary" variant="text" @click="noChange">
             Cancel
@@ -50,7 +43,7 @@ import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaPasswordEdit } from "@/forms/schemas.js";
 
 defineExpose({ open });
-const errorResponseText = ref("");
+const errorMessage = ref("");
 const formData = ref({});
 const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
@@ -62,7 +55,7 @@ const user = ref({});
 function open(dialogUser) {
   user.value = dialogUser;
   formData.value = { ...user.value };
-  errorResponseText.value = "";
+  errorMessage.value = "";
   showDialog.value = true;
   return new Promise((resolveOpen) => {
     resolve = resolveOpen;
@@ -70,10 +63,10 @@ function open(dialogUser) {
 }
 
 async function changed() {
-  errorResponseText.value = "";
+  errorMessage.value = "";
   let formValid = true;
   if (formData.value.newpwd !== formData.value.confirmpwd) {
-    errorResponseText.value = "Passwords should match";
+    errorMessage.value = "Passwords should match";
     formValid = false;
   }
   if (inputValid.value && formValid) {
@@ -91,7 +84,7 @@ async function changed() {
       show({ message: `Password changed.`, color: "success" });
       resolve(true);
     } catch (err) {
-      errorResponseText.value = err.errorResponseText;
+      errorMessage.value = err.httpError.message;
     }
   }
 }

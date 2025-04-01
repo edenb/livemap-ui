@@ -5,10 +5,7 @@ const defaults = { serverUrl: "http://localhost:3000", apiPath: "/api/v1" };
 
 export default {
   install: (app, { serverUrl, apiPath }) => {
-    const axiosConf = {
-      ...defaults,
-      ...{ serverUrl, apiPath },
-    };
+    const axiosConf = { ...defaults, ...{ serverUrl, apiPath } };
 
     async function httpRequest(method, path, data) {
       const apiConfig = {
@@ -19,29 +16,34 @@ export default {
       let headers = {};
       const authStore = useAuthStore();
       if (authStore.token) {
-        headers = {
-          Authorization: "Bearer " + authStore.token,
-        };
+        headers = { Authorization: `Bearer ${authStore.token}` };
       }
       try {
         const response = await Axios(path, {
-          method: method,
+          method,
           baseURL: apiConfig.apiURL,
-          data: data,
+          data,
           timeout: apiConfig.timeout,
           withCredentials: apiConfig.withCredentials,
-          headers: headers,
+          headers,
         });
         return response;
       } catch (err) {
-        if (err.response && err.response.status) {
-          if (err.response.data !== "") {
-            err.errorResponseText = err.response.data;
-          } else {
-            err.errorResponseText = err.response.statusText;
+        if (err.response) {
+          err.httpError = {
+            message:
+              err.response.data.message ||
+              err.response.data.statusText ||
+              "Unknown error",
+            code: err.response.data.statusCode,
+          };
+          if (err.response.data.errors) {
+            err.httpError.errors = err.response.data.errors;
           }
+        } else if (err.request) {
+          err.httpError = { message: "No server connection" };
         } else {
-          err.errorResponseText = "No server connection";
+          err.httpError = { message: "Request failed" };
         }
         throw err;
       }

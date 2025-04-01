@@ -17,19 +17,12 @@
           />
         </template>
         <template #actions>
-          <v-card-item>
-            <template v-if="errorResponseText !== ''">
-              <v-icon
-                class="px-2"
-                icon="mdi-alert"
-                size="medium"
-                color="error"
-              />
-              <span class="text-error px-2">
-                {{ errorResponseText }}
-              </span>
-            </template>
-          </v-card-item>
+          <template v-if="errorMessage">
+            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <span class="text-error px-2">
+              {{ errorMessage }}
+            </span>
+          </template>
           <v-spacer />
           <v-btn color="primary" variant="text" @click="noChange">
             Cancel
@@ -54,7 +47,7 @@ import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaUser, schemaPasswordNew } from "@/forms/schemas.js";
 
 defineExpose({ open });
-const errorResponseText = ref("");
+const errorMessage = ref("");
 const formData = ref({});
 const formTitle = computed(() => {
   return user.value.user_id < 0 ? "New User" : "Edit User";
@@ -69,7 +62,7 @@ const user = ref({});
 function open(dialogUser) {
   user.value = dialogUser;
   formData.value = { ...user.value };
-  errorResponseText.value = "";
+  errorMessage.value = "";
   showDialog.value = true;
   return new Promise((resolveOpen) => {
     resolve = resolveOpen;
@@ -77,10 +70,10 @@ function open(dialogUser) {
 }
 
 async function changed() {
-  errorResponseText.value = "";
+  errorMessage.value = "";
   let formValid = true;
   if (formData.value.password !== formData.value.password2) {
-    errorResponseText.value = "Passwords should match";
+    errorMessage.value = "Passwords should match";
     formValid = false;
   }
   if (inputValid.value && formValid) {
@@ -103,7 +96,11 @@ async function changed() {
         });
         resolve(true);
       } catch (err) {
-        errorResponseText.value = err.errorResponseText;
+        if (err.httpError.code && err.httpError.code === 409) {
+          errorMessage.value = "API key already exists";
+        } else {
+          errorMessage.value = err.httpError.message;
+        }
       }
     } else {
       const addedUser = {
@@ -123,7 +120,11 @@ async function changed() {
         });
         resolve(true);
       } catch (err) {
-        errorResponseText.value = err.errorResponseText;
+        if (err.httpError.code && err.httpError.code === 409) {
+          errorMessage.value = "API key already exists";
+        } else {
+          errorMessage.value = err.httpError.message;
+        }
       }
     }
   }

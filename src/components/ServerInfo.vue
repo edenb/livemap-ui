@@ -97,11 +97,7 @@ const copyResult = ref([null, null]);
 const dialog = ref(false);
 const httpRequest = inject("httpRequest");
 const info = ref({});
-const options = {
-  color: "primary",
-  width: 480,
-  zIndex: 2000,
-};
+const options = { color: "primary", width: 480, zIndex: 2000 };
 const { show } = inject("snackbar");
 const serverUrl = inject("serverUrl");
 
@@ -111,7 +107,7 @@ async function open() {
     info.value = response.data;
     dialog.value = true;
   } catch (err) {
-    show({ message: err.errorResponseText, color: "error" });
+    show({ message: err.httpError.message, color: "error" });
   }
 }
 
