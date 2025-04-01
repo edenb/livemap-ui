@@ -17,19 +17,12 @@
           />
         </template>
         <template #actions>
-          <v-card-item>
-            <template v-if="errorMessage">
-              <v-icon
-                class="px-2"
-                icon="mdi-alert"
-                size="medium"
-                color="error"
-              />
-              <span class="text-error px-2">
-                {{ errorMessage }}
-              </span>
-            </template>
-          </v-card-item>
+          <template v-if="errorMessage">
+            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <span class="text-error px-2">
+              {{ errorMessage }}
+            </span>
+          </template>
           <v-spacer />
           <v-btn color="primary" variant="text" @click="noChange">
             Cancel
