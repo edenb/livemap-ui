@@ -38,7 +38,7 @@ workflows:
           name: docker-build-publish
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           tag: $CIRCLE_SHA1,latest
-          update-description: true
+          update_description: true
           requires:
             - lint
             - cy-run
