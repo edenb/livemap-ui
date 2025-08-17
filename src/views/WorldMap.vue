@@ -512,9 +512,37 @@ function updateFromSocket(socketPayloadStr) {
 }
 </script>
 
-<style scoped>
+<style>
 #worldmap {
   height: 100%;
   z-index: 0;
+  .leaflet-control {
+    margin-right: 0px;
+    border: none;
+  }
+  .leaflet-control-zoom-in {
+    width: 40px;
+    height: 40px;
+    line-height: 35px;
+    border-start-start-radius: 4px;
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+  }
+  .leaflet-control-zoom-out {
+    width: 40px;
+    height: 40px;
+    line-height: 35px;
+    border-end-start-radius: 4px;
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+  }
+  .leaflet-control-zoom-in:hover {
+    background-color: #000;
+  }
+  .leaflet-control-zoom-out:hover {
+    background-color: #000;
+  }
 }
 </style>
