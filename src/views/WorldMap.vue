@@ -78,7 +78,7 @@ onUnmounted(() => {
 });
 
 function initMap() {
-  map = L.map("worldmap");
+  map = L.map("worldmap", { zoomControl: false });
   const center = worldmapStore.center;
   const zoom = worldmapStore.zoom;
   if (center !== null && zoom !== null) {
@@ -89,6 +89,8 @@ function initMap() {
       [70, 50],
     ]);
   }
+
+  L.control.zoom({ position: "topright" }).addTo(map);
 
   let baseMaps = {};
   tileProviders.forEach((tileProvider) => {
