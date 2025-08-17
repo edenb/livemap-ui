@@ -26,7 +26,7 @@ const { drawerOpen } = storeToRefs(layoutStore);
 
 let map = null;
 let deviceLayer = null;
-let layerControl = null;
+// let layerControl = null;
 const tileProviders = [
   {
     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -109,13 +109,13 @@ function initMap() {
     }
     baseMaps[tileProvider.options.name] = baseLayer;
   });
-  layerControl = L.control
-    .layers(
-      baseMaps,
-      {},
-      { collapsed: false, sortLayers: true, sortFunction: deviceOnTop },
-    )
-    .addTo(map);
+  // layerControl = L.control
+  //   .layers(
+  //     baseMaps,
+  //     {},
+  //     { collapsed: false, sortLayers: true, sortFunction: deviceOnTop },
+  //   )
+  //   .addTo(map);
   map.on("moveend", (e) => {
     worldmapStore.center = e.target.getCenter();
   });
@@ -192,7 +192,7 @@ async function loadDeviceLayer(activeLayerNames) {
       fitMarkers();
     }
     deviceLayer.options.onTop = true;
-    layerControl.addOverlay(deviceLayer, "Device");
+    // layerControl.addOverlay(deviceLayer, "Device");
     if (activeLayerNames.includes("Device")) {
       deviceLayer.addTo(map);
     }
@@ -223,7 +223,7 @@ async function loadStaticLayers(activeLayerNames) {
         return a.layerName.localeCompare(b.layerName);
       });
       layerControlStatic.forEach((element) => {
-        layerControl.addOverlay(element.layer, element.layerName);
+        // layerControl.addOverlay(element.layer, element.layerName);
         if (activeLayerNames.includes(element.layerName)) {
           element.layer.addTo(map);
         }
