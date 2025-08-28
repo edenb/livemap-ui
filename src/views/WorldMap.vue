@@ -1,6 +1,38 @@
 <template>
   <TheSidebarRight />
-  <div id="worldmap" />
+  <v-container id="worldmap" class="pa-0" fluid>
+    <v-col>
+      <v-row justify="end">
+        <v-btn-group color="rgba(0, 0, 0, 0.6)" direction="vertical">
+          <v-btn size="40" @click="zoom('in')">
+            <v-icon color="white" size="x-large">mdi-plus</v-icon>
+          </v-btn>
+          <v-btn size="40" @click="zoom('out')">
+            <v-icon color="white" size="x-large">mdi-minus</v-icon>
+          </v-btn>
+        </v-btn-group>
+      </v-row>
+      <v-row justify="end">
+        <v-btn-toggle
+          base-color="rgba(0, 0, 0, 0.6)"
+          color="primary"
+          direction="vertical"
+        >
+          <v-btn size="40">
+            <v-icon color="white" size="x-large">mdi-layers</v-icon>
+          </v-btn>
+          <v-btn size="40">
+            <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
+          </v-btn>
+          <v-btn size="40">
+            <v-icon color="white" size="x-large"
+              >mdi-information-outline</v-icon
+            >
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
+    </v-col>
+  </v-container>
 </template>
 
 <script setup>
@@ -90,7 +122,7 @@ function initMap() {
     ]);
   }
 
-  L.control.zoom({ position: "topright" }).addTo(map);
+  //L.control.zoom({ position: "topright" }).addTo(map);
 
   let baseMaps = {};
   tileProviders.forEach((tileProvider) => {
@@ -136,6 +168,15 @@ function initMap() {
   map.on("overlayremove", (e) => {
     storeOverlayControls(e.name, false);
   });
+}
+
+function zoom(change) {
+  if (change == "in") {
+    map?.zoomIn();
+  }
+  if (change == "out") {
+    map?.zoomOut();
+  }
 }
 
 function deviceOnTop(layerA, layerB) {
@@ -515,34 +556,13 @@ function updateFromSocket(socketPayloadStr) {
 <style>
 #worldmap {
   height: 100%;
-  z-index: 0;
-  .leaflet-control {
-    margin-right: 0px;
-    border: none;
+  .v-btn-group--vertical {
+    margin-top: 20px;
+    border-start-end-radius: 0px;
+    border-end-end-radius: 0px;
   }
-  .leaflet-control-zoom-in {
-    width: 40px;
-    height: 40px;
-    line-height: 35px;
-    border-start-start-radius: 4px;
-    border-bottom: none;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-  }
-  .leaflet-control-zoom-out {
-    width: 40px;
-    height: 40px;
-    line-height: 35px;
-    border-end-start-radius: 4px;
-    border-bottom: none;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-  }
-  .leaflet-control-zoom-in:hover {
-    background-color: #000;
-  }
-  .leaflet-control-zoom-out:hover {
-    background-color: #000;
+  .v-btn {
+    z-index: 500;
   }
 }
 </style>
