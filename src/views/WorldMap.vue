@@ -1,5 +1,5 @@
 <template>
-  <TheSidebarRight />
+  <TheSidebarRight :selector="mapDrawerSelector" />
   <v-container id="worldmap" class="pa-0" fluid>
     <v-col>
       <v-row justify="end">
@@ -14,17 +14,18 @@
       </v-row>
       <v-row justify="end">
         <v-btn-toggle
+          v-model="mapDrawerSelector"
           base-color="rgba(0, 0, 0, 0.6)"
           color="primary"
           direction="vertical"
         >
-          <v-btn size="40">
+          <v-btn size="40" value="layers">
             <v-icon color="white" size="x-large">mdi-layers</v-icon>
           </v-btn>
-          <v-btn size="40">
+          <v-btn size="40" value="markers">
             <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
           </v-btn>
-          <v-btn size="40">
+          <v-btn size="40 " value="info">
             <v-icon color="white" size="x-large"
               >mdi-information-outline</v-icon
             >
@@ -36,7 +37,7 @@
 </template>
 
 <script setup>
-import { inject, onMounted, onUnmounted, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
@@ -49,6 +50,7 @@ import { standardizeColor as sColor } from "@/helpers/colors.js";
 const connect = inject("connect");
 const emitter = inject("emitter");
 const httpRequest = inject("httpRequest");
+const mapDrawerSelector = ref();
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
 const { show } = inject("snackbar");
