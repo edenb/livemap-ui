@@ -80,10 +80,10 @@
           </v-list>
         </v-card>
       </v-menu>
-      <v-app-bar-nav-icon
+      <!-- <v-app-bar-nav-icon
         data-cy="navbar-device-drawer-control"
         @click.stop="toggleSidebarRight"
-      />
+      /> -->
     </template>
   </v-app-bar>
 </template>
