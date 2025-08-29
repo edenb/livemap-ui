@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="open"
-    name="drawerRight"
+    name="mapDrawer"
     location="right"
     permanent
     @transitionend="onTransistionEnd"

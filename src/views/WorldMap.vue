@@ -1,5 +1,5 @@
 <template>
-  <TheSidebarRight :selector="mapDrawerSelector" />
+  <mapDrawer :selector="mapDrawerSelector" />
   <v-container id="worldmap" class="pa-0" fluid>
     <v-col>
       <v-row justify="end">
@@ -44,7 +44,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
 import { ExtraMarkers } from "leaflet-extra-markers";
-import TheSidebarRight from "@/layouts/TheSidebarRight.vue";
+import mapDrawer from "@/components/mapDrawer.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
 const connect = inject("connect");

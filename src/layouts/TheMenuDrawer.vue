@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    name="drawerLeft"
+    name="menuDrawer"
     @transitionend="onTransistionEnd"
   >
     <v-list nav>
