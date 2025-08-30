@@ -6,37 +6,43 @@
     permanent
     @transitionend="onTransistionEnd"
   >
-    <v-list density="compact" nav>
-      <v-list-subheader>DEVICES</v-list-subheader>
-      <v-list-item
-        v-for="(device, i) in lastPositionsOrdered"
-        :key="i"
-        link
-        @click="openDevicePopup(device.raw.device_id)"
-      >
-        <template #prepend>
-          <v-avatar
-            variant="elevated"
-            :color="device.iconAttr.markerColor"
-            size="small"
-          >
-            <v-icon
-              :icon="device.iconAttr.icon"
-              :color="device.iconAttr.iconColor"
-              size="x-small"
-            />
-          </v-avatar>
-        </template>
-        <v-list-item-title>
-          {{ device.raw.alias }}
-        </v-list-item-title>
-        <template #append>
+    <v-card height="100%">
+      <template #title>{{ title }}</template>
+      <template #append>
+        <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
+      </template>
+
+      <v-list density="compact" nav>
+        <v-list-item
+          v-for="(device, i) in lastPositionsOrdered"
+          :key="i"
+          link
+          @click="openDevicePopup(device.raw.device_id)"
+        >
+          <template #prepend>
+            <v-avatar
+              variant="elevated"
+              :color="device.iconAttr.markerColor"
+              size="small"
+            >
+              <v-icon
+                :icon="device.iconAttr.icon"
+                :color="device.iconAttr.iconColor"
+                size="x-small"
+              />
+            </v-avatar>
+          </template>
           <v-list-item-title>
-            {{ getAgeText(device.raw.loc_timestamp) }}
+            {{ device.raw.alias }}
           </v-list-item-title>
-        </template>
-      </v-list-item>
-    </v-list>
+          <template #append>
+            <v-list-item-title>
+              {{ getAgeText(device.raw.loc_timestamp) }}
+            </v-list-item-title>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-card>
   </v-navigation-drawer>
 </template>
 
@@ -48,7 +54,7 @@ import { usePositionStore } from "@/store.js";
 const props = defineProps({
   selector: { type: String, default: "" },
 });
-const emit = defineEmits(["drawerReady"]);
+const emit = defineEmits(["closeDrawer", "drawerReady"]);
 const emitter = inject("emitter");
 const { lastPositions } = storeToRefs(usePositionStore());
 const lastPositionsOrdered = computed(() => {
@@ -60,7 +66,14 @@ const open = computed(() => {
   return !!selector.value;
 });
 const { selector } = toRefs(props);
-
+const title = computed(() => {
+  return titles[selector.value];
+});
+const titles = {
+  layers: "Map layers",
+  markers: "Devices",
+  info: "Information",
+};
 function openDevicePopup(device_id) {
   emitter.emit("open-device-popup", device_id);
 }

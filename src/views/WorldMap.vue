@@ -2,6 +2,7 @@
   <mapDrawer
     :selector="mapDrawerSelector"
     @drawer-ready="map.invalidateSize({ pan: false })"
+    @close-drawer="mapDrawerSelector = ''"
   />
   <v-container id="worldmap" class="pa-0" fluid>
     <v-col>
