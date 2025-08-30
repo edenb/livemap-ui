@@ -80,10 +80,6 @@
           </v-list>
         </v-card>
       </v-menu>
-      <!-- <v-app-bar-nav-icon
-        data-cy="navbar-device-drawer-control"
-        @click.stop="toggleSidebarRight"
-      /> -->
     </template>
   </v-app-bar>
 </template>
@@ -120,9 +116,5 @@ onMounted(() => {
 
 function toggleSidebarLeft() {
   emitter.emit("toggle-sidebar-left");
-}
-
-function toggleSidebarRight() {
-  emitter.emit("toggle-sidebar-right");
 }
 </script>

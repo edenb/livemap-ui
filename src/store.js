@@ -37,9 +37,10 @@ export const usePositionStore = defineStore("position", () => {
 });
 
 export const useLayoutStore = defineStore("layout", () => {
-  const drawerOpen = ref({});
+  const mapDrawerSelector = ref("");
+  const menuDrawerOpen = ref(false);
 
-  return { drawerOpen };
+  return { mapDrawerSelector, menuDrawerOpen };
 });
 
 export const useAuthStore = defineStore("auth", () => {

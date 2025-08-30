@@ -41,18 +41,14 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onUnmounted, toRefs } from "vue";
-//import { useDisplay } from "vuetify";
+import { computed, inject, toRefs } from "vue";
 import { storeToRefs } from "pinia";
-import { usePositionStore, useLayoutStore } from "@/store.js";
+import { usePositionStore } from "@/store.js";
 
 const props = defineProps({
   selector: { type: String, default: "" },
 });
-// const drawer = computed(() => {
-//   return selector.value ? true : false;
-// });
-//const { drawerOpen } = storeToRefs(useLayoutStore());
+const emit = defineEmits(["drawerReady"]);
 const emitter = inject("emitter");
 const { lastPositions } = storeToRefs(usePositionStore());
 const lastPositionsOrdered = computed(() => {
@@ -60,27 +56,10 @@ const lastPositionsOrdered = computed(() => {
   lastPositionsOrdered.sort((a, b) => a.raw.alias.localeCompare(b.raw.alias));
   return lastPositionsOrdered;
 });
-//const { mobile } = useDisplay();
 const open = computed(() => {
   return !!selector.value;
 });
 const { selector } = toRefs(props);
-
-onMounted(() => {
-  // if ("right" in drawerOpen.value) {
-  //   drawer.value = drawerOpen.value.right;
-  // } else {
-  //   drawer.value = !mobile.value;
-  //   drawerOpen.value.right = drawer.value;
-  // }
-  // emitter.on("toggle-sidebar-right", () => {
-  //   drawer.value = !drawer.value;
-  // });
-});
-
-onUnmounted(() => {
-  emitter.off("toggle-sidebar-right");
-});
 
 function openDevicePopup(device_id) {
   emitter.emit("open-device-popup", device_id);
@@ -106,8 +85,8 @@ function getAgeText(birth) {
 }
 
 function onTransistionEnd(event) {
-  //   // if (event.propertyName === "transform") {
-  //   //   drawerOpen.value.right = drawer.value;
-  //   // }
+  if (event.propertyName === "transform") {
+    emit("drawerReady");
+  }
 }
 </script>

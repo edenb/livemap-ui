@@ -1,5 +1,8 @@
 <template>
-  <mapDrawer :selector="mapDrawerSelector" />
+  <mapDrawer
+    :selector="mapDrawerSelector"
+    @drawer-ready="map.invalidateSize({ pan: false })"
+  />
   <v-container id="worldmap" class="pa-0" fluid>
     <v-col>
       <v-row justify="end">
@@ -50,13 +53,12 @@ import { standardizeColor as sColor } from "@/helpers/colors.js";
 const connect = inject("connect");
 const emitter = inject("emitter");
 const httpRequest = inject("httpRequest");
-const mapDrawerSelector = ref();
+const { mapDrawerSelector } = storeToRefs(useLayoutStore());
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
 const { show } = inject("snackbar");
 const worldmapStore = useWorldmapStore();
-const layoutStore = useLayoutStore();
-const { drawerOpen } = storeToRefs(layoutStore);
+const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 
 let map = null;
 let deviceLayer = null;
@@ -82,13 +84,9 @@ const tileProviders = [
   },
 ];
 
-watch(
-  drawerOpen,
-  () => {
-    map.invalidateSize({ pan: false });
-  },
-  { deep: true },
-);
+watch(menuDrawerOpen, () => {
+  map.invalidateSize({ pan: false });
+});
 
 watch(positionUpdate, () => {
   updateFromSocket(positionUpdate.value);
@@ -110,6 +108,10 @@ onUnmounted(() => {
   }
   emitter.off("open-device-popup");
 });
+
+function ready() {
+  console.log("Ready");
+}
 
 function initMap() {
   map = L.map("worldmap", { zoomControl: false });

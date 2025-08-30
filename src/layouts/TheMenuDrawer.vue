@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    v-model="drawer"
+    v-model="open"
     name="menuDrawer"
     @transitionend="onTransistionEnd"
   >
@@ -36,21 +36,23 @@ import { useDisplay } from "vuetify";
 import { storeToRefs } from "pinia";
 import { useAuthStore, useLayoutStore } from "@/store.js";
 
-const drawer = ref(false);
-const { drawerOpen } = storeToRefs(useLayoutStore());
+//const drawer = ref(false);
 const emitter = inject("emitter");
+const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 const { mobile } = useDisplay();
+const open = ref();
 const { user } = storeToRefs(useAuthStore());
 
 onMounted(() => {
-  if ("left" in drawerOpen.value) {
-    drawer.value = drawerOpen.value.left;
-  } else {
-    drawer.value = !mobile.value;
-    drawerOpen.value.left = drawer.value;
-  }
+  // if ("left" in drawerOpen.value) {
+  //   drawer.value = drawerOpen.value.left;
+  // } else {
+  //   drawer.value = !mobile.value;
+  //   drawerOpen.value.left = drawer.value;
+  // }
+  open.value = menuDrawerOpen.value;
   emitter.on("toggle-sidebar-left", () => {
-    drawer.value = !drawer.value;
+    open.value = !open.value;
   });
 });
 
@@ -60,7 +62,7 @@ onUnmounted(() => {
 
 function onTransistionEnd(event) {
   if (event.propertyName === "transform") {
-    drawerOpen.value.left = drawer.value;
+    menuDrawerOpen.value = open.value;
   }
 }
 </script>
