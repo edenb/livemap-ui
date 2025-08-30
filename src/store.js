@@ -1,4 +1,5 @@
 import { inject, ref } from "vue";
+import { useDisplay } from "vuetify";
 import { defineStore } from "pinia";
 
 export const useWorldmapStore = defineStore("worldmap", () => {
@@ -37,8 +38,9 @@ export const usePositionStore = defineStore("position", () => {
 });
 
 export const useLayoutStore = defineStore("layout", () => {
+  const { mobile } = useDisplay();
   const mapDrawerSelector = ref("");
-  const menuDrawerOpen = ref(false);
+  const menuDrawerOpen = ref(!mobile.value);
 
   return { mapDrawerSelector, menuDrawerOpen };
 });

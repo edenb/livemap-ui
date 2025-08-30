@@ -32,24 +32,15 @@
 
 <script setup>
 import { inject, onMounted, onUnmounted, ref } from "vue";
-import { useDisplay } from "vuetify";
 import { storeToRefs } from "pinia";
 import { useAuthStore, useLayoutStore } from "@/store.js";
 
-//const drawer = ref(false);
 const emitter = inject("emitter");
 const { menuDrawerOpen } = storeToRefs(useLayoutStore());
-const { mobile } = useDisplay();
 const open = ref();
 const { user } = storeToRefs(useAuthStore());
 
 onMounted(() => {
-  // if ("left" in drawerOpen.value) {
-  //   drawer.value = drawerOpen.value.left;
-  // } else {
-  //   drawer.value = !mobile.value;
-  //   drawerOpen.value.left = drawer.value;
-  // }
   open.value = menuDrawerOpen.value;
   emitter.on("toggle-sidebar-left", () => {
     open.value = !open.value;
