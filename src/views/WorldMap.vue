@@ -3,6 +3,7 @@
     :selector="mapDrawerSelector"
     @drawer-ready="map.invalidateSize({ pan: false })"
     @close-drawer="mapDrawerSelector = ''"
+    @open-marker-popup="openPopup"
   />
   <v-container id="worldmap" class="pa-0" fluid>
     <v-col>
@@ -23,13 +24,13 @@
           color="primary"
           direction="vertical"
         >
-          <v-btn size="40" value="layers">
+          <v-btn size="40" value="mapDrawerLayers">
             <v-icon color="white" size="x-large">mdi-layers</v-icon>
           </v-btn>
-          <v-btn size="40" value="markers">
+          <v-btn size="40" value="mapDrawerMarkers">
             <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
           </v-btn>
-          <v-btn size="40 " value="info">
+          <v-btn size="40 " value="mapDrawerInfo">
             <v-icon color="white" size="x-large"
               >mdi-information-outline</v-icon
             >
@@ -41,7 +42,7 @@
 </template>
 
 <script setup>
-import { inject, onMounted, onUnmounted, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
@@ -52,7 +53,6 @@ import mapDrawer from "@/components/mapDrawer.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
 const connect = inject("connect");
-const emitter = inject("emitter");
 const httpRequest = inject("httpRequest");
 const { mapDrawerSelector } = storeToRefs(useLayoutStore());
 const positionUpdate = inject("positionUpdate");
@@ -63,7 +63,6 @@ const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 
 let map = null;
 let deviceLayer = null;
-// let layerControl = null;
 const tileProviders = [
   {
     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -97,9 +96,6 @@ onMounted(() => {
   initMap();
   loadDeviceLayer(worldmapStore.overlayNames);
   loadStaticLayers(worldmapStore.overlayNames);
-  emitter.on("open-device-popup", (device_id) => {
-    openPopup(device_id);
-  });
   connect();
 });
 
@@ -107,12 +103,7 @@ onUnmounted(() => {
   if (map) {
     map.remove();
   }
-  emitter.off("open-device-popup");
 });
-
-function ready() {
-  console.log("Ready");
-}
 
 function initMap() {
   map = L.map("worldmap", { zoomControl: false });
@@ -126,8 +117,6 @@ function initMap() {
       [70, 50],
     ]);
   }
-
-  //L.control.zoom({ position: "topright" }).addTo(map);
 
   let baseMaps = {};
   tileProviders.forEach((tileProvider) => {
@@ -184,15 +173,15 @@ function zoom(change) {
   }
 }
 
-function deviceOnTop(layerA, layerB) {
-  if (layerA.options.onTop) {
-    return -1;
-  } else if (layerB.options.onTop) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
+// function deviceOnTop(layerA, layerB) {
+//   if (layerA.options.onTop) {
+//     return -1;
+//   } else if (layerB.options.onTop) {
+//     return 1;
+//   } else {
+//     return 0;
+//   }
+// }
 
 function storeOverlayControls(name, active) {
   const overlayNames = worldmapStore.overlayNames;

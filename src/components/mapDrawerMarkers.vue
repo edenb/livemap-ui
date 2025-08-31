@@ -1,0 +1,65 @@
+<template>
+  <v-list density="compact" nav>
+    <v-list-item
+      v-for="(device, i) in lastPositionsOrdered"
+      :key="i"
+      link
+      @click="emit('openMarkerPopup', device.raw.device_id)"
+    >
+      <template #prepend>
+        <v-avatar
+          variant="elevated"
+          :color="device.iconAttr.markerColor"
+          size="small"
+        >
+          <v-icon
+            :icon="device.iconAttr.icon"
+            :color="device.iconAttr.iconColor"
+            size="x-small"
+          />
+        </v-avatar>
+      </template>
+      <v-list-item-title>
+        {{ device.raw.alias }}
+      </v-list-item-title>
+      <template #append>
+        <v-list-item-title>
+          {{ getAgeText(device.raw.loc_timestamp) }}
+        </v-list-item-title>
+      </template>
+    </v-list-item>
+  </v-list>
+</template>
+
+<script setup>
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
+import { usePositionStore } from "@/store.js";
+
+const emit = defineEmits(["openMarkerPopup"]);
+const { lastPositions } = storeToRefs(usePositionStore());
+const lastPositionsOrdered = computed(() => {
+  let lastPositionsOrdered = lastPositions.value;
+  lastPositionsOrdered.sort((a, b) => a.raw.alias.localeCompare(b.raw.alias));
+  return lastPositionsOrdered;
+});
+
+function getAgeText(birth) {
+  const tsBirth = new Date(birth);
+  const tsNow = new Date(Date.now());
+  const td = (tsNow - tsBirth) / 1000;
+  if (td < 60) {
+    return `<1m`;
+  }
+  if (td < 3600) {
+    return `${(td / 60).toFixed()}m`;
+  }
+  if (td < 3600 * 24) {
+    return `${(td / 3600).toFixed()}h`;
+  }
+  if (td < 3600 * 24 * 99) {
+    return `${(td / (3600 * 24)).toFixed()}d`;
+  }
+  return `>99d`;
+}
+</script>
