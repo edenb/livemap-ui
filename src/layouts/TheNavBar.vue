@@ -29,13 +29,6 @@
     </v-app-bar-title>
 
     <template #append>
-      <ServerInfo ref="serverInfo" />
-      <v-btn
-        data-cy="navbar-info-dialog-control"
-        icon="mdi-information-outline"
-        variant="text"
-        @click="serverInfo.open()"
-      />
       <v-menu>
         <template #activator="{ props }">
           <v-chip
@@ -87,7 +80,6 @@
 <script setup>
 import { computed, inject, onMounted, ref } from "vue";
 import { useAuthStore } from "@/store.js";
-import ServerInfo from "@/components/ServerInfo.vue";
 
 const authStore = useAuthStore();
 const connect = inject("connect");
