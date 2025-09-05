@@ -11,20 +11,24 @@
       <template #append>
         <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
       </template>
-      <component :is="mapDrawers[selector]" v-bind="$attrs" />
+      <mapDrawerMarkers
+        v-if="selector === 'mapDrawerMarkers'"
+        @open-marker-popup="emit('openMarkerPopup', $event)"
+      />
+      <mapDrawerInfo v-if="selector === 'mapDrawerInfo'" />
     </v-card>
   </v-navigation-drawer>
 </template>
 
 <script setup>
 import { computed, toRefs } from "vue";
+import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerMarkers from "@/components/mapDrawerMarkers.vue";
 
 const props = defineProps({
   selector: { type: String, default: "" },
 });
-const emit = defineEmits(["closeDrawer", "drawerReady"]);
-const mapDrawers = { mapDrawerMarkers };
+const emit = defineEmits(["closeDrawer", "drawerReady", "openMarkerPopup"]);
 const open = computed(() => {
   return !!selector.value;
 });
