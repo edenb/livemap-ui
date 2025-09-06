@@ -9,10 +9,10 @@
     <v-col>
       <v-row justify="end">
         <v-btn-group color="rgba(0, 0, 0, 0.6)" direction="vertical">
-          <v-btn size="40" @click="zoom('in')">
+          <v-btn size="40" @click="zoomIn">
             <v-icon color="white" size="x-large">mdi-plus</v-icon>
           </v-btn>
-          <v-btn size="40" @click="zoom('out')">
+          <v-btn size="40" @click="zoomOut">
             <v-icon color="white" size="x-large">mdi-minus</v-icon>
           </v-btn>
         </v-btn-group>
@@ -164,13 +164,12 @@ function initMap() {
   });
 }
 
-function zoom(change) {
-  if (change == "in") {
-    map?.zoomIn();
-  }
-  if (change == "out") {
-    map?.zoomOut();
-  }
+function zoomIn() {
+  map?.zoomIn();
+}
+
+function zoomOut() {
+  map?.zoomOut();
 }
 
 // function deviceOnTop(layerA, layerB) {
