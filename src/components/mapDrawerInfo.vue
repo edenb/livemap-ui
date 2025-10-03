@@ -1,5 +1,5 @@
 <template>
-  <v-list density="compact" lines="false" nav>
+  <v-list data-cy="map-drawer-info" density="compact" lines="false" nav>
     <div
       v-if="info?.application?.about && info?.application?.about?.length > 0"
     >

@@ -1,4 +1,4 @@
-describe("Server Info Dialog", () => {
+describe("Information Drawer", () => {
   beforeEach(function () {
     cy.mockMapResponses("Bobby");
     // Login and go to the main page
@@ -7,21 +7,21 @@ describe("Server Info Dialog", () => {
     cy.contains("Livemap");
   });
 
-  it("should show the server info dialog", () => {
+  it("should show the information drawer", () => {
     cy.intercept("GET", "/api/v1/server/info", (req) => {
       req.reply({
         statusCode: 200,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          application: { name: "Livemap", about: "About", license: "MIT" },
+          application: { name: "Livemap", about: "About text", license: "MIT" },
         }),
       });
     });
-    cy.get("[data-cy=navbar-info-dialog-control]").click();
-    cy.get("[data-cy=server-info-dialog]")
+    cy.get("[data-cy=map-drawer-info-control]").click();
+    cy.get("[data-cy=map-drawer-info]")
       .should("be.visible")
-      .and("contain", "Livemap")
-      .and("contain", "About")
+      .and("contain", "http://localhost:3000")
+      .and("contain", "About text")
       .and("contain", "MIT");
     cy.get("[data-cy=snackbar]").should("not.exist");
   });
@@ -30,10 +30,12 @@ describe("Server Info Dialog", () => {
     cy.intercept("GET", "/api/v1/server/info", (req) => {
       req.destroy();
     });
-    cy.get("[data-cy=navbar-info-dialog-control]").click();
+    cy.get("[data-cy=map-drawer-info-control]").click();
+    cy.get("[data-cy=map-drawer-info]")
+      .should("be.visible")
+      .and("contain", "http://localhost:3000");
     cy.get("[data-cy=snackbar]").should("exist");
     cy.contains("No server connection").should("be.visible");
-    cy.get("[data-cy=server-info-dialog]").should("not.exist");
   });
 
   it("should show a snackbar when the server has an internal error", () => {
@@ -50,9 +52,11 @@ describe("Server Info Dialog", () => {
         },
       });
     });
-    cy.get("[data-cy=navbar-info-dialog-control]").click();
+    cy.get("[data-cy=map-drawer-info-control]").click();
+    cy.get("[data-cy=map-drawer-info]")
+      .should("be.visible")
+      .and("contain", "http://localhost:3000");
     cy.get("[data-cy=snackbar]").should("exist");
     cy.contains("Internal Server Error").should("be.visible");
-    cy.get("[data-cy=server-info-dialog]").should("not.exist");
   });
 });

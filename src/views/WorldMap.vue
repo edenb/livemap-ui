@@ -30,13 +30,25 @@
           color="primary"
           direction="vertical"
         >
-          <v-btn size="40" value="mapDrawerLayers">
+          <v-btn
+            data-cy="map-drawer-layers-control"
+            size="40"
+            value="mapDrawerLayers"
+          >
             <v-icon color="white" size="x-large">mdi-layers</v-icon>
           </v-btn>
-          <v-btn size="40" value="mapDrawerMarkers">
+          <v-btn
+            data-cy="map-drawer-markers-control"
+            size="40"
+            value="mapDrawerMarkers"
+          >
             <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
           </v-btn>
-          <v-btn size="40 " value="mapDrawerInfo">
+          <v-btn
+            data-cy="map-drawer-info-control"
+            size="40 "
+            value="mapDrawerInfo"
+          >
             <v-icon color="white" size="x-large"
               >mdi-information-outline</v-icon
             >
