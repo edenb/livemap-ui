@@ -164,14 +164,7 @@ function initMap() {
     baseLayerName.value = defaultBaseLayerName;
   }
   baseLayers[baseLayerName.value].addTo(map);
-  // setBaseLayer[baseLayerName.value];
-  // layerControl = L.control
-  //   .layers(
-  //     baseMaps,
-  //     {},
-  //     { collapsed: false, sortLayers: true, sortFunction: deviceOnTop },
-  //   )
-  //   .addTo(map);
+
   map.on("moveend", (e) => {
     worldmapStore.center = e.target.getCenter();
   });
@@ -181,12 +174,6 @@ function initMap() {
       .getElementById("worldmap")
       .setAttribute("data-cy", "zoom-animation-end");
   });
-  // map.on("overlayadd", (e) => {
-  //   storeOverlayControls(e.name, true);
-  // });
-  // map.on("overlayremove", (e) => {
-  //   storeOverlayControls(e.name, false);
-  // });
 }
 
 function setBaseLayer(name) {
@@ -223,31 +210,6 @@ function zoomOut() {
   map?.zoomOut();
 }
 
-// function deviceOnTop(layerA, layerB) {
-//   if (layerA.options.onTop) {
-//     return -1;
-//   } else if (layerB.options.onTop) {
-//     return 1;
-//   } else {
-//     return 0;
-//   }
-// }
-
-// function storeOverlayNames(names) {
-//   worldmapStore.overlayNames = names;
-// }
-
-// function storeOverlayControls(name, active) {
-//   const overlayNames = worldmapStore.overlayNames;
-//   if (active) {
-//     if (!overlayNames.includes(name)) {
-//       overlayNames.push(name);
-//     }
-//   } else {
-//     overlayNames.splice(overlayNames.indexOf(name), 1);
-//   }
-// }
-
 async function loadDeviceLayer(activeLayerNames) {
   let response;
   try {
@@ -283,10 +245,6 @@ async function loadDeviceLayer(activeLayerNames) {
       fitMarkers();
     }
     deviceLayer.options.onTop = true;
-    // layerControl.addOverlay(deviceLayer, "Device");
-    // if (activeLayerNames.includes("Device")) {
-    //   deviceLayer.addTo(map);
-    // }
     overlays["Devices"] = deviceLayer;
     setOverlays(activeLayerNames);
   }
@@ -311,7 +269,6 @@ async function loadStaticLayers(activeLayerNames) {
         });
         const layerName = getStaticLayerName(geojson, layerIndex);
         overlays[layerName] = L.geoJSON(geojson, getGeoJsonOptions(geojson));
-        // overlayNames.value.push(layerName);
         layerIndex++;
       }
       replaceDuplicateNames(staticLayers);
@@ -319,12 +276,7 @@ async function loadStaticLayers(activeLayerNames) {
         return a.layerName.localeCompare(b.layerName);
       });
       staticLayers.forEach((element) => {
-        // layerControl.addOverlay(element.layer, element.layerName);
         overlays[element.layerName] = element.layer;
-        // overlayNames.value.push(element.layerName);
-        // if (activeLayerNames.includes(element.layerName)) {
-        //   element.layer.addTo(map);
-        // }
       });
       setOverlays(activeLayerNames);
     } catch (err) {
