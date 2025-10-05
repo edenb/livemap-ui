@@ -30,7 +30,7 @@
   </v-list>
   <v-divider />
   <v-list
-    v-if="overlayNames.length > 0"
+    v-if="overlayNamesOrdered.length > 0"
     v-model:selected="selectedOverlayNames"
     class="pa-0"
     density="compact"
@@ -40,7 +40,7 @@
   >
     <v-list-subheader>Overlays</v-list-subheader>
     <v-list-item
-      v-for="overlayName in overlayNames"
+      v-for="overlayName in overlayNamesOrdered"
       :key="overlayName"
       :title="overlayName"
       :value="overlayName"
@@ -55,24 +55,11 @@
         </v-list-item-action>
       </template>
     </v-list-item>
-
-    <!-- <v-list-item
-      v-for="overlayName in overlayNames"
-      :key="overlayName"
-      class="pl-3 pa-0"
-    >
-      <v-checkbox
-        :label="overlayName"
-        :value="overlayName"
-        density="compact"
-        hide-details
-      ></v-checkbox>
-    </v-list-item> -->
   </v-list>
 </template>
 
 <script setup>
-import { ref, toRefs, watch } from "vue";
+import { computed, ref, toRefs, watch } from "vue";
 
 const props = defineProps({
   overlayNames: { type: Array, default: () => [] },
@@ -84,6 +71,26 @@ const emit = defineEmits(["setBaseLayer", "setOverlays"]);
 const { overlayNamesSelected, baseLayerNamesSelected } = toRefs(props);
 const selectedBaseLayerNames = ref([props.baseLayerNamesSelected]);
 const selectedOverlayNames = ref(props.overlayNamesSelected);
+
+const overlayNamesOrdered = computed(() => {
+  const layersOnTop = ["Devices"];
+  let overlayNamesTop = [];
+  let overlayNamesBottom = [];
+  props.overlayNames.forEach((layerName) => {
+    if (layersOnTop.includes(layerName)) {
+      overlayNamesTop.push(layerName);
+    } else {
+      overlayNamesBottom.push(layerName);
+    }
+  });
+  overlayNamesTop.sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: "base" }),
+  );
+  overlayNamesBottom.sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: "base" }),
+  );
+  return overlayNamesTop.concat(overlayNamesBottom);
+});
 
 watch(baseLayerNamesSelected, () => {
   selectedBaseLayerNames.value = [baseLayerNamesSelected.value];
