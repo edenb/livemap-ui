@@ -1,9 +1,9 @@
 <template>
-  <v-list data-cy="map-drawer-info" density="compact" lines="false" nav>
+  <v-list data-cy="map-drawer-info" class="pa-0" lines="false" nav>
     <div
       v-if="info?.application?.about && info?.application?.about?.length > 0"
     >
-      <v-list-item>
+      <v-list-item class="px-0">
         <v-list-item-title>
           <span class="text-overline">About</span>
         </v-list-item-title>
@@ -11,10 +11,10 @@
           {{ info.application.about }}
         </v-list-item-subtitle>
       </v-list-item>
-      <v-divider class="mx-2" />
+      <v-divider />
     </div>
     <div>
-      <v-list-item>
+      <v-list-item class="px-0">
         <v-list-item-title>
           <span class="text-overline">Server</span>
           <v-icon
@@ -35,10 +35,10 @@
           </div>
         </v-list-item-subtitle>
       </v-list-item>
-      <v-divider class="mx-2" />
+      <v-divider />
     </div>
     <div v-if="info.mqtt">
-      <v-list-item>
+      <v-list-item class="px-0">
         <v-list-item-title>
           <span class="text-overline">MQTT broker</span>
           <v-icon
@@ -60,10 +60,10 @@
           <div>Port: {{ info.mqtt.port }}</div>
         </v-list-item-subtitle>
       </v-list-item>
-      <v-divider class="mx-2" />
+      <v-divider />
     </div>
     <div v-if="info?.application?.license">
-      <v-list-item>
+      <v-list-item class="px-0">
         <v-list-item-title>
           <span class="text-overline"> License </span>
         </v-list-item-title>
@@ -71,7 +71,7 @@
           info.application.license
         }}</v-list-item-subtitle>
       </v-list-item>
-      <v-divider class="mx-2" />
+      <v-divider />
     </div>
   </v-list>
 </template>

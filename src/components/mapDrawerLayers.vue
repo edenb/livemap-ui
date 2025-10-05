@@ -1,6 +1,7 @@
 <template>
   <v-list
     v-model:selected="selectedBaseLayerNames"
+    class="pa-0"
     density="compact"
     mandatory
     nav
@@ -26,28 +27,12 @@
         </v-list-item-action>
       </template>
     </v-list-item>
-
-    <!-- <v-list-item class="pl-2">
-      <v-radio-group
-        v-model="selectedBaseLayerName"
-        density="compact"
-        hide-details
-        @update:model-value="emit('setBaseLayer', selectedBaseLayerName)"
-      >
-        <v-radio
-          v-for="tileProviderName in tileProviderNames"
-          :key="tileProviderName"
-          :label="tileProviderName"
-          :value="tileProviderName"
-          class="pa-0"
-        ></v-radio>
-      </v-radio-group>
-    </v-list-item> -->
   </v-list>
-  <v-divider class="mx-2" />
+  <v-divider />
   <v-list
     v-if="overlayNames.length > 0"
     v-model:selected="selectedOverlayNames"
+    class="pa-0"
     density="compact"
     nav
     select-strategy="leaf"

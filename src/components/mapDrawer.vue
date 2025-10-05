@@ -2,7 +2,7 @@
   <v-navigation-drawer
     v-model="open"
     name="mapDrawer"
-    location="right"
+    :location="mobile ? 'top' : 'right'"
     permanent
     @transitionend="onTransistionEnd"
   >
@@ -16,39 +16,41 @@
       <template #append>
         <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
       </template>
-      <mapDrawerLayers
-        v-if="selector === 'mapDrawerLayers'"
-        :overlay-names="overlayNames"
-        :overlay-names-selected="overlayNamesSelected"
-        :base-layer-names="baseLayerNames"
-        :base-layer-names-selected="baseLayerNamesSelected"
-        @set-base-layer="emit('setBaseLayer', $event)"
-        @set-overlays="emit('setOverlays', $event)"
-      />
-      <mapDrawerMarkers
-        v-if="selector === 'mapDrawerMarkers'"
-        @open-marker-popup="emit('openMarkerPopup', $event)"
-      />
-      <mapDrawerInfo v-if="selector === 'mapDrawerInfo'" />
-      <v-slide-y-reverse-transition>
-        <v-btn
-          v-show="showScrollUpButton"
-          class="ma-4"
-          color="primary"
-          elevation="8"
-          icon="mdi-chevron-up"
-          location="bottom right"
-          position="fixed"
-          @click="goTo(0, { container: '#drawer-container' })"
+      <template #text>
+        <mapDrawerLayers
+          v-if="selector === 'mapDrawerLayers'"
+          :overlay-names="overlayNames"
+          :overlay-names-selected="overlayNamesSelected"
+          :base-layer-names="baseLayerNames"
+          :base-layer-names-selected="baseLayerNamesSelected"
+          @set-base-layer="emit('setBaseLayer', $event)"
+          @set-overlays="emit('setOverlays', $event)"
         />
-      </v-slide-y-reverse-transition>
+        <mapDrawerMarkers
+          v-if="selector === 'mapDrawerMarkers'"
+          @open-marker-popup="emit('openMarkerPopup', $event)"
+        />
+        <mapDrawerInfo v-if="selector === 'mapDrawerInfo'" />
+        <v-slide-y-reverse-transition>
+          <v-btn
+            v-show="showScrollUpButton"
+            class="ma-4"
+            color="primary"
+            elevation="8"
+            icon="mdi-chevron-up"
+            location="bottom right"
+            position="fixed"
+            @click="goTo(0, { container: '#drawer-container' })"
+          />
+        </v-slide-y-reverse-transition>
+      </template>
     </v-card>
   </v-navigation-drawer>
 </template>
 
 <script setup>
 import { computed, ref, toRefs } from "vue";
-import { useGoTo } from "vuetify";
+import { useDisplay, useGoTo } from "vuetify";
 import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerLayers from "@/components/mapDrawerLayers.vue";
 import mapDrawerMarkers from "@/components/mapDrawerMarkers.vue";
@@ -68,6 +70,7 @@ const emit = defineEmits([
   "setOverlays",
 ]);
 const goTo = useGoTo();
+const { mobile } = useDisplay({ mobileBreakpoint: "sm" });
 const open = computed(() => {
   return !!selector.value;
 });

@@ -1,8 +1,9 @@
 <template>
-  <v-list density="compact" nav>
+  <v-list class="pa-0" density="compact" nav>
     <v-list-item
       v-for="(device, i) in lastPositionsOrdered"
       :key="i"
+      class="px-0"
       link
       @click="emit('openMarkerPopup', device.raw.device_id)"
     >
