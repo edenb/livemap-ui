@@ -100,7 +100,6 @@ const connectionIcon = computed(() => {
 });
 const emitter = inject("emitter");
 const isConnected = inject("isConnected");
-const serverInfo = ref(null);
 
 onMounted(() => {
   connect();
