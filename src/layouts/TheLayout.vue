@@ -2,7 +2,7 @@
   <v-layout ref="app">
     <SnackbarProvider>
       <TheNavBar />
-      <TheSidebarLeft />
+      <menuDrawer />
       <v-main>
         <div style="height: 100%">
           <router-view />
@@ -15,7 +15,7 @@
 <script setup>
 import SnackbarProvider from "@/components/SnackbarProvider.vue";
 import TheNavBar from "@/layouts/TheNavBar.vue";
-import TheSidebarLeft from "@/layouts/TheSidebarLeft.vue";
+import menuDrawer from "@/layouts/TheMenuDrawer.vue";
 </script>
 
 <style>

@@ -1,15 +1,16 @@
 import { inject, ref } from "vue";
+import { useDisplay } from "vuetify";
 import { defineStore } from "pinia";
 
 export const useWorldmapStore = defineStore("worldmap", () => {
   const baseLayerName = ref("");
   const center = ref(null);
-  const overlayNames = ref(["Device"]);
+  const overlayNames = ref(["Devices"]);
   const zoom = ref(null);
   function resetAll() {
     baseLayerName.value = "";
     center.value = null;
-    overlayNames.value = ["Device"];
+    overlayNames.value = ["Devices"];
     zoom.value = null;
   }
 
@@ -37,9 +38,11 @@ export const usePositionStore = defineStore("position", () => {
 });
 
 export const useLayoutStore = defineStore("layout", () => {
-  const drawerOpen = ref({});
+  const { mobile } = useDisplay();
+  const mapDrawerSelector = ref("");
+  const menuDrawerOpen = ref(!mobile.value);
 
-  return { drawerOpen };
+  return { mapDrawerSelector, menuDrawerOpen };
 });
 
 export const useAuthStore = defineStore("auth", () => {

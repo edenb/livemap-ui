@@ -16,13 +16,7 @@ describe("Navigation bar", () => {
       "text-red",
     );
   });
-  it("should show info dialog control", () => {
-    cy.get("[data-cy=navbar-info-dialog-control]").should("be.visible");
-  });
   it("should show account dialog control", () => {
     cy.get("[data-cy=navbar-account-dialog-control]").should("be.visible");
-  });
-  it("should show device drawer control", () => {
-    cy.get("[data-cy=navbar-device-drawer-control]").should("be.visible");
   });
 });

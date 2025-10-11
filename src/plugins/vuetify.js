@@ -1,6 +1,7 @@
 // Styles
 import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
+import { VIconBtn } from "vuetify/labs/VIconBtn";
 
 // Vuetify
 import { createVuetify } from "vuetify";
@@ -31,6 +32,9 @@ const livemapTheme = {
 };
 
 export default createVuetify({
+  components: {
+    VIconBtn,
+  },
   theme: {
     defaultTheme: "livemapTheme",
     themes: {

@@ -1,38 +1,97 @@
 <template>
-  <TheSidebarRight />
-  <div id="worldmap" />
+  <mapDrawer
+    :base-layer-names="allBaseLayerNames"
+    :base-layer-names-selected="baseLayerName"
+    :overlay-names="allOverlayNames"
+    :overlay-names-selected="overlayNames"
+    :selector="mapDrawerSelector"
+    @drawer-ready="map.invalidateSize({ pan: false })"
+    @close-drawer="mapDrawerSelector = ''"
+    @open-marker-popup="openPopup"
+    @set-base-layer="setBaseLayer"
+    @set-overlays="setOverlays"
+  />
+  <v-container id="worldmap" class="pa-0" fluid>
+    <v-col>
+      <v-row justify="end">
+        <v-btn-group color="rgba(0, 0, 0, 0.6)" direction="vertical">
+          <v-btn size="40" @click="zoomIn">
+            <v-icon color="white" size="x-large">mdi-plus</v-icon>
+          </v-btn>
+          <v-btn size="40" @click="zoomOut">
+            <v-icon color="white" size="x-large">mdi-minus</v-icon>
+          </v-btn>
+        </v-btn-group>
+      </v-row>
+      <v-row justify="end">
+        <v-btn-toggle
+          v-model="mapDrawerSelector"
+          base-color="rgba(0, 0, 0, 0.6)"
+          color="primary"
+          direction="vertical"
+        >
+          <v-btn
+            data-cy="map-drawer-layers-control"
+            size="40"
+            value="mapDrawerLayers"
+          >
+            <v-icon color="white" size="x-large">mdi-layers</v-icon>
+          </v-btn>
+          <v-btn
+            data-cy="map-drawer-markers-control"
+            size="40"
+            value="mapDrawerMarkers"
+          >
+            <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
+          </v-btn>
+          <v-btn
+            data-cy="map-drawer-info-control"
+            size="40 "
+            value="mapDrawerInfo"
+          >
+            <v-icon color="white" size="x-large"
+              >mdi-information-outline</v-icon
+            >
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
+    </v-col>
+  </v-container>
 </template>
 
 <script setup>
-import { inject, onMounted, onUnmounted, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
 import { ExtraMarkers } from "leaflet-extra-markers";
-import TheSidebarRight from "@/layouts/TheSidebarRight.vue";
+import mapDrawer from "@/components/mapDrawer.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
+const allOverlayNames = ref([]);
+const baseLayerName = ref("");
 const connect = inject("connect");
-const emitter = inject("emitter");
 const httpRequest = inject("httpRequest");
+const { mapDrawerSelector } = storeToRefs(useLayoutStore());
+const overlayNames = ref([]);
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
 const { show } = inject("snackbar");
 const worldmapStore = useWorldmapStore();
-const layoutStore = useLayoutStore();
-const { drawerOpen } = storeToRefs(layoutStore);
+const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 
 let map = null;
 let deviceLayer = null;
-let layerControl = null;
+let baseLayers = {};
+let overlays = {};
 const tileProviders = [
   {
     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     options: {
       name: "OpenStreetMap",
-      visible: true,
+      defaultMap: true,
       attribution:
         '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     },
@@ -41,20 +100,17 @@ const tileProviders = [
     urlTemplate: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
     options: {
       name: "OpenTopoMap",
-      visible: false,
+      defaultMap: false,
       attribution:
         'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
     },
   },
 ];
+const allBaseLayerNames = tileProviders.map(({ options }) => options.name);
 
-watch(
-  drawerOpen,
-  () => {
-    map.invalidateSize({ pan: false });
-  },
-  { deep: true },
-);
+watch(menuDrawerOpen, () => {
+  map.invalidateSize({ pan: false });
+});
 
 watch(positionUpdate, () => {
   updateFromSocket(positionUpdate.value);
@@ -64,9 +120,6 @@ onMounted(() => {
   initMap();
   loadDeviceLayer(worldmapStore.overlayNames);
   loadStaticLayers(worldmapStore.overlayNames);
-  emitter.on("open-device-popup", (device_id) => {
-    openPopup(device_id);
-  });
   connect();
 });
 
@@ -74,11 +127,10 @@ onUnmounted(() => {
   if (map) {
     map.remove();
   }
-  emitter.off("open-device-popup");
 });
 
 function initMap() {
-  map = L.map("worldmap");
+  map = L.map("worldmap", { zoomControl: false });
   const center = worldmapStore.center;
   const zoom = worldmapStore.zoom;
   if (center !== null && zoom !== null) {
@@ -90,32 +142,29 @@ function initMap() {
     ]);
   }
 
-  let baseMaps = {};
+  let defaultBaseLayerName = tileProviders[0].options.name;
   tileProviders.forEach((tileProvider) => {
     const baseLayer = L.tileLayer(
       tileProvider.urlTemplate,
       tileProvider.options,
     );
-    if (
-      worldmapStore.baseLayerName === tileProvider.options.name ||
-      (worldmapStore.baseLayerName === "" && tileProvider.options.visible)
-    ) {
-      baseLayer.on("load", () => {
-        document
-          .getElementById("worldmap")
-          .setAttribute("data-cy", "all-tiles-loaded");
-      });
-      baseLayer.addTo(map);
+    baseLayer.on("load", () => {
+      document
+        .getElementById("worldmap")
+        .setAttribute("data-cy", "all-tiles-loaded");
+    });
+    if (tileProvider.options.defaultMap) {
+      defaultBaseLayerName = tileProvider.options.name;
     }
-    baseMaps[tileProvider.options.name] = baseLayer;
+    baseLayers[tileProvider.options.name] = baseLayer;
   });
-  layerControl = L.control
-    .layers(
-      baseMaps,
-      {},
-      { collapsed: false, sortLayers: true, sortFunction: deviceOnTop },
-    )
-    .addTo(map);
+
+  baseLayerName.value = worldmapStore.baseLayerName;
+  if (baseLayerName.value === "") {
+    baseLayerName.value = defaultBaseLayerName;
+  }
+  baseLayers[baseLayerName.value].addTo(map);
+
   map.on("moveend", (e) => {
     worldmapStore.center = e.target.getCenter();
   });
@@ -125,36 +174,40 @@ function initMap() {
       .getElementById("worldmap")
       .setAttribute("data-cy", "zoom-animation-end");
   });
-  map.on("baselayerchange", (e) => {
-    worldmapStore.baseLayerName = e.name;
-  });
-  map.on("overlayadd", (e) => {
-    storeOverlayControls(e.name, true);
-  });
-  map.on("overlayremove", (e) => {
-    storeOverlayControls(e.name, false);
-  });
 }
 
-function deviceOnTop(layerA, layerB) {
-  if (layerA.options.onTop) {
-    return -1;
-  } else if (layerB.options.onTop) {
-    return 1;
-  } else {
-    return 0;
+function setBaseLayer(name) {
+  const layer = baseLayers[name];
+  let isVisible = map.hasLayer(layer);
+  if (!isVisible) {
+    map.removeLayer(baseLayers[baseLayerName.value]);
+    map.addLayer(baseLayers[name]);
   }
+  baseLayerName.value = name;
+  worldmapStore.baseLayerName = name;
 }
 
-function storeOverlayControls(name, active) {
-  const overlayNames = worldmapStore.overlayNames;
-  if (active) {
-    if (!overlayNames.includes(name)) {
-      overlayNames.push(name);
+function setOverlays(names) {
+  Object.entries(overlays).forEach(([layerName, layer]) => {
+    let isVisible = map.hasLayer(layer);
+    if (!isVisible && names.includes(layerName)) {
+      map.addLayer(layer);
     }
-  } else {
-    overlayNames.splice(overlayNames.indexOf(name), 1);
-  }
+    if (isVisible && !names.includes(layerName)) {
+      map.removeLayer(layer);
+    }
+  });
+  allOverlayNames.value = Object.keys(overlays);
+  overlayNames.value = names;
+  worldmapStore.overlayNames = names;
+}
+
+function zoomIn() {
+  map?.zoomIn();
+}
+
+function zoomOut() {
+  map?.zoomOut();
 }
 
 async function loadDeviceLayer(activeLayerNames) {
@@ -192,10 +245,8 @@ async function loadDeviceLayer(activeLayerNames) {
       fitMarkers();
     }
     deviceLayer.options.onTop = true;
-    layerControl.addOverlay(deviceLayer, "Device");
-    if (activeLayerNames.includes("Device")) {
-      deviceLayer.addTo(map);
-    }
+    overlays["Devices"] = deviceLayer;
+    setOverlays(activeLayerNames);
   }
 }
 
@@ -209,25 +260,25 @@ async function loadStaticLayers(activeLayerNames) {
 
   if (response?.data) {
     try {
-      let layerControlStatic = [];
+      let staticLayers = [];
       let layerIndex = 1;
       for (let geojson of response.data) {
-        layerControlStatic.push({
+        staticLayers.push({
           layer: L.geoJSON(geojson, getGeoJsonOptions(geojson)),
           layerName: getStaticLayerName(geojson, layerIndex),
         });
+        const layerName = getStaticLayerName(geojson, layerIndex);
+        overlays[layerName] = L.geoJSON(geojson, getGeoJsonOptions(geojson));
         layerIndex++;
       }
-      replaceDuplicateNames(layerControlStatic);
-      layerControlStatic.sort((a, b) => {
+      replaceDuplicateNames(staticLayers);
+      staticLayers.sort((a, b) => {
         return a.layerName.localeCompare(b.layerName);
       });
-      layerControlStatic.forEach((element) => {
-        layerControl.addOverlay(element.layer, element.layerName);
-        if (activeLayerNames.includes(element.layerName)) {
-          element.layer.addTo(map);
-        }
+      staticLayers.forEach((element) => {
+        overlays[element.layerName] = element.layer;
       });
+      setOverlays(activeLayerNames);
     } catch (err) {
       show({ message: err, color: "error" });
     }
@@ -273,7 +324,7 @@ function updateMarker(id, lat, lon, popup, iconAttr, opacity) {
     const allMarkers = deviceLayer.getLayers();
     let marker = allMarkers.find((e) => e.options.id === id);
     if (!marker) {
-      marker = L.marker([lat, lon], { id, icon, opacity });
+      marker = L.marker([lat, lon], { id, icon, opacity, zIndexOffset: 1000 });
       marker.bindPopup(popup);
       deviceLayer.addLayer(marker);
     } else {
@@ -510,9 +561,16 @@ function updateFromSocket(socketPayloadStr) {
 }
 </script>
 
-<style scoped>
+<style>
 #worldmap {
   height: 100%;
-  z-index: 0;
+  .v-btn-group--vertical {
+    margin-top: 20px;
+    border-start-end-radius: 0px;
+    border-end-end-radius: 0px;
+  }
+  .v-btn {
+    z-index: 500;
+  }
 }
 </style>

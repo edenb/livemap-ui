@@ -29,13 +29,6 @@
     </v-app-bar-title>
 
     <template #append>
-      <ServerInfo ref="serverInfo" />
-      <v-btn
-        data-cy="navbar-info-dialog-control"
-        icon="mdi-information-outline"
-        variant="text"
-        @click="serverInfo.open()"
-      />
       <v-menu>
         <template #activator="{ props }">
           <v-chip
@@ -80,10 +73,6 @@
           </v-list>
         </v-card>
       </v-menu>
-      <v-app-bar-nav-icon
-        data-cy="navbar-device-drawer-control"
-        @click.stop="toggleSidebarRight"
-      />
     </template>
   </v-app-bar>
 </template>
@@ -91,7 +80,6 @@
 <script setup>
 import { computed, inject, onMounted, ref } from "vue";
 import { useAuthStore } from "@/store.js";
-import ServerInfo from "@/components/ServerInfo.vue";
 
 const authStore = useAuthStore();
 const connect = inject("connect");
@@ -120,9 +108,5 @@ onMounted(() => {
 
 function toggleSidebarLeft() {
   emitter.emit("toggle-sidebar-left");
-}
-
-function toggleSidebarRight() {
-  emitter.emit("toggle-sidebar-right");
 }
 </script>
