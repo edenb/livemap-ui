@@ -25,6 +25,15 @@
     </v-empty-state>
 
     <v-empty-state
+      v-if="state === 'empty-viewer'"
+      data-cy="device-list-state-empty-viewer"
+      icon="mdi-devices"
+      style="height: 100%"
+      text="No devices have been shared with you."
+      title="No devices yet."
+    ></v-empty-state>
+
+    <v-empty-state
       v-if="state === 'failed'"
       data-cy="device-list-state-failed"
       icon="mdi-emoticon-sad"
@@ -64,7 +73,12 @@
             single-line
           />
           <v-spacer />
-          <v-btn v-tooltip="'Add device'" icon="mdi-plus" @click="newItem()" />
+          <v-btn
+            v-tooltip="'Add device'"
+            :disabled="user.role === 'viewer'"
+            icon="mdi-plus"
+            @click="newItem()"
+          />
           <v-btn
             v-tooltip="'Edit selected device'"
             :disabled="selectedOwned(selected).length !== 1"
@@ -182,7 +196,11 @@ async function loadTable() {
       }
     });
     if (allDevices.value.length === 0) {
-      state.value = "empty";
+      if (user.value.role === "viewer") {
+        state.value = "empty-viewer";
+      } else {
+        state.value = "empty";
+      }
     } else {
       state.value = "loaded";
     }
