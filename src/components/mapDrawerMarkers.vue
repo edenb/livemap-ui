@@ -3,6 +3,7 @@
     <v-list-item
       v-for="(device, i) in lastPositionsOrdered"
       :key="i"
+      :value="device.raw.device_id"
       class="px-0"
       link
       @click="emit('openMarkerPopup', device.raw.device_id)"
