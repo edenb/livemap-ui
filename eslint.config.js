@@ -1,15 +1,21 @@
 import js from "@eslint/js";
-import cypress from "eslint-plugin-cypress/flat";
-import prettier from "eslint-plugin-prettier/recommended";
-import vue from "eslint-plugin-vue";
-import vuetify from "eslint-plugin-vuetify";
+import globals from "globals";
+import pluginVue from "eslint-plugin-vue";
+import pluginVuetify from "eslint-plugin-vuetify";
+import pluginCypress from "eslint-plugin-cypress";
+import pluginPrettier from "eslint-plugin-prettier/recommended";
+import { defineConfig } from "eslint/config";
 
-export default [
-  { files: ["**/*.js", "**/*.vue"], languageOptions: { ecmaVersion: 2021 } },
-  js.configs.recommended,
-  cypress.configs.recommended,
-  ...vue.configs["flat/recommended"],
-  ...vuetify.configs["flat/recommended"],
-  { rules: { "no-unused-vars": "off" } },
-  prettier, // Prettier always last
-];
+export default defineConfig([
+  {
+    files: ["**/*.{js,vue}"],
+    plugins: { js },
+    extends: ["js/recommended"],
+    languageOptions: { globals: globals.browser },
+    rules: { "no-unused-vars": "off" },
+  },
+  pluginVue.configs["flat/recommended"],
+  pluginVuetify.configs["flat/recommended"],
+  pluginCypress.configs["recommended"],
+  pluginPrettier, // Prettier always last
+]);

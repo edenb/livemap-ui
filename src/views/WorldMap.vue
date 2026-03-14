@@ -300,8 +300,8 @@ function replaceDuplicateNames(layerList) {
   layerList.forEach((layer) => {
     if (dupNames.includes(layer.layerName)) {
       let count = 1;
-      let newName = "";
-      let allNames = [];
+      let newName;
+      let allNames;
       do {
         allNames = layerList.map(({ layerName }) => layerName);
         newName = `${layer.layerName}-${count}`;
