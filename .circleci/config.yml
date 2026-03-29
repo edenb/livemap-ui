@@ -20,10 +20,9 @@ workflows:
       - lint
       - cypress/run:
           name: cy-run
-          install-browsers: true
           working-directory: "/home/circleci/project"
           start-command: "npm run build && npm run serve"
-          cypress-command: "npx cypress run --browser chrome --config baseUrl=http://localhost:4173"
+          cypress-command: "npx cypress run --config baseUrl=http://localhost:4173"
       - docker/publish:
           name: docker-build
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
