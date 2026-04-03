@@ -22,7 +22,7 @@ describe("Login", () => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(200);
 
-        cy.get(".leaflet-marker-icon").should("not.exist");
+        cy.get(".extra-marker").should("not.exist");
         cy.screenshot();
       });
     });
@@ -46,7 +46,7 @@ describe("Login", () => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(200);
 
-        cy.get(".leaflet-marker-icon").should("have.length", 3);
+        cy.get(".extra-marker").should("have.length", 3);
         cy.screenshot();
       });
     });

@@ -16,7 +16,7 @@
     "@mdi/font": "^7.1.96",
     "axios": "^1.14.0",
     "leaflet": "~1.9.0",
-    "leaflet-extra-markers": "^1.2.1",
+    "leaflet-extra-markers": "^2.0.1",
     "mitt": "^3.0.0",
     "pinia": "^3.0.1",
     "roboto-fontface": "*",
