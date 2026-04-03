@@ -64,9 +64,12 @@ import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
-import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import L from "leaflet";
-import { ExtraMarkers } from "leaflet-extra-markers";
+import {
+  createElement,
+  Icon as ExtraIcon,
+  PinCirclePanel,
+} from "leaflet-extra-markers";
 import mapDrawer from "@/components/mapDrawer.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
@@ -314,12 +317,13 @@ function replaceDuplicateNames(layerList) {
 
 function updateMarker(id, lat, lon, popup, iconAttr, opacity) {
   if (deviceLayer) {
-    const icon = ExtraMarkers.icon({
-      icon: iconAttr.icon,
-      prefix: iconAttr.prefix,
-      markerColor: iconAttr.markerColor,
-      iconColor: iconAttr.iconColor,
-      svg: true,
+    const icon = new ExtraIcon({
+      accentColor: iconAttr.markerColor,
+      color: iconAttr.markerColor,
+      content: createElement(["i", { class: `mdi ${iconAttr.icon}` }]),
+      contentColor: iconAttr.iconColor,
+      contentWrapperStyle: { "font-size": "1.4em" },
+      svg: PinCirclePanel,
     });
     const allMarkers = deviceLayer.getLayers();
     let marker = allMarkers.find((e) => e.options.id === id);
@@ -360,26 +364,35 @@ function getGeoJsonOptions(geojson) {
             geojson.properties.marker &&
             geojson.properties.marker.opacity) ||
           0.8,
-        icon: ExtraMarkers.icon({
-          icon: `mdi-${
-            (geojson.properties &&
-              geojson.properties.marker &&
-              geojson.properties.marker.icon) ||
-            "star"
-          }`,
-          prefix: "mdi",
-          markerColor:
+        icon: new ExtraIcon({
+          accentColor:
             (geojson.properties &&
               geojson.properties.marker &&
               sColor(geojson.properties.marker.markercolor)) ||
             sColor("green"),
-          iconColor:
+          color:
+            (geojson.properties &&
+              geojson.properties.marker &&
+              sColor(geojson.properties.marker.markercolor)) ||
+            sColor("green"),
+          content: createElement([
+            "i",
+            {
+              class: `mdi mdi-${
+                (geojson.properties &&
+                  geojson.properties.marker &&
+                  geojson.properties.marker.icon) ||
+                "star"
+              }`,
+            },
+          ]),
+          contentColor:
             (geojson.properties &&
               geojson.properties.marker &&
               sColor(geojson.properties.marker.iconcolor)) ||
             sColor("white"),
-          shape: "circle",
-          svg: true,
+          contentWrapperStyle: { "font-size": "1.4em" },
+          svg: PinCirclePanel,
         }),
       });
     },
