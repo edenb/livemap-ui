@@ -8,7 +8,7 @@ describe("Map", () => {
   it("should show 3 markers", () => {
     cy.visit("/worldmap");
     cy.contains("Livemap");
-    cy.get(".leaflet-marker-icon").should("have.length", 3);
+    cy.get(".extra-marker").should("have.length", 3);
   });
 
   it("should show a snackbar when fetching the device layer fails", () => {
