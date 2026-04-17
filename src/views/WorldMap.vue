@@ -14,7 +14,11 @@
   <v-container id="worldmap" class="pa-0" fluid>
     <v-col>
       <v-row justify="end">
-        <v-btn-group color="rgba(0, 0, 0, 0.6)" direction="vertical">
+        <v-btn-group
+          class="map-btn-group"
+          color="rgba(0, 0, 0, 0.6)"
+          direction="vertical"
+        >
           <v-btn size="40" @click="zoomIn">
             <v-icon color="white" size="x-large">mdi-plus</v-icon>
           </v-btn>
@@ -26,6 +30,7 @@
       <v-row justify="end">
         <v-btn-toggle
           v-model="mapDrawerSelector"
+          class="map-btn-group"
           base-color="rgba(0, 0, 0, 0.6)"
           color="primary"
           direction="vertical"
@@ -577,7 +582,7 @@ function updateFromSocket(socketPayloadStr) {
 <style>
 #worldmap {
   height: 100%;
-  .v-btn-group--vertical {
+  .map-btn-group {
     margin-top: 20px;
     border-start-end-radius: 0px;
     border-end-end-radius: 0px;

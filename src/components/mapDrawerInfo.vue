@@ -3,24 +3,20 @@
     <div
       v-if="info?.application?.about && info?.application?.about?.length > 0"
     >
-      <v-list-item class="px-0">
-        <v-list-item-title>
-          <span class="text-overline">About</span>
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ info.application.about }}
-        </v-list-item-subtitle>
-      </v-list-item>
+      <v-list-item
+        class="px-0"
+        :subtitle="info.application.about"
+        title="About"
+      />
       <v-divider />
     </div>
     <div>
-      <v-list-item class="px-0">
-        <v-list-item-title>
-          <span class="text-overline">Server</span>
+      <v-list-item class="px-0" :subtitle="serverUrl">
+        <template #title>
+          Server
           <v-icon
             icon="mdi-content-copy"
             size="small"
-            class="ml-2"
             @click="copy(serverUrl, 0)"
           />
           <transition name="fade-out">
@@ -28,18 +24,13 @@
               {{ copyResult[0].text }}
             </span>
           </transition>
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <div>
-            {{ serverUrl }}
-          </div>
-        </v-list-item-subtitle>
+        </template>
       </v-list-item>
       <v-divider />
     </div>
     <div v-if="info.mqtt">
       <v-list-item class="px-0">
-        <v-list-item-title>
+        <template #title>
           <span class="text-overline">MQTT broker</span>
           <v-icon
             icon="mdi-content-copy"
@@ -52,25 +43,22 @@
               {{ copyResult[1].text }}
             </span>
           </transition>
-        </v-list-item-title>
-        <v-list-item-subtitle>
+        </template>
+        <template #subtitle>
           <div>
             {{ info.mqtt.url }}
           </div>
           <div>Port: {{ info.mqtt.port }}</div>
-        </v-list-item-subtitle>
+        </template>
       </v-list-item>
       <v-divider />
     </div>
     <div v-if="info?.application?.license">
-      <v-list-item class="px-0">
-        <v-list-item-title>
-          <span class="text-overline"> License </span>
-        </v-list-item-title>
-        <v-list-item-subtitle>{{
-          info.application.license
-        }}</v-list-item-subtitle>
-      </v-list-item>
+      <v-list-item
+        class="px-0"
+        :subtitle="info.application.license"
+        title="License"
+      />
       <v-divider />
     </div>
   </v-list>

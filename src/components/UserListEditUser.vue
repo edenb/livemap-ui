@@ -18,7 +18,12 @@
         </template>
         <template #actions>
           <template v-if="errorMessage">
-            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <v-icon
+              class="pl-8"
+              icon="mdi-alert"
+              size="x-small"
+              color="error"
+            />
             <span class="text-error px-2">
               {{ errorMessage }}
             </span>

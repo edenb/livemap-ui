@@ -3,7 +3,7 @@
     <v-container class="fill-height">
       <v-row class="fill-height" justify="center">
         <v-col align-self="center" cols="12" sm="8" md="6">
-          <v-card class="elevation-12">
+          <v-card class="elevation-5">
             <v-toolbar color="primary">
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>
@@ -19,7 +19,7 @@
             </v-card-text>
             <v-card-actions class="px-4">
               <template v-if="errorMessage">
-                <v-icon icon="mdi-alert" size="medium" color="error" />
+                <v-icon icon="mdi-alert" size="x-small" color="error" />
                 <div class="text-error px-2">
                   {{ errorMessage }}
                 </div>

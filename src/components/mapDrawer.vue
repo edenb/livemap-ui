@@ -8,13 +8,16 @@
   >
     <v-card
       id="drawer-container"
-      v-scroll.self="onScroll"
       class="overflow-y-auto"
       height="100%"
+      @scroll="onScroll"
     >
-      <template #title>{{ title }}</template>
-      <template #append>
-        <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
+      <template #title>
+        <v-toolbar density="compact" :title="title">
+          <template #append>
+            <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
+          </template>
+        </v-toolbar>
       </template>
       <template #text>
         <mapDrawerLayers

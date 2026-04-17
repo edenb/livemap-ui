@@ -52,23 +52,18 @@
             <v-toolbar-title>{{ authStore.user.fullname }}</v-toolbar-title>
           </v-toolbar>
           <v-list density="compact">
-            <v-list-item>
+            <v-list-item :title="authStore.user.username" subtitle="Username">
               <template #prepend>
                 <v-icon icon="mdi-account" />
               </template>
-              <v-list-item-title>
-                {{ authStore.user.username }}
-              </v-list-item-title>
-              <v-list-item-subtitle> Username </v-list-item-subtitle>
             </v-list-item>
-            <v-list-item>
+            <v-list-item
+              :title="authStore.user.role"
+              subtitle="Permission level"
+            >
               <template #prepend>
                 <v-icon icon="mdi-account-key" />
               </template>
-              <v-list-item-title>
-                {{ authStore.user.role }}
-              </v-list-item-title>
-              <v-list-item-subtitle> Permission level </v-list-item-subtitle>
             </v-list-item>
           </v-list>
         </v-card>
