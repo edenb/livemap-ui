@@ -19,18 +19,18 @@ export const useWorldmapStore = defineStore("worldmap", () => {
 export const usePositionStore = defineStore("position", () => {
   const lastPositions = ref([]);
   function addLastPositions(payload) {
-    this.lastPositions.push(payload);
+    lastPositions.value.push(payload);
     // If present remove the previous position of the device
     // i.e. the device with the same id as the last one added
     if (typeof payload.cb === "function") {
-      let idx = this.lastPositions.findIndex(payload.cb);
-      if (idx >= 0 && idx !== this.lastPositions.length - 1) {
-        this.lastPositions.splice(idx, 1);
+      let idx = lastPositions.value.findIndex(payload.cb);
+      if (idx >= 0 && idx !== lastPositions.value.length - 1) {
+        lastPositions.value.splice(idx, 1);
       }
     }
   }
   function clearLastPositions() {
-    this.lastPositions = [];
+    lastPositions.value = [];
   }
 
   return { lastPositions, clearLastPositions, addLastPositions };
@@ -49,26 +49,26 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref({});
   const token = ref(localStorage.getItem("jwt"));
 
-  async function setAuthorized(token) {
-    this.token = token;
+  async function setAuthorized(updateToken) {
+    token.value = updateToken;
     try {
       const response = await httpRequest("get", "/account");
-      this.user = { ...response.data };
-      localStorage.setItem("jwt", token);
-      this.authorized = true;
+      user.value = { ...response.data };
+      localStorage.setItem("jwt", token.value);
+      authorized.value = true;
       return response;
     } catch (err) {
-      this.authorized = false;
-      this.user = {};
+      authorized.value = false;
+      user.value = {};
       localStorage.removeItem("jwt");
       throw err;
     }
   }
 
   function revokeAuthorized() {
-    this.authorized = false;
-    this.token = null;
-    this.user = {};
+    authorized.value = false;
+    token.value = null;
+    user.value = {};
     localStorage.removeItem("jwt");
   }
 
