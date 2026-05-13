@@ -6,19 +6,17 @@
     permanent
     @transitionend="onTransistionEnd"
   >
+    <v-toolbar color="transparent" :title="title">
+      <template #append>
+        <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
+      </template>
+    </v-toolbar>
     <v-card
       id="drawer-container"
       class="overflow-y-auto"
       height="100%"
       @scroll="onScroll"
     >
-      <template #title>
-        <v-toolbar density="compact" :title="title">
-          <template #append>
-            <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
-          </template>
-        </v-toolbar>
-      </template>
       <template #text>
         <mapDrawerLayers
           v-if="selector === 'mapDrawerLayers'"
