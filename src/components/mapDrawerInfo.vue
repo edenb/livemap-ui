@@ -19,11 +19,11 @@
             size="small"
             @click="copy(serverUrl, 0)"
           />
-          <transition name="fade-out">
+          <Transition name="fade-out">
             <span v-if="copyResult[0]" :class="copyResult[0].class">
               {{ copyResult[0].text }}
             </span>
-          </transition>
+          </Transition>
         </template>
       </v-list-item>
       <v-divider />
@@ -38,11 +38,11 @@
             class="ml-2"
             @click="copy(info.mqtt.url, 1)"
           />
-          <transition name="fade-out">
+          <Transition name="fade-out">
             <span v-if="copyResult[1]" :class="copyResult[1].class">
               {{ copyResult[1].text }}
             </span>
-          </transition>
+          </Transition>
         </template>
         <template #subtitle>
           <div>
@@ -116,6 +116,8 @@ async function copy(clipboardText, copyIdx) {
   transition: opacity 1s;
 }
 
+.fade-out-enter-active,
+.fade-out-enter-from,
 .fade-out-leave-to {
   opacity: 0;
 }
