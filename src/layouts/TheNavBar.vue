@@ -7,7 +7,7 @@
     <template #prepend>
       <v-app-bar-nav-icon
         data-cy="navbar-menu-drawer-control"
-        @click.stop="toggleSidebarLeft"
+        @click.stop="menuDrawerOpen = !menuDrawerOpen"
       ></v-app-bar-nav-icon>
     </template>
 
@@ -74,7 +74,8 @@
 
 <script setup>
 import { computed, inject, onMounted, ref } from "vue";
-import { useAuthStore } from "@/store.js";
+import { storeToRefs } from "pinia";
+import { useAuthStore, useLayoutStore } from "@/store.js";
 
 const authStore = useAuthStore();
 const connect = inject("connect");
@@ -95,12 +96,9 @@ const connectionIcon = computed(() => {
 });
 const emitter = inject("emitter");
 const isConnected = inject("isConnected");
+const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 
 onMounted(() => {
   connect();
 });
-
-function toggleSidebarLeft() {
-  emitter.emit("toggle-sidebar-left");
-}
 </script>

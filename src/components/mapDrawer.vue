@@ -50,16 +50,16 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue";
+import { computed, ref, toRefs, watch } from "vue";
 import { useDisplay, useGoTo } from "vuetify";
 import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerLayers from "@/components/mapDrawerLayers.vue";
 import mapDrawerMarkers from "@/components/mapDrawerMarkers.vue";
 
+const selector = defineModel({ type: String });
 const props = defineProps({
   overlayNames: { type: Array, default: () => [] },
   overlayNamesSelected: { type: Array, default: () => [] },
-  selector: { type: String, default: "" },
   baseLayerNames: { type: Array, default: () => [] },
   baseLayerNamesSelected: { type: String, default: "" },
 });
@@ -72,11 +72,8 @@ const emit = defineEmits([
 ]);
 const goTo = useGoTo();
 const { mobile } = useDisplay({ mobileBreakpoint: "sm" });
-const open = computed(() => {
-  return !!selector.value;
-});
+const open = ref(!!selector.value);
 const showScrollUpButton = ref(false);
-const { selector } = toRefs(props);
 const title = computed(() => {
   return titles[selector.value];
 });
@@ -85,6 +82,10 @@ const titles = {
   mapDrawerMarkers: "Devices",
   mapDrawerInfo: "Information",
 };
+
+watch(selector, () => {
+  open.value = !!selector.value;
+});
 
 function onScroll(e) {
   showScrollUpButton.value = e.target.scrollTop > 100;
