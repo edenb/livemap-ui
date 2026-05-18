@@ -1,6 +1,6 @@
 <template>
   <mapDrawer
-    v-model="mapDrawerSelector"
+    v-model="selector"
     :base-layer-names="allBaseLayerNames"
     :base-layer-names-selected="baseLayerName"
     :overlay-names="allOverlayNames"
@@ -95,6 +95,7 @@ const { menuDrawerOpened } = toRefs(props);
 const overlayNames = ref([]);
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
+const selector = ref("");
 const { show } = inject("snackbar");
 const worldmapStore = useWorldmapStore();
 
@@ -124,6 +125,10 @@ const tileProviders = [
 ];
 const allBaseLayerNames = tileProviders.map(({ options }) => options.name);
 
+watch(mapDrawerSelector, () => {
+  selector.value = mapDrawerSelector.value;
+});
+
 watch(menuDrawerOpened, (isOpen) => {
   if (!isOpen) {
     map.invalidateSize({ pan: false });
@@ -136,9 +141,13 @@ watch(positionUpdate, () => {
 
 onMounted(async () => {
   await initMap();
-  await loadDeviceLayer(worldmapStore.overlayNames);
-  await loadStaticLayers(worldmapStore.overlayNames);
-  connect();
+  selector.value = mapDrawerSelector.value;
+  // The tile fade transition duration in Leaflet is 0.2 seconds (200 ms) after tiles are loaded.
+  setTimeout(async () => {
+    await loadDeviceLayer(worldmapStore.overlayNames);
+    await loadStaticLayers(worldmapStore.overlayNames);
+    connect();
+  }, 200);
 });
 
 onUnmounted(() => {
