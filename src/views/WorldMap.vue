@@ -147,6 +147,7 @@ onMounted(async () => {
     await loadDeviceLayer(worldmapStore.overlayNames);
     await loadStaticLayers(worldmapStore.overlayNames);
     connect();
+    saveMapStateOnChange();
   }, 200);
 });
 
@@ -193,16 +194,18 @@ function initMap() {
       baseLayerName.value = defaultBaseLayerName;
     }
     baseLayers[baseLayerName.value].addTo(map);
+  });
+}
 
-    map.on("moveend", (e) => {
-      worldmapStore.center = e.target.getCenter();
-    });
-    map.on("zoomend", (e) => {
-      worldmapStore.zoom = e.target.getZoom();
-      document
-        .getElementById("worldmap")
-        .setAttribute("data-cy", "zoom-animation-end");
-    });
+function saveMapStateOnChange() {
+  map.on("moveend", (e) => {
+    worldmapStore.center = e.target.getCenter();
+  });
+  map.on("zoomend", (e) => {
+    worldmapStore.zoom = e.target.getZoom();
+    document
+      .getElementById("worldmap")
+      .setAttribute("data-cy", "zoom-animation-end");
   });
 }
 
