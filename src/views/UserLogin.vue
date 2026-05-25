@@ -1,9 +1,9 @@
 <template>
   <v-main>
     <v-container class="fill-height">
-      <v-row class="fill-height" justify="center">
-        <v-col align-self="center" cols="12" sm="8" md="6">
-          <v-card class="elevation-5">
+      <v-row class="fill-height justify-center">
+        <v-col class="align-self-center" cols="12" sm="8" md="6">
+          <v-card class="elevation-2">
             <v-toolbar color="primary">
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>

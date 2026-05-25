@@ -3,13 +3,13 @@
     <v-form v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
-          <span class="text-h5">Share / Unshare</span>
+          <span class="text-headline-small">Share / Unshare</span>
         </template>
         <template #text>
           <FormRenderer v-model="formData" :form-schema="schemaUsername" />
         </template>
         <v-card-text>
-          <div class="text-h5">Affected devices</div>
+          <div class="text-headline-small">Affected devices</div>
           <v-chip
             v-for="device in devices"
             :key="device"

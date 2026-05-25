@@ -16,7 +16,7 @@
     <v-container id="worldmap" class="pa-0" fluid>
       <div class="map-controls">
         <v-col>
-          <v-row justify="end">
+          <v-row class="justify-end">
             <v-btn-group
               class="map-btn-group"
               color="rgba(0, 0, 0, 0.6)"
@@ -30,7 +30,7 @@
               </v-btn>
             </v-btn-group>
           </v-row>
-          <v-row justify="end">
+          <v-row class="justify-end">
             <v-btn-toggle
               v-model="mapDrawerSelector"
               class="map-btn-group"

@@ -3,7 +3,7 @@
     <v-form v-model="inputValid" @keydown.enter="changed">
       <v-card class="pa-4">
         <template #title>
-          <span class="text-h5">Reset Password</span>
+          <span class="text-headline-small">Reset Password</span>
         </template>
         <template #subtitle>
           <div>User: {{ user.fullname }}</div>

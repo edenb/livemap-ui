@@ -31,7 +31,7 @@
     <div v-if="info.mqtt">
       <v-list-item class="px-0">
         <template #title>
-          <span class="text-overline">MQTT broker</span>
+          <span class="text-label-medium">MQTT broker</span>
           <v-icon
             icon="mdi-content-copy"
             size="small"

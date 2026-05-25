@@ -3,7 +3,7 @@
     <v-form v-model="inputValid" @keydown.enter="changed">
       <v-card class="pa-4">
         <template #title>
-          <span class="text-h5">{{ formTitle }}</span>
+          <span class="text-headline-small">{{ formTitle }}</span>
         </template>
         <template v-if="user.user_id >= 0" #subtitle>
           User ID: {{ user.user_id }}

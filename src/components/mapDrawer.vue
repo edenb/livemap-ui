@@ -37,7 +37,7 @@
             v-show="showScrollUpButton"
             class="ma-4"
             color="primary"
-            elevation="8"
+            elevation="3"
             icon="mdi-chevron-up"
             location="bottom right"
             position="fixed"

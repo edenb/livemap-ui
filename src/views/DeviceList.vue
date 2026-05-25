@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-3" fluid style="height: 100%">
     <v-row v-if="state === 'loading'" style="height: 100%">
-      <v-col align-self="center" class="text-center">
+      <v-col class="text-center align-self-center">
         <v-progress-circular
           v-if="state === 'loading'"
           data-cy="device-list-state-loading"
