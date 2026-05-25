@@ -15,7 +15,7 @@ export default defineConfig([
     rules: { "no-unused-vars": "off" },
   },
   pluginVue.configs["flat/recommended"],
-  pluginVuetify.configs["flat/recommended"],
+  pluginVuetify.configs["flat/recommended-v4"],
   pluginCypress.configs["recommended"],
   pluginPrettier, // Prettier always last
 ]);
