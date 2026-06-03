@@ -1,7 +1,6 @@
 // Styles
 import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
-import { VIconBtn } from "vuetify/labs/VIconBtn";
 
 // Vuetify
 import { createVuetify } from "vuetify";
@@ -60,9 +59,6 @@ const livemapThemeDark = {
 };
 
 export default createVuetify({
-  components: {
-    VIconBtn,
-  },
   theme: {
     // "system" lets Vuetify 4 honour the OS dark/light preference and
     // automatically switch between livemapTheme and livemapThemeDark.
