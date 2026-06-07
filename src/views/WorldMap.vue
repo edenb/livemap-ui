@@ -1,5 +1,6 @@
 <template>
   <mapDrawer
+    ref="mapDrawerRef"
     v-model="mapDrawerSelector"
     :base-layer-names="allBaseLayerNames"
     :base-layer-names-selected="baseLayerName"
@@ -96,8 +97,11 @@ const props = defineProps({
 const allOverlayNames = ref([]);
 const baseLayerName = ref("");
 const connect = inject("connect");
+const mapDrawerRef = ref(null);
 const { mapDrawerSelector, menuDrawerOpen } = storeToRefs(useLayoutStore());
-const mapDrawerOffset = computed(() => (mapDrawerSelector.value ? 256 : 0)); // 256 = default v-navigation-drawer width
+const mapDrawerOffset = computed(() =>
+  mapDrawerSelector.value ? (mapDrawerRef.value?.drawerWidth ?? 256) : 0,
+);
 const { menuDrawerOpened } = toRefs(props);
 const overlayNames = ref([]);
 const positionUpdate = inject("positionUpdate");

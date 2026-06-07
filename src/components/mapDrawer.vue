@@ -1,10 +1,11 @@
 <template>
   <v-navigation-drawer
+    ref="drawerRef"
     v-model="open"
-    name="mapDrawer"
     :location="mobile ? 'top' : 'right'"
-    temporary
+    name="mapDrawer"
     :scrim="false"
+    temporary
   >
     <v-toolbar color="transparent" :title="title">
       <template #append>
@@ -56,6 +57,8 @@ import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerLayers from "@/components/mapDrawerLayers.vue";
 import mapDrawerMarkers from "@/components/mapDrawerMarkers.vue";
 
+const drawerWidth = computed(() => drawerRef.value?.width ?? 256);
+defineExpose({ drawerWidth });
 const selector = defineModel({ type: String });
 const props = defineProps({
   overlayNames: { type: Array, default: () => [] },
@@ -69,6 +72,7 @@ const emit = defineEmits([
   "setBaseLayer",
   "setOverlays",
 ]);
+const drawerRef = ref(null);
 const goTo = useGoTo();
 const { mobile } = useDisplay({ mobileBreakpoint: "sm" });
 const open = ref(!!selector.value);
