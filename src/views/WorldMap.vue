@@ -6,7 +6,6 @@
     :overlay-names="allOverlayNames"
     :overlay-names-selected="overlayNames"
     location="right"
-    @drawer-ready="map.invalidateSize({ pan: false })"
     @close-drawer="mapDrawerSelector = ''"
     @open-marker-popup="openPopup"
     @set-base-layer="setBaseLayer"

@@ -5,7 +5,6 @@
     :location="mobile ? 'top' : 'right'"
     temporary
     :scrim="false"
-    @transitionend="onTransistionEnd"
   >
     <v-toolbar color="transparent" :title="title">
       <template #append>
@@ -66,7 +65,6 @@ const props = defineProps({
 });
 const emit = defineEmits([
   "closeDrawer",
-  "drawerReady",
   "openMarkerPopup",
   "setBaseLayer",
   "setOverlays",
@@ -90,11 +88,5 @@ watch(selector, () => {
 
 function onScroll(e) {
   showScrollUpButton.value = e.target.scrollTop > 100;
-}
-
-function onTransistionEnd(event) {
-  if (event.propertyName === "transform") {
-    emit("drawerReady");
-  }
 }
 </script>
