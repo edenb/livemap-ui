@@ -1,6 +1,6 @@
 <template>
   <mapDrawer
-    v-model="selector"
+    v-model="mapDrawerSelector"
     :base-layer-names="allBaseLayerNames"
     :base-layer-names-selected="baseLayerName"
     :overlay-names="allOverlayNames"
@@ -14,7 +14,7 @@
   />
   <div class="map-wrapper">
     <v-container id="worldmap" class="pa-0" fluid>
-      <div class="map-controls">
+      <div class="map-controls" :style="{ right: mapDrawerOffset + 'px' }">
         <v-col>
           <v-row class="justify-end">
             <v-btn-group
@@ -70,7 +70,15 @@
 </template>
 
 <script setup>
-import { inject, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
+import {
+  computed,
+  inject,
+  onMounted,
+  onUnmounted,
+  ref,
+  toRefs,
+  watch,
+} from "vue";
 import { storeToRefs } from "pinia";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
@@ -91,11 +99,11 @@ const baseLayerName = ref("");
 const connect = inject("connect");
 const httpRequest = inject("httpRequest");
 const { mapDrawerSelector, menuDrawerOpen } = storeToRefs(useLayoutStore());
+const mapDrawerOffset = computed(() => (mapDrawerSelector.value ? 256 : 0)); // 256 = default v-navigation-drawer width
 const { menuDrawerOpened } = toRefs(props);
 const overlayNames = ref([]);
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
-const selector = ref("");
 const { show } = inject("snackbar");
 const worldmapStore = useWorldmapStore();
 
@@ -125,10 +133,6 @@ const tileProviders = [
 ];
 const allBaseLayerNames = tileProviders.map(({ options }) => options.name);
 
-watch(mapDrawerSelector, () => {
-  selector.value = mapDrawerSelector.value;
-});
-
 watch(menuDrawerOpened, (isOpen) => {
   if (!isOpen) {
     map.invalidateSize({ pan: false });
@@ -141,7 +145,6 @@ watch(positionUpdate, () => {
 
 onMounted(async () => {
   await initMap();
-  selector.value = mapDrawerSelector.value;
   // The tile fade transition duration in Leaflet is 0.2 seconds (200 ms) after tiles are loaded.
   setTimeout(async () => {
     await loadDeviceLayer(worldmapStore.overlayNames);
@@ -170,6 +173,8 @@ function initMap() {
         [70, 50],
       ]);
     }
+
+    map.attributionControl.setPosition("bottomleft");
 
     let defaultBaseLayerName = tileProviders[0].options.name;
     tileProviders.forEach((tileProvider) => {
@@ -624,6 +629,7 @@ function updateFromSocket(socketPayloadStr) {
     right: 0;
     z-index: 1000;
     pointer-events: none; /* let map clicks pass through the container */
+    transition: right 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* matches Vuetify drawer transition */
   }
 
   #worldmap .map-controls .v-btn,

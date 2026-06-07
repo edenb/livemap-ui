@@ -3,7 +3,8 @@
     v-model="open"
     name="mapDrawer"
     :location="mobile ? 'top' : 'right'"
-    permanent
+    temporary
+    :scrim="false"
     @transitionend="onTransistionEnd"
   >
     <v-toolbar color="transparent" :title="title">
