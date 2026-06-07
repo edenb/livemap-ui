@@ -116,8 +116,6 @@ async function copy(clipboardText, copyIdx) {
   transition: opacity 1s;
 }
 
-.fade-out-enter-active,
-.fade-out-enter-from,
 .fade-out-leave-to {
   opacity: 0;
 }
