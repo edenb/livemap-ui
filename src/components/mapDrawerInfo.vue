@@ -66,9 +66,9 @@
 
 <script setup>
 import { inject, onMounted, ref } from "vue";
+import { httpRequest } from "@/plugins/http.js";
 
 const copyResult = ref([null, null]);
-const httpRequest = inject("httpRequest");
 const info = ref({});
 const { show } = inject("snackbar");
 const serverUrl = inject("serverUrl");

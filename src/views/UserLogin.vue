@@ -43,8 +43,9 @@
 </template>
 
 <script setup>
-import { inject, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaLogin } from "@/forms/schemas.js";
@@ -52,7 +53,6 @@ import { schemaLogin } from "@/forms/schemas.js";
 const authStore = useAuthStore();
 const errorMessage = ref("");
 const formData = ref({});
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 const loading = ref(false);
 const router = useRouter();
@@ -65,7 +65,7 @@ async function loginUser() {
         username: formData.value.username,
         password: formData.value.password,
       });
-      await authStore.setAuthorized(response.data.access_token);
+      await authStore.setAuthorized(response.data.access_token, httpRequest);
       await router.push("/worldmap");
     } catch (err) {
       errorMessage.value = err.httpError.message;

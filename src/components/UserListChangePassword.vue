@@ -44,13 +44,13 @@
 
 <script setup>
 import { inject, ref } from "vue";
+import { httpRequest } from "@/plugins/http.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaPasswordEdit } from "@/forms/schemas.js";
 
 defineExpose({ open });
 const errorMessage = ref("");
 const formData = ref({});
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");

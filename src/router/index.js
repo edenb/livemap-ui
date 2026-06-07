@@ -1,4 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 const TheLayout = () => import("@/layouts/TheLayout.vue");
 const WorldMap = () => import("@/views/WorldMap.vue");
@@ -76,7 +77,7 @@ router.beforeEach(async (to) => {
     // Re-authenticate if a token is present but user not authorized
     if (authStore.token && !authStore.authorized) {
       try {
-        await authStore.setAuthorized(authStore.token);
+        await authStore.setAuthorized(authStore.token, httpRequest);
         return;
       } catch {
         return { name: "login" };

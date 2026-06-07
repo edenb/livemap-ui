@@ -78,6 +78,7 @@ import {
   watch,
 } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -95,7 +96,6 @@ const props = defineProps({
 const allOverlayNames = ref([]);
 const baseLayerName = ref("");
 const connect = inject("connect");
-const httpRequest = inject("httpRequest");
 const { mapDrawerSelector, menuDrawerOpen } = storeToRefs(useLayoutStore());
 const mapDrawerOffset = computed(() => (mapDrawerSelector.value ? 256 : 0)); // 256 = default v-navigation-drawer width
 const { menuDrawerOpened } = toRefs(props);

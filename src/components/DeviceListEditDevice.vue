@@ -59,6 +59,7 @@
 <script setup>
 import { computed, inject, ref } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import {
@@ -74,7 +75,6 @@ const formData = ref({});
 const formTitle = computed(() => {
   return device.value.device_id < 0 ? "New Device" : "Edit Device";
 });
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");

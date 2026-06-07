@@ -60,6 +60,7 @@
 <script setup>
 import { inject, ref } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaUsername } from "@/forms/schemas.js";
@@ -68,7 +69,6 @@ defineExpose({ open });
 const devices = ref([]);
 const errorMessage = ref("");
 const formData = ref({});
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");

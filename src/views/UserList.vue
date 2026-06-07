@@ -108,6 +108,7 @@
 <script setup>
 import { inject, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import UserListEditUser from "@/components/UserListEditUser.vue";
@@ -123,7 +124,6 @@ const headers = [
   { title: "Role", key: "role" },
   { title: "Actions", key: "actions", sortable: false },
 ];
-const httpRequest = inject("httpRequest");
 const newUser = ref({
   api_key: "",
   email: "",

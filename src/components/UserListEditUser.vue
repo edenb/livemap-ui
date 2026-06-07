@@ -48,6 +48,7 @@
 
 <script setup>
 import { computed, inject, ref } from "vue";
+import { httpRequest } from "@/plugins/http.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaUser, schemaPasswordNew } from "@/forms/schemas.js";
 
@@ -57,7 +58,6 @@ const formData = ref({});
 const formTitle = computed(() => {
   return user.value.user_id < 0 ? "New User" : "Edit User";
 });
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");
