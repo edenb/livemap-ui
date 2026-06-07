@@ -65,7 +65,7 @@ async function loginUser() {
         username: formData.value.username,
         password: formData.value.password,
       });
-      await authStore.setAuthorized(response.data.access_token, httpRequest);
+      await authStore.setAuthorized(response.data.access_token);
       await router.push("/worldmap");
     } catch (err) {
       errorMessage.value = err.httpError.message;

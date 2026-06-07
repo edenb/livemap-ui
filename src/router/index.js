@@ -77,7 +77,7 @@ router.beforeEach(async (to) => {
     // Re-authenticate if a token is present but user not authorized
     if (authStore.token && !authStore.authorized) {
       try {
-        await authStore.setAuthorized(authStore.token, httpRequest);
+        await authStore.setAuthorized(authStore.token);
         return;
       } catch {
         return { name: "login" };
