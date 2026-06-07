@@ -94,7 +94,6 @@ const connectionIcon = computed(() => {
     };
   }
 });
-const emitter = inject("emitter");
 const isConnected = inject("isConnected");
 const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 

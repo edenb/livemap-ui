@@ -8,7 +8,6 @@ import Configuration from "@/configuration.js";
 import { useAuthStore } from "@/store.js";
 import socketio from "@/plugins/socketio.js";
 import http from "@/plugins/http.js";
-import emitter from "@/plugins/emitter.js";
 
 loadFonts();
 
@@ -37,5 +36,4 @@ app
   .use(vuetify)
   .use(socketio, socketioConf)
   .use(http, httpConf)
-  .use(emitter)
   .mount("#app");
