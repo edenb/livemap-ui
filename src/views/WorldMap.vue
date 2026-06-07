@@ -5,7 +5,6 @@
     :base-layer-names-selected="baseLayerName"
     :overlay-names="allOverlayNames"
     :overlay-names-selected="overlayNames"
-    location="right"
     @close-drawer="mapDrawerSelector = ''"
     @open-marker-popup="openPopup"
     @set-base-layer="setBaseLayer"
