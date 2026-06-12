@@ -4,13 +4,10 @@ import { io } from "socket.io-client";
 const defaults = { connection: "http://localhost:3000", options: {} };
 
 export default {
-  install: (app, { connection, options }) => {
+  install: (app, { connection, options } = {}) => {
     let isConnected = ref(false);
     let positionUpdate = ref("");
-    let socketioConf = {
-      ...defaults,
-      ...{ connection, options },
-    };
+    let socketioConf = { ...defaults, connection, options };
     const socketio = io(socketioConf.connection, socketioConf.options);
 
     socketio.on("connect", () => {

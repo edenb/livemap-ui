@@ -48,8 +48,8 @@ export async function httpRequest(method, path, data) {
 }
 
 export default {
-  install: (app, { serverUrl, apiPath }) => {
-    axiosConf = { ...defaults, ...{ serverUrl, apiPath } };
+  install: (app, { serverUrl, apiPath } = {}) => {
+    axiosConf = { ...defaults, serverUrl, apiPath };
     app.provide("serverUrl", serverUrl);
   },
 };
