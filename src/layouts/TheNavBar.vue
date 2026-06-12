@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore, useLayoutStore } from "@/store.js";
 

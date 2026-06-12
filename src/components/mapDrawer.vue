@@ -1,6 +1,5 @@
 <template>
   <v-navigation-drawer
-    ref="drawerRef"
     v-model="open"
     :location="mobile ? 'top' : 'right'"
     name="mapDrawer"
@@ -51,7 +50,7 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useDisplay, useGoTo } from "vuetify";
 import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerLayers from "@/components/mapDrawerLayers.vue";
@@ -71,7 +70,6 @@ const emit = defineEmits([
   "setBaseLayer",
   "setOverlays",
 ]);
-const drawerRef = ref(null);
 const goTo = useGoTo();
 const mapRightOffset = computed(() => (open.value && !mobile.value ? 256 : 0));
 const mapTopOffset = computed(() => (open.value && mobile.value ? 256 : 0));

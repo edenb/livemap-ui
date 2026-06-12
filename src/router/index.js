@@ -1,5 +1,4 @@
 import { createWebHistory, createRouter } from "vue-router";
-import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 const TheLayout = () => import("@/layouts/TheLayout.vue");
 const WorldMap = () => import("@/views/WorldMap.vue");

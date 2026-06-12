@@ -1,5 +1,5 @@
 <template>
-  <v-app ref="app">
+  <v-app>
     <SnackbarProvider>
       <TheNavBar />
       <menuDrawer

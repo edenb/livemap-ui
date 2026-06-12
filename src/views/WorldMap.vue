@@ -1,6 +1,5 @@
 <template>
   <mapDrawer
-    ref="mapDrawerRef"
     v-model="mapDrawerSelector"
     :base-layer-names="allBaseLayerNames"
     :base-layer-names-selected="baseLayerName"
@@ -76,15 +75,7 @@
 </template>
 
 <script setup>
-import {
-  computed,
-  inject,
-  onMounted,
-  onUnmounted,
-  ref,
-  toRefs,
-  watch,
-} from "vue";
+import { inject, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { httpRequest } from "@/plugins/http.js";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
@@ -104,7 +95,6 @@ const props = defineProps({
 const allOverlayNames = ref([]);
 const baseLayerName = ref("");
 const connect = inject("connect");
-const mapDrawerRef = ref(null);
 const { mapDrawerSelector, menuDrawerOpen } = storeToRefs(useLayoutStore());
 const mapOffsets = ref({ right: 256, top: 0 });
 const { menuDrawerOpened } = toRefs(props);
