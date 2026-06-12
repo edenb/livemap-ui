@@ -57,8 +57,6 @@ import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerLayers from "@/components/mapDrawerLayers.vue";
 import mapDrawerMarkers from "@/components/mapDrawerMarkers.vue";
 
-const drawerWidth = computed(() => drawerRef.value?.width ?? 256);
-defineExpose({ drawerWidth });
 const selector = defineModel({ type: String });
 const props = defineProps({
   overlayNames: { type: Array, default: () => [] },
@@ -68,12 +66,15 @@ const props = defineProps({
 });
 const emit = defineEmits([
   "closeDrawer",
+  "mapOffsetChange",
   "openMarkerPopup",
   "setBaseLayer",
   "setOverlays",
 ]);
 const drawerRef = ref(null);
 const goTo = useGoTo();
+const mapRightOffset = computed(() => (open.value && !mobile.value ? 256 : 0));
+const mapTopOffset = computed(() => (open.value && mobile.value ? 256 : 0));
 const { mobile } = useDisplay({ mobileBreakpoint: "sm" });
 const open = ref(!!selector.value);
 const showScrollUpButton = ref(false);
@@ -89,6 +90,14 @@ const titles = {
 watch(selector, () => {
   open.value = !!selector.value;
 });
+
+watch(
+  [mapRightOffset, mapTopOffset],
+  ([newRight, newTop]) => {
+    emit("mapOffsetChange", { right: newRight, top: newTop });
+  },
+  { immediate: true },
+);
 
 function onScroll(e) {
   showScrollUpButton.value = e.target.scrollTop > 100;

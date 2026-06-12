@@ -7,13 +7,20 @@
     :overlay-names="allOverlayNames"
     :overlay-names-selected="overlayNames"
     @close-drawer="mapDrawerSelector = ''"
+    @map-offset-change="mapOffsetChange"
     @open-marker-popup="openPopup"
     @set-base-layer="setBaseLayer"
     @set-overlays="setOverlays"
   />
   <div class="map-wrapper">
     <v-container id="worldmap" class="pa-0" fluid>
-      <div class="map-controls" :style="{ right: mapDrawerOffset + 'px' }">
+      <div
+        class="map-controls"
+        :style="{
+          right: mapOffsets.right + 'px',
+          top: mapOffsets.top + 'px',
+        }"
+      >
         <v-col>
           <v-row class="justify-end">
             <v-btn-group
@@ -99,9 +106,7 @@ const baseLayerName = ref("");
 const connect = inject("connect");
 const mapDrawerRef = ref(null);
 const { mapDrawerSelector, menuDrawerOpen } = storeToRefs(useLayoutStore());
-const mapDrawerOffset = computed(() =>
-  mapDrawerSelector.value ? (mapDrawerRef.value?.drawerWidth ?? 256) : 0,
-);
+const mapOffsets = ref({ right: 256, top: 0 });
 const { menuDrawerOpened } = toRefs(props);
 const overlayNames = ref([]);
 const positionUpdate = inject("positionUpdate");
@@ -161,6 +166,10 @@ onUnmounted(() => {
     map.remove();
   }
 });
+
+const mapOffsetChange = (payload) => {
+  mapOffsets.value = payload;
+};
 
 function initMap() {
   return new Promise((resolve) => {
@@ -631,7 +640,9 @@ function updateFromSocket(socketPayloadStr) {
     right: 0;
     z-index: 1000;
     pointer-events: none; /* let map clicks pass through the container */
-    transition: right 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* matches Vuetify drawer transition */
+    transition:
+      right 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      top 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* matches Vuetify drawer transition */
   }
 
   #worldmap .map-controls .v-btn,
