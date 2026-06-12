@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-3" fluid style="height: 100%">
     <v-row v-if="state === 'loading'" style="height: 100%">
-      <v-col align-self="center" class="text-center">
+      <v-col class="text-center align-self-center">
         <v-progress-circular
           v-if="state === 'loading'"
           data-cy="device-list-state-loading"
@@ -147,6 +147,7 @@
 <script setup>
 import { inject, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import DeviceListEditDevice from "@/components/DeviceListEditDevice.vue";
@@ -162,7 +163,6 @@ const headers = [
   { title: "Shared With", key: "shared" },
   { title: "Actions", key: "actions", sortable: false },
 ];
-const httpRequest = inject("httpRequest");
 const newDevice = ref({
   device_id: -1,
   alias: "",

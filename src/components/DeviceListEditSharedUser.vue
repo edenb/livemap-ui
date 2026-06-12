@@ -3,13 +3,13 @@
     <v-form v-model="inputValid">
       <v-card class="pa-4">
         <template #title>
-          <span class="text-h5">Share / Unshare</span>
+          <span class="text-headline-small">Share / Unshare</span>
         </template>
         <template #text>
           <FormRenderer v-model="formData" :form-schema="schemaUsername" />
         </template>
         <v-card-text>
-          <div class="text-h5">Affected devices</div>
+          <div class="text-headline-small">Affected devices</div>
           <v-chip
             v-for="device in devices"
             :key="device"
@@ -21,7 +21,12 @@
         </v-card-text>
         <template #actions>
           <template v-if="errorMessage">
-            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <v-icon
+              class="pl-8"
+              icon="mdi-alert"
+              size="x-small"
+              color="error"
+            />
             <span class="text-error px-2">
               {{ errorMessage }}
             </span>
@@ -55,6 +60,7 @@
 <script setup>
 import { inject, ref } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaUsername } from "@/forms/schemas.js";
@@ -63,7 +69,6 @@ defineExpose({ open });
 const devices = ref([]);
 const errorMessage = ref("");
 const formData = ref({});
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");

@@ -1,7 +1,6 @@
 // Styles
 import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
-import { VIconBtn } from "vuetify/labs/VIconBtn";
 
 // Vuetify
 import { createVuetify } from "vuetify";
@@ -31,14 +30,51 @@ const livemapTheme = {
   },
 };
 
-export default createVuetify({
-  components: {
-    VIconBtn,
+// Dark theme: blue-grey palette inverted for dark surfaces.
+//
+// Design rationale:
+//   background / surface  — deep blue-grey instead of pure black, keeps the
+//                           blue-grey family feel and avoids harsh contrast.
+//   primary               — lightened blue-grey (blueGrey.lighten2) so it
+//                           stays readable on dark surfaces (WCAG AA).
+//   secondary             — mid blue-grey (blueGrey.lighten1), one step below
+//                           primary to maintain the light/secondary hierarchy.
+//   accent                — darkened blue-grey (blueGrey.darken1) for subtle
+//                           chip/badge backgrounds without washing out.
+//   error/info/success/   — all slightly brightened (+10–15 lightness) vs the
+//   warning                 light-theme values so they stay vivid on dark bg.
+const livemapThemeDark = {
+  dark: true,
+  colors: {
+    background: "#1a2226", // blueGrey.darken4 approx
+    surface: "#263238", // blueGrey.darken3
+    primary: "#90a4ae", // blueGrey.lighten2 — readable on dark bg
+    secondary: "#78909c", // blueGrey.lighten1
+    accent: "#546e7a", // blueGrey.darken1
+    error: "#ef5350", // red.lighten1
+    info: "#42a5f5", // blue.lighten1
+    success: "#66bb6a", // green.lighten1
+    warning: "#ffa726", // orange.lighten1
   },
+};
+
+export default createVuetify({
   theme: {
-    defaultTheme: "livemapTheme",
+    // "system" lets Vuetify 4 honour the OS dark/light preference and
+    // automatically switch between livemapTheme and livemapThemeDark.
+    defaultTheme: "system",
     themes: {
+      // Vuetify 4 matches theme names by convention:
+      //   "light"  → used when OS prefers light
+      //   "dark"   → used when OS prefers dark
+      // Aliasing your custom themes to these names means the system
+      // toggle works without any additional configuration.
+      light: livemapTheme,
+      dark: livemapThemeDark,
+      // Keep the named exports too so any existing
+      // useTheme() / theme.global.name references still resolve.
       livemapTheme,
+      livemapThemeDark,
     },
   },
   icons: {

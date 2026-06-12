@@ -1,21 +1,22 @@
 <template>
   <v-navigation-drawer
     v-model="open"
-    name="mapDrawer"
     :location="mobile ? 'top' : 'right'"
-    permanent
-    @transitionend="onTransistionEnd"
+    name="mapDrawer"
+    :scrim="false"
+    temporary
   >
-    <v-card
-      id="drawer-container"
-      v-scroll.self="onScroll"
-      class="overflow-y-auto"
-      height="100%"
-    >
-      <template #title>{{ title }}</template>
+    <v-toolbar color="transparent" :title="title">
       <template #append>
         <v-icon-btn icon="$close" @click="emit('closeDrawer')" />
       </template>
+    </v-toolbar>
+    <v-card
+      id="drawer-container"
+      class="overflow-y-auto"
+      height="100%"
+      @scroll="onScroll"
+    >
       <template #text>
         <mapDrawerLayers
           v-if="selector === 'mapDrawerLayers'"
@@ -36,7 +37,7 @@
             v-show="showScrollUpButton"
             class="ma-4"
             color="primary"
-            elevation="8"
+            elevation="3"
             icon="mdi-chevron-up"
             location="bottom right"
             position="fixed"
@@ -49,33 +50,32 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue";
+import { computed, ref, watch } from "vue";
 import { useDisplay, useGoTo } from "vuetify";
 import mapDrawerInfo from "@/components/mapDrawerInfo.vue";
 import mapDrawerLayers from "@/components/mapDrawerLayers.vue";
 import mapDrawerMarkers from "@/components/mapDrawerMarkers.vue";
 
+const selector = defineModel({ type: String });
 const props = defineProps({
   overlayNames: { type: Array, default: () => [] },
   overlayNamesSelected: { type: Array, default: () => [] },
-  selector: { type: String, default: "" },
   baseLayerNames: { type: Array, default: () => [] },
   baseLayerNamesSelected: { type: String, default: "" },
 });
 const emit = defineEmits([
   "closeDrawer",
-  "drawerReady",
+  "mapOffsetChange",
   "openMarkerPopup",
   "setBaseLayer",
   "setOverlays",
 ]);
 const goTo = useGoTo();
+const mapRightOffset = computed(() => (open.value && !mobile.value ? 256 : 0));
+const mapTopOffset = computed(() => (open.value && mobile.value ? 256 : 0));
 const { mobile } = useDisplay({ mobileBreakpoint: "sm" });
-const open = computed(() => {
-  return !!selector.value;
-});
+const open = ref(!!selector.value);
 const showScrollUpButton = ref(false);
-const { selector } = toRefs(props);
 const title = computed(() => {
   return titles[selector.value];
 });
@@ -85,13 +85,19 @@ const titles = {
   mapDrawerInfo: "Information",
 };
 
+watch(selector, () => {
+  open.value = !!selector.value;
+});
+
+watch(
+  [mapRightOffset, mapTopOffset],
+  ([newRight, newTop]) => {
+    emit("mapOffsetChange", { right: newRight, top: newTop });
+  },
+  { immediate: true },
+);
+
 function onScroll(e) {
   showScrollUpButton.value = e.target.scrollTop > 100;
-}
-
-function onTransistionEnd(event) {
-  if (event.propertyName === "transform") {
-    emit("drawerReady");
-  }
 }
 </script>

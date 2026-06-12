@@ -3,7 +3,7 @@
     <v-form v-model="inputValid" @keydown.enter="changed">
       <v-card class="pa-4">
         <template #title>
-          <span class="text-h5">{{ formTitle }}</span>
+          <span class="text-headline-small">{{ formTitle }}</span>
         </template>
         <template v-if="user.user_id >= 0" #subtitle>
           User ID: {{ user.user_id }}
@@ -18,7 +18,12 @@
         </template>
         <template #actions>
           <template v-if="errorMessage">
-            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <v-icon
+              class="pl-8"
+              icon="mdi-alert"
+              size="x-small"
+              color="error"
+            />
             <span class="text-error px-2">
               {{ errorMessage }}
             </span>
@@ -43,6 +48,7 @@
 
 <script setup>
 import { computed, inject, ref } from "vue";
+import { httpRequest } from "@/plugins/http.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaUser, schemaPasswordNew } from "@/forms/schemas.js";
 
@@ -52,7 +58,6 @@ const formData = ref({});
 const formTitle = computed(() => {
   return user.value.user_id < 0 ? "New User" : "Edit User";
 });
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");

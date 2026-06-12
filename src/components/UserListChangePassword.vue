@@ -3,7 +3,7 @@
     <v-form v-model="inputValid" @keydown.enter="changed">
       <v-card class="pa-4">
         <template #title>
-          <span class="text-h5">Reset Password</span>
+          <span class="text-headline-small">Reset Password</span>
         </template>
         <template #subtitle>
           <div>User: {{ user.fullname }}</div>
@@ -14,7 +14,12 @@
         </template>
         <template #actions>
           <template v-if="errorMessage">
-            <v-icon class="pl-8" icon="mdi-alert" size="medium" color="error" />
+            <v-icon
+              class="pl-8"
+              icon="mdi-alert"
+              size="x-small"
+              color="error"
+            />
             <span class="text-error px-2">
               {{ errorMessage }}
             </span>
@@ -39,13 +44,13 @@
 
 <script setup>
 import { inject, ref } from "vue";
+import { httpRequest } from "@/plugins/http.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaPasswordEdit } from "@/forms/schemas.js";
 
 defineExpose({ open });
 const errorMessage = ref("");
 const formData = ref({});
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 let resolve;
 const { show } = inject("snackbar");

@@ -1,9 +1,9 @@
 <template>
   <v-main>
     <v-container class="fill-height">
-      <v-row class="fill-height" justify="center">
-        <v-col align-self="center" cols="12" sm="8" md="6">
-          <v-card class="elevation-12">
+      <v-row class="fill-height justify-center">
+        <v-col class="align-self-center" cols="12" sm="8" md="6">
+          <v-card class="elevation-2">
             <v-toolbar color="primary">
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>
@@ -19,7 +19,7 @@
             </v-card-text>
             <v-card-actions class="px-4">
               <template v-if="errorMessage">
-                <v-icon icon="mdi-alert" size="medium" color="error" />
+                <v-icon icon="mdi-alert" size="x-small" color="error" />
                 <div class="text-error px-2">
                   {{ errorMessage }}
                 </div>
@@ -43,8 +43,9 @@
 </template>
 
 <script setup>
-import { inject, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { httpRequest } from "@/plugins/http.js";
 import { useAuthStore } from "@/store.js";
 import FormRenderer from "@/components/FormRenderer.vue";
 import { schemaLogin } from "@/forms/schemas.js";
@@ -52,7 +53,6 @@ import { schemaLogin } from "@/forms/schemas.js";
 const authStore = useAuthStore();
 const errorMessage = ref("");
 const formData = ref({});
-const httpRequest = inject("httpRequest");
 const inputValid = ref(false);
 const loading = ref(false);
 const router = useRouter();

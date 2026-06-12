@@ -1,67 +1,83 @@
 <template>
   <mapDrawer
+    v-model="mapDrawerSelector"
     :base-layer-names="allBaseLayerNames"
     :base-layer-names-selected="baseLayerName"
     :overlay-names="allOverlayNames"
     :overlay-names-selected="overlayNames"
-    :selector="mapDrawerSelector"
-    @drawer-ready="map.invalidateSize({ pan: false })"
     @close-drawer="mapDrawerSelector = ''"
+    @map-offset-change="mapOffsetChange"
     @open-marker-popup="openPopup"
     @set-base-layer="setBaseLayer"
     @set-overlays="setOverlays"
   />
-  <v-container id="worldmap" class="pa-0" fluid>
-    <v-col>
-      <v-row justify="end">
-        <v-btn-group color="rgba(0, 0, 0, 0.6)" direction="vertical">
-          <v-btn size="40" @click="zoomIn">
-            <v-icon color="white" size="x-large">mdi-plus</v-icon>
-          </v-btn>
-          <v-btn size="40" @click="zoomOut">
-            <v-icon color="white" size="x-large">mdi-minus</v-icon>
-          </v-btn>
-        </v-btn-group>
-      </v-row>
-      <v-row justify="end">
-        <v-btn-toggle
-          v-model="mapDrawerSelector"
-          base-color="rgba(0, 0, 0, 0.6)"
-          color="primary"
-          direction="vertical"
-        >
-          <v-btn
-            data-cy="map-drawer-layers-control"
-            size="40"
-            value="mapDrawerLayers"
-          >
-            <v-icon color="white" size="x-large">mdi-layers</v-icon>
-          </v-btn>
-          <v-btn
-            data-cy="map-drawer-markers-control"
-            size="40"
-            value="mapDrawerMarkers"
-          >
-            <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
-          </v-btn>
-          <v-btn
-            data-cy="map-drawer-info-control"
-            size="40 "
-            value="mapDrawerInfo"
-          >
-            <v-icon color="white" size="x-large"
-              >mdi-information-outline</v-icon
+  <div class="map-wrapper">
+    <v-container id="worldmap" class="pa-0" fluid>
+      <div
+        class="map-controls"
+        :style="{
+          right: mapOffsets.right + 'px',
+          top: mapOffsets.top + 'px',
+        }"
+      >
+        <v-col>
+          <v-row class="justify-end">
+            <v-btn-group
+              class="map-btn-group"
+              color="rgba(0, 0, 0, 0.6)"
+              direction="vertical"
             >
-          </v-btn>
-        </v-btn-toggle>
-      </v-row>
-    </v-col>
-  </v-container>
+              <v-btn size="40" @click="zoomIn">
+                <v-icon color="white" size="x-large">mdi-plus</v-icon>
+              </v-btn>
+              <v-btn size="40" @click="zoomOut">
+                <v-icon color="white" size="x-large">mdi-minus</v-icon>
+              </v-btn>
+            </v-btn-group>
+          </v-row>
+          <v-row class="justify-end">
+            <v-btn-toggle
+              v-model="mapDrawerSelector"
+              class="map-btn-group"
+              base-color="rgba(0, 0, 0, 0.6)"
+              color="primary"
+              direction="vertical"
+            >
+              <v-btn
+                data-cy="map-drawer-layers-control"
+                size="40"
+                value="mapDrawerLayers"
+              >
+                <v-icon color="white" size="x-large">mdi-layers</v-icon>
+              </v-btn>
+              <v-btn
+                data-cy="map-drawer-markers-control"
+                size="40"
+                value="mapDrawerMarkers"
+              >
+                <v-icon color="white" size="x-large">mdi-map-marker</v-icon>
+              </v-btn>
+              <v-btn
+                data-cy="map-drawer-info-control"
+                size="40 "
+                value="mapDrawerInfo"
+              >
+                <v-icon color="white" size="x-large"
+                  >mdi-information-outline</v-icon
+                >
+              </v-btn>
+            </v-btn-toggle>
+          </v-row>
+        </v-col>
+      </div>
+    </v-container>
+  </div>
 </template>
 
 <script setup>
-import { inject, onMounted, onUnmounted, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
 import { storeToRefs } from "pinia";
+import { httpRequest } from "@/plugins/http.js";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -73,17 +89,20 @@ import {
 import mapDrawer from "@/components/mapDrawer.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
+const props = defineProps({
+  menuDrawerOpened: { type: Boolean },
+});
 const allOverlayNames = ref([]);
 const baseLayerName = ref("");
 const connect = inject("connect");
-const httpRequest = inject("httpRequest");
-const { mapDrawerSelector } = storeToRefs(useLayoutStore());
+const { mapDrawerSelector, menuDrawerOpen } = storeToRefs(useLayoutStore());
+const mapOffsets = ref({ right: 256, top: 0 });
+const { menuDrawerOpened } = toRefs(props);
 const overlayNames = ref([]);
 const positionUpdate = inject("positionUpdate");
 const positionStore = usePositionStore();
 const { show } = inject("snackbar");
 const worldmapStore = useWorldmapStore();
-const { menuDrawerOpen } = storeToRefs(useLayoutStore());
 
 let map = null;
 let deviceLayer = null;
@@ -111,19 +130,25 @@ const tileProviders = [
 ];
 const allBaseLayerNames = tileProviders.map(({ options }) => options.name);
 
-watch(menuDrawerOpen, () => {
-  map.invalidateSize({ pan: false });
+watch(menuDrawerOpened, (isOpen) => {
+  if (!isOpen) {
+    map.invalidateSize({ pan: false });
+  }
 });
 
 watch(positionUpdate, () => {
   updateFromSocket(positionUpdate.value);
 });
 
-onMounted(() => {
-  initMap();
-  loadDeviceLayer(worldmapStore.overlayNames);
-  loadStaticLayers(worldmapStore.overlayNames);
-  connect();
+onMounted(async () => {
+  await initMap();
+  // The tile fade transition duration in Leaflet is 0.2 seconds (200 ms) after tiles are loaded.
+  setTimeout(async () => {
+    await loadDeviceLayer(worldmapStore.overlayNames);
+    await loadStaticLayers(worldmapStore.overlayNames);
+    connect();
+    saveMapStateOnChange();
+  }, 200);
 });
 
 onUnmounted(() => {
@@ -132,42 +157,53 @@ onUnmounted(() => {
   }
 });
 
+const mapOffsetChange = (payload) => {
+  mapOffsets.value = payload;
+};
+
 function initMap() {
-  map = L.map("worldmap", { zoomControl: false });
-  const center = worldmapStore.center;
-  const zoom = worldmapStore.zoom;
-  if (center !== null && zoom !== null) {
-    map.setView(center, zoom);
-  } else {
-    map.fitBounds([
-      [-60, -50],
-      [70, 50],
-    ]);
-  }
-
-  let defaultBaseLayerName = tileProviders[0].options.name;
-  tileProviders.forEach((tileProvider) => {
-    const baseLayer = L.tileLayer(
-      tileProvider.urlTemplate,
-      tileProvider.options,
-    );
-    baseLayer.on("load", () => {
-      document
-        .getElementById("worldmap")
-        .setAttribute("data-cy", "all-tiles-loaded");
-    });
-    if (tileProvider.options.defaultMap) {
-      defaultBaseLayerName = tileProvider.options.name;
+  return new Promise((resolve) => {
+    map = L.map("worldmap", { zoomControl: false });
+    const center = worldmapStore.center;
+    const zoom = worldmapStore.zoom;
+    if (center !== null && zoom !== null) {
+      map.setView(center, zoom);
+    } else {
+      map.fitBounds([
+        [-60, -50],
+        [70, 50],
+      ]);
     }
-    baseLayers[tileProvider.options.name] = baseLayer;
+
+    map.attributionControl.setPosition("bottomleft");
+
+    let defaultBaseLayerName = tileProviders[0].options.name;
+    tileProviders.forEach((tileProvider) => {
+      const baseLayer = L.tileLayer(
+        tileProvider.urlTemplate,
+        tileProvider.options,
+      );
+      baseLayer.on("load", () => {
+        document
+          .getElementById("worldmap")
+          .setAttribute("data-cy", "all-tiles-loaded");
+        resolve();
+      });
+      if (tileProvider.options.defaultMap) {
+        defaultBaseLayerName = tileProvider.options.name;
+      }
+      baseLayers[tileProvider.options.name] = baseLayer;
+    });
+
+    baseLayerName.value = worldmapStore.baseLayerName;
+    if (baseLayerName.value === "") {
+      baseLayerName.value = defaultBaseLayerName;
+    }
+    baseLayers[baseLayerName.value].addTo(map);
   });
+}
 
-  baseLayerName.value = worldmapStore.baseLayerName;
-  if (baseLayerName.value === "") {
-    baseLayerName.value = defaultBaseLayerName;
-  }
-  baseLayers[baseLayerName.value].addTo(map);
-
+function saveMapStateOnChange() {
   map.on("moveend", (e) => {
     worldmapStore.center = e.target.getCenter();
   });
@@ -575,15 +611,43 @@ function updateFromSocket(socketPayloadStr) {
 </script>
 
 <style>
+@layer overrides {
+  /* 
+   * The map container needs to be a positioning context so the
+   * button overlay can be placed on top of Leaflet's canvas.
+   * Leaflet tiles sit at z-index 200–400 internally.
+   * Leaflet's own controls (zoom, attribution) use z-index 800–1000.
+   * We use 1000 to always beat everything Leaflet renders.
+   */
+  .map-wrapper {
+    position: relative;
+    height: 100%;
+  }
+
+  #worldmap .map-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    pointer-events: none; /* let map clicks pass through the container */
+    transition:
+      right 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      top 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* matches Vuetify drawer transition */
+  }
+
+  #worldmap .map-controls .v-btn,
+  #worldmap .map-controls .v-btn-group,
+  #worldmap .map-controls .v-btn-toggle {
+    pointer-events: all; /* re-enable clicks on the buttons themselves */
+  }
+}
+
 #worldmap {
   height: 100%;
-  .v-btn-group--vertical {
+  .map-btn-group {
     margin-top: 20px;
     border-start-end-radius: 0px;
     border-end-end-radius: 0px;
-  }
-  .v-btn {
-    z-index: 500;
   }
 }
 </style>

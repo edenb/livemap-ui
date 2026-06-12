@@ -31,29 +31,16 @@
 </template>
 
 <script setup>
-import { inject, onMounted, onUnmounted, ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useAuthStore, useLayoutStore } from "@/store.js";
+import { useAuthStore } from "@/store.js";
 
-const emitter = inject("emitter");
-const { menuDrawerOpen } = storeToRefs(useLayoutStore());
-const open = ref();
+const open = defineModel({ type: Boolean });
+const emit = defineEmits(["menuDrawerOpened"]);
 const { user } = storeToRefs(useAuthStore());
-
-onMounted(() => {
-  open.value = menuDrawerOpen.value;
-  emitter.on("toggle-sidebar-left", () => {
-    open.value = !open.value;
-  });
-});
-
-onUnmounted(() => {
-  emitter.off("toggle-sidebar-left");
-});
 
 function onTransistionEnd(event) {
   if (event.propertyName === "transform") {
-    menuDrawerOpen.value = open.value;
+    emit("menuDrawerOpened", open.value);
   }
 }
 </script>

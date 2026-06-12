@@ -10,9 +10,9 @@
     >
       <template #prepend>
         <v-avatar
-          variant="elevated"
           :color="device.iconAttr.markerColor"
           size="small"
+          variant="elevated"
         >
           <v-icon
             :icon="device.iconAttr.icon"
@@ -21,13 +21,9 @@
           />
         </v-avatar>
       </template>
-      <v-list-item-title>
-        {{ device.raw.alias }}
-      </v-list-item-title>
+      {{ device.raw.alias }}
       <template #append>
-        <v-list-item-title>
-          {{ getAgeText(device.raw.loc_timestamp) }}
-        </v-list-item-title>
+        {{ getAgeText(device.raw.loc_timestamp) }}
       </template>
     </v-list-item>
   </v-list>
