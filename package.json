@@ -37,7 +37,7 @@
     "eslint-plugin-vuetify": "^2.7.2",
     "globals": "^17.7.0",
     "postcss-100vh-fix": "^2.0.0",
-    "prettier": "^3.8.4",
+    "prettier": "^3.9.1",
     "vite": "^8.1.0",
     "vite-plugin-vuetify": "^2.0.4"
   },
