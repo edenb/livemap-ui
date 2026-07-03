@@ -1,56 +1,55 @@
-describe("Menu", () => {
-  describe("For user Alice with role admin", () => {
-    beforeEach(function () {
-      cy.mockMapResponses("Alice");
-      // Login and go to the main page
-      cy.login("Alice");
-      cy.visit("/worldmap");
-      cy.contains("Livemap");
-    });
+describe("Menu Navigation", () => {
+  const testUsers = [
+    { name: "Alice", role: "admin", shouldSeeUserList: true },
+    { name: "Bobby", role: "manager", shouldSeeUserList: false },
+  ];
 
-    it("should select device list", () => {
-      cy.get("[data-cy=navbar-menu-drawer-control]").click();
-      cy.get("[data-cy=menu-select-device-list]").click();
-      cy.url().should("contain", "/devices");
-    });
+  testUsers.forEach(({ name, role, shouldSeeUserList }) => {
+    describe(`For user ${name} with role ${role}`, () => {
+      beforeEach(function () {
+        // Setup: Login and navigate to worldmap
+        cy.mockMapResponses(name);
+        cy.login(name);
+        cy.visit("/worldmap");
+        cy.contains("Livemap").should("be.visible");
+      });
 
-    it("should select user list", () => {
-      cy.get("[data-cy=navbar-menu-drawer-control]").click();
-      cy.get("[data-cy=menu-select-user-list]").click();
-      cy.url().should("contain", "/users");
-    });
+      it("should navigate to device list", () => {
+        cy.openMenu();
+        cy.get("[data-cy=menu-select-device-list]")
+          .should("be.visible")
+          .click();
+        cy.url().should("include", "/devices");
+        cy.contains("Devices").should("be.visible");
+      });
 
-    it("should select logout", () => {
-      cy.get("[data-cy=navbar-menu-drawer-control]").click();
-      cy.get("[data-cy=menu-select-logout]").click();
-      cy.url().should("contain", "/login");
+      it("should handle logout correctly", () => {
+        cy.openMenu();
+        cy.get("[data-cy=menu-select-logout]").should("be.visible").click();
+        cy.url().should("include", "/login");
+        cy.contains("Login").should("be.visible");
+      });
+
+      if (shouldSeeUserList) {
+        it("should navigate to user list", () => {
+          cy.openMenu();
+          cy.get("[data-cy=menu-select-user-list]")
+            .should("be.visible")
+            .click();
+          cy.url().should("include", "/users");
+          cy.contains("Users").should("be.visible");
+        });
+      } else {
+        it("should not show user list option", () => {
+          cy.openMenu();
+          cy.get("[data-cy=menu-select-user-list]").should("not.exist");
+        });
+      }
     });
   });
 
-  describe("For user Bobby with role manager", () => {
-    beforeEach(function () {
-      cy.mockMapResponses("Bobby");
-      // Login and go to the main page
-      cy.login("Bobby");
-      cy.visit("/worldmap");
-      cy.contains("Livemap");
-    });
-
-    it("should select device list", () => {
-      cy.get("[data-cy=navbar-menu-drawer-control]").click();
-      cy.get("[data-cy=menu-select-device-list]").click();
-      cy.url().should("contain", "/devices");
-    });
-
-    it("should not show user list selection", () => {
-      cy.get("[data-cy=navbar-menu-drawer-control]").click();
-      cy.get("[data-cy=menu-select-user-list]").should("have.length", 0);
-    });
-
-    it("should select logout", () => {
-      cy.get("[data-cy=navbar-menu-drawer-control]").click();
-      cy.get("[data-cy=menu-select-logout]").click();
-      cy.url().should("contain", "/login");
-    });
+  // Helper command to open menu
+  Cypress.Commands.add("openMenu", () => {
+    cy.get("[data-cy=navbar-menu-drawer-control]").click();
   });
 });
