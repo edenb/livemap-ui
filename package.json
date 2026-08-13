@@ -35,7 +35,7 @@
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-vue": "^10.10.0",
     "eslint-plugin-vuetify": "^2.7.2",
-    "globals": "^17.9.0",
+    "globals": "^17.11.0",
     "postcss-100vh-fix": "^2.0.0",
     "prettier": "^3.9.6",
     "vite": "^8.2.1",
