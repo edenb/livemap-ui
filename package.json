@@ -38,7 +38,7 @@
     "globals": "^17.11.0",
     "postcss-100vh-fix": "^2.0.0",
     "prettier": "^3.9.6",
-    "vite": "^8.2.1",
+    "vite": "^8.2.2",
     "vite-plugin-vuetify": "^2.0.4"
   },
   "postcss": {
