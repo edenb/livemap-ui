@@ -12,6 +12,10 @@ describe("Menu Navigation", () => {
         cy.login(name);
         cy.visit("/worldmap");
         cy.contains("Livemap").should("be.visible");
+        // Wait for map to fully initialize and tiles to load
+        cy.get("[data-cy=all-tiles-loaded]", { timeout: 10000 }).should(
+          "exist",
+        );
       });
 
       it("should navigate to device list", () => {
