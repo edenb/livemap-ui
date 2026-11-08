@@ -80,12 +80,19 @@ import { storeToRefs } from "pinia";
 import { httpRequest } from "@/plugins/http.js";
 import { useLayoutStore, usePositionStore, useWorldmapStore } from "@/store.js";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 import {
-  createElement,
-  Icon as ExtraIcon,
-  PinCirclePanel,
-} from "leaflet-extra-markers";
+  DefaultIcon,
+  FeatureGroup,
+  GeoJSON,
+  LeafletMap,
+  Marker,
+  TileLayer,
+} from "leaflet";
+// import {
+//   createElement,
+//   Icon as ExtraIcon,
+//   PinCirclePanel,
+// } from "leaflet-extra-markers";
 import mapDrawer from "@/components/mapDrawer.vue";
 import { standardizeColor as sColor } from "@/helpers/colors.js";
 
@@ -163,7 +170,7 @@ const mapOffsetChange = (payload) => {
 
 function initMap() {
   return new Promise((resolve) => {
-    map = L.map("worldmap", { zoomControl: false });
+    map = new LeafletMap("worldmap", { zoomControl: false });
     const center = worldmapStore.center;
     const zoom = worldmapStore.zoom;
     if (center !== null && zoom !== null) {
@@ -179,7 +186,7 @@ function initMap() {
 
     let defaultBaseLayerName = tileProviders[0].options.name;
     tileProviders.forEach((tileProvider) => {
-      const baseLayer = L.tileLayer(
+      const baseLayer = new TileLayer(
         tileProvider.urlTemplate,
         tileProvider.options,
       );
@@ -258,7 +265,7 @@ async function loadDeviceLayer(activeLayerNames) {
   }
 
   if (response?.data) {
-    deviceLayer = L.featureGroup();
+    deviceLayer = new FeatureGroup();
     positionStore.clearLastPositions();
     for (let dev of response.data) {
       const popup = getPopupText(dev);
@@ -303,11 +310,11 @@ async function loadStaticLayers(activeLayerNames) {
       let layerIndex = 1;
       for (let geojson of response.data) {
         staticLayers.push({
-          layer: L.geoJSON(geojson, getGeoJsonOptions(geojson)),
+          layer: new GeoJSON(geojson, getGeoJsonOptions(geojson)),
           layerName: getStaticLayerName(geojson, layerIndex),
         });
         const layerName = getStaticLayerName(geojson, layerIndex);
-        overlays[layerName] = L.geoJSON(geojson, getGeoJsonOptions(geojson));
+        overlays[layerName] = new GeoJSON(geojson, getGeoJsonOptions(geojson));
         layerIndex++;
       }
       replaceDuplicateNames(staticLayers);
@@ -353,18 +360,24 @@ function replaceDuplicateNames(layerList) {
 
 function updateMarker(id, lat, lon, popup, iconAttr, opacity) {
   if (deviceLayer) {
-    const icon = new ExtraIcon({
-      accentColor: iconAttr.markerColor,
-      color: iconAttr.markerColor,
-      content: createElement(["i", { class: `mdi ${iconAttr.icon}` }]),
-      contentColor: iconAttr.iconColor,
-      contentWrapperStyle: { "font-size": "1.4em" },
-      svg: PinCirclePanel,
-    });
+    const icon = new DefaultIcon({ color: "crimson" });
+    // const icon = new ExtraIcon({
+    //   accentColor: iconAttr.markerColor,
+    //   color: iconAttr.markerColor,
+    //   content: createElement(["i", { class: `mdi ${iconAttr.icon}` }]),
+    //   contentColor: iconAttr.iconColor,
+    //   contentWrapperStyle: { "font-size": "1.4em" },
+    //   svg: PinCirclePanel,
+    // });
     const allMarkers = deviceLayer.getLayers();
     let marker = allMarkers.find((e) => e.options.id === id);
     if (!marker) {
-      marker = L.marker([lat, lon], { id, icon, opacity, zIndexOffset: 1000 });
+      marker = new Marker([lat, lon], {
+        id,
+        icon,
+        opacity,
+        zIndexOffset: 1000,
+      });
       marker.bindPopup(popup);
       deviceLayer.addLayer(marker);
     } else {
@@ -394,42 +407,43 @@ function fitMarkers() {
 function getGeoJsonOptions(geojson) {
   return {
     pointToLayer: (feature, latlng) => {
-      return L.marker(latlng, {
+      return new Marker(latlng, {
         opacity:
           (geojson.properties &&
             geojson.properties.marker &&
             geojson.properties.marker.opacity) ||
           0.8,
-        icon: new ExtraIcon({
-          accentColor:
-            (geojson.properties &&
-              geojson.properties.marker &&
-              sColor(geojson.properties.marker.markercolor)) ||
-            sColor("green"),
-          color:
-            (geojson.properties &&
-              geojson.properties.marker &&
-              sColor(geojson.properties.marker.markercolor)) ||
-            sColor("green"),
-          content: createElement([
-            "i",
-            {
-              class: `mdi mdi-${
-                (geojson.properties &&
-                  geojson.properties.marker &&
-                  geojson.properties.marker.icon) ||
-                "star"
-              }`,
-            },
-          ]),
-          contentColor:
-            (geojson.properties &&
-              geojson.properties.marker &&
-              sColor(geojson.properties.marker.iconcolor)) ||
-            sColor("white"),
-          contentWrapperStyle: { "font-size": "1.4em" },
-          svg: PinCirclePanel,
-        }),
+        icon: new DefaultIcon({ color: "crimson" }),
+        // icon: new ExtraIcon({
+        //   accentColor:
+        //     (geojson.properties &&
+        //       geojson.properties.marker &&
+        //       sColor(geojson.properties.marker.markercolor)) ||
+        //     sColor("green"),
+        //   color:
+        //     (geojson.properties &&
+        //       geojson.properties.marker &&
+        //       sColor(geojson.properties.marker.markercolor)) ||
+        //     sColor("green"),
+        //   content: createElement([
+        //     "i",
+        //     {
+        //       class: `mdi mdi-${
+        //         (geojson.properties &&
+        //           geojson.properties.marker &&
+        //           geojson.properties.marker.icon) ||
+        //         "star"
+        //       }`,
+        //     },
+        //   ]),
+        //   contentColor:
+        //     (geojson.properties &&
+        //       geojson.properties.marker &&
+        //       sColor(geojson.properties.marker.iconcolor)) ||
+        //     sColor("white"),
+        //   contentWrapperStyle: { "font-size": "1.4em" },
+        //   svg: PinCirclePanel,
+        // }),
       });
     },
     style: (feature) => {
